@@ -1,6 +1,6 @@
 import {createApp} from "vue";
 import {createPinia} from "pinia";
-import {persist} from "pinia-persists";
+import piniaPluginPersist from "pinia-plugin-persist";
 import {router} from "./router/router";
 import VueClickAway from "vue3-click-away";
 import service from "./plugins/axios";
@@ -12,12 +12,7 @@ import "./assets/style.css";
 
 const app = createApp(App);
 const pinia = createPinia();
-pinia.use(
-    persist({
-        prefix: "gaop",
-        storage: window.localStorage,
-    })
-);
+pinia.use(piniaPluginPersist)
 app.use(VueClickAway);
 app.component("layout", BaseLayout);
 app.config.globalProperties.$axios = service;
