@@ -13,7 +13,7 @@ export default defineConfig({
         }),
         AutoImport({
             imports: ["vue", "vue-router"],
-            dts:"src/plugins/auto-import.d.ts",
+            dts: "src/plugins/auto-import.d.ts",
         }),
         viteCompression({
             verbose: true,

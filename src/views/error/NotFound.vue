@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import {useI18n} from "vue-next-i18n";
+
 const router = useRouter();
 const route = useRoute();
+const { t } = useI18n();
 
 function goHome() {
   router.push("/");
@@ -14,12 +17,12 @@ const hStyle = computed(() => (route.name === "404" ? "h-full" : "h-screen"));
     <div class="flex-1 flex flex-col md:flex-row items-center justify-center px-5 text-gray-700">
       <div class="max-w-md md:text-left text-center">
         <div class="text-5xl font-dark font-bold">Error 404</div>
-        <p class="text-2xl md:text-3xl font-light leading-normal mb-3">{{ $t("error.not_found") }}</p>
+        <p class="text-2xl md:text-3xl font-light leading-normal mb-3">{{ t("error.not_found") }}</p>
         <button
             class="px-4 inline py-2 text-sm font-medium leading-5 shadow text-white transition-colors duration-150 border border-transparent rounded-lg focus:outline-none focus:shadow-outline-blue bg-blue-600 active:bg-blue-600 hover:bg-blue-700"
             @click="goHome"
         >
-          {{ $t("go_home") }}
+          {{ t("go_home") }}
         </button>
       </div>
       <div class="max-w-lg">

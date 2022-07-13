@@ -1,6 +1,8 @@
 <script setup lang="ts">
-const router = useRouter();
+import {useI18n} from "vue-next-i18n";
 
+const router = useRouter();
+const { t } = useI18n();
 function goHome() {
   router.push("/");
 }
@@ -11,12 +13,12 @@ function goHome() {
     <div class="flex-1 flex flex-col md:flex-row items-center justify-center px-5 text-gray-700">
       <div class="max-w-md md:text-left text-center">
         <div class="text-5xl font-dark font-bold">Error 403</div>
-        <p class="text-2xl md:text-3xl font-light leading-normal mb-3">{{ $t("error.access_denied") }}</p>
+        <p class="text-2xl md:text-3xl font-light leading-normal mb-3">{{ t("error.access_denied") }}</p>
         <button
             class="px-4 inline py-2 text-sm font-medium leading-5 shadow text-white transition-colors duration-150 border border-transparent rounded-lg focus:outline-none focus:shadow-outline-blue bg-blue-600 active:bg-blue-600 hover:bg-blue-700"
             @click="goHome"
         >
-          {{ $t("go_home") }}
+          {{ t("go_home") }}
         </button>
       </div>
       <div class="max-w-lg">
@@ -537,107 +539,5 @@ function goHome() {
   svg {
     width: 90%;
   }
-}
-.cls-1 {
-  fill: #d6b49a;
-}
-.cls-1,
-.cls-10,
-.cls-11,
-.cls-13,
-.cls-14,
-.cls-15,
-.cls-17,
-.cls-2,
-.cls-4,
-.cls-5,
-.cls-6 {
-  stroke: #000;
-}
-.cls-1,
-.cls-11,
-.cls-13,
-.cls-14,
-.cls-16,
-.cls-8 {
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.cls-1,
-.cls-10,
-.cls-11,
-.cls-12,
-.cls-13,
-.cls-14,
-.cls-15,
-.cls-16,
-.cls-17,
-.cls-2,
-.cls-3,
-.cls-4,
-.cls-5,
-.cls-6,
-.cls-7,
-.cls-8,
-.cls-9 {
-  stroke-width: 3px;
-}
-.cls-2 {
-  fill: #020202;
-}
-.cls-10,
-.cls-12,
-.cls-15,
-.cls-17,
-.cls-2,
-.cls-3,
-.cls-4,
-.cls-5,
-.cls-6,
-.cls-7,
-.cls-9 {
-  stroke-miterlimit: 10;
-}
-.cls-3 {
-  fill: #818181;
-}
-.cls-12,
-.cls-16,
-.cls-3,
-.cls-7,
-.cls-8,
-.cls-9 {
-  stroke: #191818;
-}
-.cls-4 {
-  fill: #dcdbda;
-}
-.cls-5 {
-  fill: #4ea7f1;
-}
-.cls-14,
-.cls-6 {
-  fill: #f8f3ed;
-}
-.cls-16,
-.cls-7 {
-  fill: #333;
-}
-.cls-13,
-.cls-8 {
-  fill: none;
-}
-.cls-9 {
-  fill: #f8f59c;
-}
-.cls-10,
-.cls-11 {
-  fill: #f3d2c9;
-}
-.cls-15 {
-  fill: #8bb174;
-}
-.cls-17 {
-  fill: #dacb22;
 }
 </style>
