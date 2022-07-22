@@ -4,9 +4,10 @@ import {authStore} from "../store/auth";
 import {useRouter} from "vue-router";
 import Vue, {getCurrentInstance} from "vue";
 import {router} from "../router/router";
+import {useI18n} from "vue-next-i18n";
 
 const service = axios.create({
-    baseURL: localStorage.getItem('host') || "https://api.arknights.host/",
+    baseURL: localStorage.getItem('host') || "https://akapi.aopcore.com/",
     timeout: 50000,
 });
 
@@ -57,6 +58,10 @@ service.interceptors.request.use((config) => {
     return config
 }, err)
 
+function setAccessToken(token: string) {
+    service.defaults.headers.post['Authorization'] = token;
+    service.defaults.headers.get['Authorization'] = token;
+}
 
 function post(url: string, params: object = {}) {
     const auth = authStore();
@@ -68,7 +73,7 @@ function post(url: string, params: object = {}) {
             }, err => {
                 if (err.response === undefined) {
                     createToast(
-                        getCurrentInstance()?.appContext.config.globalProperties._translate('error.net_err'), {
+                        useI18n().t('error.net_err'), {
                             showIcon: true,
                             type: 'danger',
                             timeout: 2000,
@@ -142,7 +147,18 @@ function del(url: string, params: any) {
 }
 
 export default service;
-export {post, patch, put, get, del};
+export {post, patch, put, get, del, setAccessToken};
+
+export const apiAuthRegister = (username: string, password: string, invitecode: string) => post('/auth/register', {
+    username,
+    password,
+    invitecode
+});
+export const apiAuthLogin = (username: string, password: string) => post('/auth/login', {
+    username,
+    password
+})
+export const apiGetMe = () => get("/account/me");
 // export const apiRegister = (params: any) => post("Auth", params); // Register
 // export const apiLogin = (params: string) => get(`Auth/${params}`); // Login
 // export const apiReLogin = (token: string) => get(`Auth/${token}`); // ReLogin

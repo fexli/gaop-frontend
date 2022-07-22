@@ -8,8 +8,9 @@ import App from "./App.vue";
 import "mosha-vue-toastify/dist/style.css";
 import "./assets/index.css";
 import "./assets/style.css";
+import "./assets/global.sass";
 import {i18n} from "./local";
-
+import global_const from "./utils/global_const";
 const app = createApp(App);
 
 const pinia = createPinia();
@@ -19,4 +20,10 @@ app.use(i18n);
 
 app.use(VueClickAway);
 app.config.globalProperties.$axios = service;
+app.config.globalProperties.GLOBAL = global_const;
+app.config.globalProperties.get_rand_bg = function () {
+    let total = global_const.loginBG.bg.length + global_const.loginBG.avgs.length
+    let select = Math.round(Math.random() * (total - 1))
+    return `static/${select < global_const.loginBG.bg.length ? 'bg' : 'avgs'}/${select < global_const.loginBG.bg.length ? global_const.loginBG.bg[select] : global_const.loginBG.avgs[select - global_const.loginBG.bg.length]}`
+}
 app.use(router).use(pinia).mount("#app");

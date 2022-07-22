@@ -47,7 +47,7 @@ import { apiLogin, apiReLogin } from "../plugins/axios";
 import { getCurrentInstance, ref } from "vue";
 import { createToast } from "mosha-vue-toastify";
 import { useRoute, useRouter } from "vue-router";
-import { userStore } from "../store/user";
+import { userStore } from "../store/auth";
 import Loading from "../components/loading.vue";
 import { validate } from "../plugins/function";
 import { storeToRefs } from "pinia/dist/pinia";

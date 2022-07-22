@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {post, get} from "../plugins/axios";
+import {post, get, setAccessToken, apiAuthRegister, apiAuthLogin, apiGetMe} from "../plugins/axios";
 
 export const authStore = defineStore("auth", {
     state: () => ({
@@ -16,23 +16,23 @@ export const authStore = defineStore("auth", {
         getUsername: (state) => state.username,
     },
     actions: {
+        async register(username: string, password: string, invitecode: string) {
+            return await apiAuthRegister(username, password, invitecode)
+        },
         async login(username: string, password: string) {
-            return await post(
-                '/auth/login',
-                {
-                    username,
-                    password
-                }).then((resp: any) => {
+            return await apiAuthLogin(username, password).then((resp: any) => {
                 this.access_token = resp.access_token;
                 this.expires_in = resp.expires_in;
                 this.username = username;
+                setAccessToken(resp.access_token);
+                return resp;
             })
         },
         logout() {
             this.$reset()
         },
         fetchProfile() {
-            return get("/account/me")
+            return apiGetMe()
         }
     },
     persist: {

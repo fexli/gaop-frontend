@@ -1,7 +1,7 @@
 import {defineStore} from "pinia";
 import {post, get} from "../plugins/axios";
 
-export const authStore = defineStore("app", {
+export const serverStore = defineStore("server", {
     state: () => ({
         secure: false,
         server: "mc.mesord.com:8082",

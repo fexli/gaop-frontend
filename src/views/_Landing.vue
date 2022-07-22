@@ -68,7 +68,7 @@
   </div>
 </template>
 <script setup>
-  import {userStore} from "../store/user";
+  import {userStore} from "../store/auth";
   import {storeToRefs} from "pinia/dist/pinia";
 
   const _user = userStore()

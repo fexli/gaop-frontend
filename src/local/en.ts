@@ -187,6 +187,12 @@ export const en = {
         info: 'Info',
     },
     login: {
+        error:{
+            password_empty: 'Password cannot be empty',
+            username_empty: 'Username cannot be empty',
+        },
+        notice_reg:'Or',
+        forget: 'Forget Password',
         switch_serv: 'Switch Serv',
         title: 'User Login',
         username: 'User Name',
