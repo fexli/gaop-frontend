@@ -13,27 +13,28 @@ export const router = createRouter({
 });
 
 
-const user = authStore();
 
 router.beforeEach((to, from, next) => {
     Nprogress.start()
-    const token = user.getAccessToken;
-    if (to.path.startsWith('/static') || to.path.startsWith('/reader')) {
-        next()
-    } else if (to.name !== 'login' && to.name !== 'register') {
-        if (token) {
-            next()
-        } else {
-            // next({name: 'login', query: {redirect: to.path}})
-            next({path: '/reader'})
-        }
-    } else {
-        if (token) {
-            next({path: '/'})
-        } else {
-            next()
-        }
-    }
+    next()
+    // const user = authStore();
+    // const token = user.getAccessToken;
+    // if (to.path.startsWith('/static') || to.path.startsWith('/reader')) {
+    //     next()
+    // } else if (to.name !== 'login' && to.name !== 'register') {
+    //     if (token) {
+    //         next()
+    //     } else {
+    //         // next({name: 'login', query: {redirect: to.path}})
+    //         next({path: '/reader'})
+    //     }
+    // } else {
+    //     if (token) {
+    //         next({path: '/'})
+    //     } else {
+    //         next()
+    //     }
+    // }
 })
 
 router.afterEach(() => {
