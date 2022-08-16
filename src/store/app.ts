@@ -3,7 +3,7 @@ import {defineStore} from "pinia";
 export const appStore = defineStore("app", {
     state: () => ({
         darkMode: true,
-        background: 'static/bg/avg_0_2.png',
+        background: 'static/bg/janus.jpg',
         themeColor: '#3f51b5',
         theme: 'indigo',
         language: 'zh_cn',
