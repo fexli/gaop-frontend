@@ -51,6 +51,7 @@ class Menu {
     }
 
     toggleState() {
+        console.log("toggleState");
         this.close.value = !this.close.value;
     }
 

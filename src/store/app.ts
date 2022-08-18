@@ -1,4 +1,5 @@
 import {defineStore} from "pinia";
+import {setByDarkMode} from "../plugins/theme";
 
 export const appStore = defineStore("app", {
     state: () => ({
@@ -43,6 +44,11 @@ export const appStore = defineStore("app", {
         },
         setThemeMode(data: any) {
             this.darkMode = data
+            setByDarkMode(data)
+        },
+        toggleThemeMode() {
+            this.darkMode = !this.darkMode
+            setByDarkMode(this.darkMode)
         },
         setLanguage(data: any) {
             this.language = data

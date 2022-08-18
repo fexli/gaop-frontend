@@ -1,0 +1,29 @@
+.boom-out:hover {
+    animation: boom-out 0.5s;
+}
+@keyframes boom-out {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.25);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.boom-in:hover {
+    animation: boom-in 0.5s;
+}
+@keyframes boom-in {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.75);
+    }
+    100% {
+        transform: scale(1);
+    }
+}

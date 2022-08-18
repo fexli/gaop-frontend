@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-full absolute text-center flex flex-col items-center justify-center">
-    <div class="w-full text-base-content dash" :style="`opacity: ${Math.min(t1o/40,1)}`">{{ t1l[t1t] }}</div>
-    <div class="w-full text-base-content dash" :style="`opacity: ${Math.min(t1o/40,1)}`">{{ t2l[t1t] }}</div>
+    <div class="w-full text-primary dash" :style="`opacity: ${Math.min(t1o/40,1)}`">{{ t1l[t1t] }}</div>
+    <div class="w-full text-primary dash" :style="`opacity: ${Math.min(t1o/40,1)}`">{{ t2l[t1t] }}</div>
   </div>
 </template>
 

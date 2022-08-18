@@ -47,8 +47,9 @@
 <script lang="ts" setup>
 import {appStore} from "../../store/app";
 import {storeToRefs} from "pinia/dist/pinia";
-import NavBar from "./parts/NavBar.vue";
-import AsideBar from "./parts/AsideBar.vue";
+import NavBar from "./default/NavBar.vue";
+import AsideBar from "./default/AsideBar.vue";
+import Translate from "./default/nav/Translate.vue";
 
 const _app = appStore()
 const {background,opacity} = storeToRefs(_app)
