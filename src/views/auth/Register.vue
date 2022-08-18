@@ -118,16 +118,16 @@
 </template>
 
 <script setup lang="ts">
-import {useI18n} from "vue-next-i18n";
 import {useRouter} from "vue-router";
-import {createToast} from "mosha-vue-toastify";
 import {authStore} from "../../store/auth";
 import {useLoginPlaceholder} from "../../hooks/computed";
+import {useToast} from "../../hooks/toast";
+
 
 const router = useRouter();
 const auth = authStore();
-const {t} = useI18n();
 const {regUserInputText, regPassInputText, regInviteInputText} = useLoginPlaceholder();
+const {showMessage} = useToast()
 
 const loading = ref(false);
 
@@ -167,23 +167,13 @@ const onSubmit = async (values: any) => {
       invite.value
   ).then(() => {
     loading.value = false;
-    createToast(t("register.success"), {
-      showIcon: true,
-      type: "success",
-      transition: "bounce",
-      timeout: 4000,
-    });
+    showMessage("register.success", 4000, "success")
     router.push("/auth/login");
   }).catch((err) => {
     loading.value = false;
     console.log(err)
     console.log(err.data.msg)
-    createToast(t(err.data.msg) || err.data.msg, {
-      showIcon: true,
-      type: "danger",
-      transition: "bounce",
-      timeout: 4000,
-    });
+    showMessage(err.data.msg, 4000, "danger")
   });
 }
 </script>

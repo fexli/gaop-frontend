@@ -91,11 +91,13 @@ import {createToast} from "mosha-vue-toastify";
 import {authStore} from "../../store/auth";
 import {useLoginPlaceholder} from "../../hooks/computed";
 import {useTranslate} from "../../hooks/translate";
+import {useToast} from "../../hooks/toast";
 
 const {translate} = useTranslate();
 const router = useRouter();
 const auth = authStore();
 const {t} = useI18n();
+const {showMessage} = useToast()
 const {passwordInputText, usernameInputText} = useLoginPlaceholder();
 
 const loading = ref(false);
@@ -130,22 +132,12 @@ const onSubmit = async (values: any) => {
   ).then(() => {
     loading.value = false;
     router.push("/dashboard");
-    createToast(translate("login.success", account.value), {
-      showIcon: true,
-      type: "success",
-      transition: "bounce",
-      timeout: 4000,
-    });
+    showMessage("login.success", 4000, "success", account.value);
   }).catch((err) => {
     loading.value = false;
     console.log(err)
     console.log(err.data.msg)
-    createToast(translate(err.data.msg) || err.data.msg, {
-      showIcon: true,
-      type: "danger",
-      transition: "bounce",
-      timeout: 4000,
-    });
+    showMessage(err.data.msg, 4000, "danger")
   });
 }
 </script>

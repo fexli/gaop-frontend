@@ -1,14 +1,15 @@
 import {createI18n} from 'vue-next-i18n';
 import {zhHans} from "./zh_cn";
 import {en} from "./en";
+import {appStore} from "../store/app";
 
 const messages = {
-    "zhHans": zhHans,
+    "zh_cn": zhHans,
     "en": en
 }
 
 export const i18n = createI18n({
-    locale: 'zhHans',
+    locale: 'zh_cn',
     messages,
-    localeKeys: ['zhHans', 'en']
+    localeKeys: ['zh_cn', 'en']
 })

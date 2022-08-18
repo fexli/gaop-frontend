@@ -4,8 +4,8 @@ import {post, get} from "../plugins/axios";
 export const serverStore = defineStore("server", {
     state: () => ({
         secure: false,
-        server: "mc.mesord.com:8082",
-        serverName: "稳定服",
+        server: "127.0.0.1:8084",
+        serverName: "[x]本地服",
     }),
     getters: {
         getServer: (state) => {

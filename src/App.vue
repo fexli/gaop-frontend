@@ -17,7 +17,7 @@
   </div>
 </template>
 <script setup>
-import {load} from "./plugins/theme";
+import {loadTheme} from "./plugins/theme";
 import {isLarge} from "./plugins/common";
 import {getCurrentInstance, onMounted} from "vue";
 import {storeToRefs} from "pinia/dist/pinia";
@@ -25,13 +25,41 @@ import {authStore} from "./store/auth";
 import {serverStore} from "./store/server";
 import globals from "./utils/global_const";
 import {formatDate} from "./plugins/function";
+import websock from "./hooks/websock";
+import {loadLanguage} from "./plugins/language";
+import global_const from "./utils/global_const";
+import {useToast} from "./hooks/toast";
 
-load(); // LOAD THEME
+loadTheme(); // LOAD THEME
+loadLanguage(); // LOAD LANGUAGE
 const _auth = authStore();
 const {access_token} = storeToRefs(_auth);
 
+const $axios =
+    getCurrentInstance().appContext.config.globalProperties.$axios.defaults;
+
+if (access_token.value !== '') {
+  $axios.headers["Authorization"] = access_token.value;
+}
+
+const {showMessage} = useToast()
+
 const _server = serverStore();
-const {serverName, server} = storeToRefs(_server);
+const {serverName} = storeToRefs(_server);
+if (_server.getServerName !== "自定义") {
+  console.log("Check server name: " + _server.getServerName);
+  for (let i of global_const.servers) {
+    if (i.name === _server.getServerName) {
+      if (_server.getServer !== i.server || _server.getSecure !== i.secure) {
+        console.log("serv missmatch", i);
+        _server.setServer(i);
+        showMessage("server.force_switch", 5000, "info", i.name, i.secure ? "https" : "http", i.server);
+      }
+    }
+  }
+}
+$axios.baseURL = `http${_server.getSecure ? 's' : ''}://${_server.getServer}/`
+
 
 const curTime = ref('---------- --:--');
 const updateTime = () => {
@@ -39,12 +67,10 @@ const updateTime = () => {
   setTimeout(updateTime, 2000);
 };
 setTimeout(updateTime, 2000);
-const $axios =
-    getCurrentInstance().appContext.config.globalProperties.$axios.defaults;
 
-if (access_token.value !== '') {
-  $axios.headers["Authorization"] = access_token.value;
-}
+
+websock.setup()
+websock.initWebSocket()
 
 onMounted(() => {
   isLarge.value = document.documentElement.clientWidth >= 1024;

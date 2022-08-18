@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import {appStore} from "../../../../store/app";
-
+import {setLanguage} from "../../../../plugins/language";
 const app = appStore()
 
 </script>
@@ -23,14 +23,14 @@ const app = appStore()
         class="dropdown-content bg-base-200 text-base-content rounded-t-box rounded-b-box top-px mt-10 w-36 overflow-y-auto shadow-lg">
       <ul class="menu menu-compact gap-1 p-2" tabindex="0">
         <li>
-          <button class="flex" :class="{'active':app.language === 'en'}" @click="app.setLanguage('en')">
+          <button class="flex" :class="{'active':app.language === 'en'}" @click="setLanguage('en')">
             <img loading="lazy" width="20" height="20" alt="English"
                  src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.0/svg/1f1ec-1f1e7.svg">
             <span class="flex flex-1 justify-between">English </span>
           </button>
         </li>
         <li>
-          <button class="flex" :class="{'active':app.language === 'zh_cn'}" @click="app.setLanguage('zh_cn')">
+          <button class="flex" :class="{'active':app.language === 'zh_cn'}" @click="setLanguage('zh_cn')">
             <img loading="lazy" width="20" height="20" alt="中文"
                  src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.0/svg/1f1e8-1f1f3.svg">
             <span class="flex flex-1 justify-between">中文 </span>

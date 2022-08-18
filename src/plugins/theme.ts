@@ -1,23 +1,24 @@
 import {appStore} from "../store/app";
 
-export function load() {
+export function loadTheme() {
     const apps = appStore()
     setByDarkMode(apps.getThemeMode)
 }
 
-export function set(name: string) {
+export function setTheme(name: string) {
     localStorage.setItem("theme", name);
     document.documentElement.setAttribute("data-theme", name);
 }
 
 export function setByDarkMode(mode: boolean) {
     if (mode) {
-        set("halloween");
+        setTheme("halloween");
     } else {
-        set("cmyk");
+        setTheme("cmyk");
     }
 }
 
-export function get() {
-    return localStorage.getItem("theme");
+export function getTheme() {
+    const apps = appStore()
+    return apps.getThemeMode
 }

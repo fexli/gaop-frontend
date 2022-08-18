@@ -3,6 +3,7 @@ import Drawer from "./nav/Drawer.vue";
 import DarkMode from "./nav/DarkMode.vue";
 import FullScreen from "./nav/FullScreen.vue";
 import Translate from "./nav/Translate.vue";
+import WebSocket from "./nav/WebSocket.vue";
 </script>
 
 <template>
@@ -14,6 +15,7 @@ import Translate from "./nav/Translate.vue";
     </div>
     <div class="spacer"/>
     <div class="nav-flex-cc text-right">
+      <WebSocket/>
       <Translate/>
       <FullScreen/>
       <DarkMode/>

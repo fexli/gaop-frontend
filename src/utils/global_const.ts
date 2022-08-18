@@ -128,28 +128,22 @@ const statusType = {
     '2': 'cyan',
     '3': 'red',
 }
-const aopVersion = '1.6b - 1.8.21'
-
-// const baseUrl = '192.168.1.2:8082'
-// const secures = false
-
-// const baseUrl = 'mc.mes-sy.top:8082'
-// const secures = false
+const aopVersion = '2.1a - 1.8.61'
 
 const servers = [
     {
         name: "稳定服",
-        server: "mc.mesord.com:8082",
+        server: "api.akaem.com:8082",
         secure: false,
     },
     {
         name: "测试服",
-        server: "mc.mesord.com:8084",
+        server: "api.aksc.com:8084",
         secure: true,
     },
     {
         name: "[x]本地服",
-        server: "192.168.112.137:8082",
+        server: "127.0.0.1:8084",
         secure: false,
     },
     {

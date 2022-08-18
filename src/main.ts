@@ -12,10 +12,12 @@ import "./assets/global.sass";
 import "./assets/animate.css";
 import {i18n} from "./local";
 import global_const from "./utils/global_const";
+
 const app = createApp(App);
 
 const pinia = createPinia();
 pinia.use(piniaPluginPersist)
+app.use(pinia);
 
 app.use(i18n);
 
@@ -27,4 +29,4 @@ app.config.globalProperties.get_rand_bg = function () {
     let select = Math.round(Math.random() * (total - 1))
     return `static/${select < global_const.loginBG.bg.length ? 'bg' : 'avgs'}/${select < global_const.loginBG.bg.length ? global_const.loginBG.bg[select] : global_const.loginBG.avgs[select - global_const.loginBG.bg.length]}`
 }
-app.use(router).use(pinia).mount("#app");
+app.use(router).mount("#app");
