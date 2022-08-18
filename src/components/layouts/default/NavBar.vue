@@ -4,6 +4,8 @@ import DarkMode from "./nav/DarkMode.vue";
 import FullScreen from "./nav/FullScreen.vue";
 import Translate from "./nav/Translate.vue";
 import WebSocket from "./nav/WebSocket.vue";
+import Logo from "./nav/Logo.vue";
+import BreadCrumb from "./nav/BreadCrumb.vue";
 </script>
 
 <template>
@@ -12,6 +14,7 @@ import WebSocket from "./nav/WebSocket.vue";
       w-screen transition-all lg:transition-none lg:w-auto">
     <div class="nav-flex-cc">
       <Drawer/>
+      <BreadCrumb/>
     </div>
     <div class="spacer"/>
     <div class="nav-flex-cc text-right">

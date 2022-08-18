@@ -39,7 +39,8 @@ class Menu {
         this.menus.value.forEach((m) => {
             this.getNestedMenuByRoute(m, routerMap);
         });
-        return routerMap.get(route.name);
+        console.log("routerMap", routerMap)
+        return routerMap.get(route.path);
     }
 
     linkPage(menu: RouteRecordRaw) {
@@ -62,7 +63,6 @@ class Menu {
      */
     filterNestedMenu(children: RouteRecordNormalized["children"]): RouteRecordRaw[] {
         return children
-            .filter((route) => route.meta)
             .map((route) => {
                 if (route.children) {
                     const childRoute = this.filterNestedMenu(route.children);
@@ -76,13 +76,12 @@ class Menu {
     getMenuByRoute() {
         return router
             .getRoutes()
-            .filter((route) => route.children.length && route.meta.menu)
+            .filter((route) => route.children.length)
             .map((route) => {
                 const menu: RouteRecordRaw = {...route};
                 menu.children = this.filterNestedMenu(route.children);
                 return menu;
-            })
-            .filter((menu) => menu.children?.length) as RouteRecordRaw[];
+            }) as RouteRecordRaw[];
     }
 }
 
