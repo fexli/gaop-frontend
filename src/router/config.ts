@@ -27,7 +27,7 @@ export const publicRoute: RouteRecordRaw[] = [
         },
         children: [
             {
-                path: 'login',
+                path: '/auth/login',
                 name: 'login',
                 meta: {
                     title: 'Login'
@@ -35,7 +35,7 @@ export const publicRoute: RouteRecordRaw[] = [
                 component: () => import('../views/auth/Login.vue')
             },
             {
-                path: 'register',
+                path: '/auth/register',
                 name: 'register',
                 meta: {
                     title: 'Register'

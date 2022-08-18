@@ -12,7 +12,8 @@
       <span class="text-right sm:hidden">AOP Project</span>
       <span class="text-right hidden sm:flex">AOP Project v{{ globals.aopVersion }}</span>
       <div class="divider divider-horizontal m-0"></div>
-      <span class="text-right sm:text-base text-2xs flex items-center">{{ curTime }}</span>
+      <span class="text-right hidden sm:flex flex items-center">{{ curTime }}</span>
+      <span class="text-right sm:hidden flex items-center">{{ curTimeSimp }}</span>
     </div>
   </div>
 </template>
@@ -62,8 +63,10 @@ $axios.baseURL = `http${_server.getSecure ? 's' : ''}://${_server.getServer}/`
 
 
 const curTime = ref('---------- --:--');
+const curTimeSimp = ref('----------');
 const updateTime = () => {
   curTime.value = formatDate((new Date()).getTime() / 1000, true);
+  curTimeSimp.value = formatDate((new Date()).getTime() / 1000, false);
   setTimeout(updateTime, 2000);
 };
 setTimeout(updateTime, 2000);
