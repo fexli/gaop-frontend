@@ -19,7 +19,7 @@
 </template>
 <script setup>
 import {loadTheme} from "./plugins/theme";
-import {isLarge} from "./plugins/common";
+import {calcWidth} from "./plugins/common";
 import {getCurrentInstance, onMounted} from "vue";
 import {storeToRefs} from "pinia/dist/pinia";
 import {authStore} from "./store/auth";
@@ -75,10 +75,11 @@ setTimeout(updateTime, 2000);
 websock.setup()
 websock.initWebSocket()
 
+
 onMounted(() => {
-  isLarge.value = document.documentElement.clientWidth >= 1024;
+  calcWidth();
   window.onresize = () => {
-    isLarge.value = document.documentElement.clientWidth >= 1024;
+    calcWidth();
   };
 });
 </script>
