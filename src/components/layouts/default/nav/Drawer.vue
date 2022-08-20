@@ -34,7 +34,7 @@ const findParentNodes = (node: Element): boolean => {
 
 <template>
   <div
-      class="aside-cursor"
+      class="aside-cursor h-11 flex items-center"
       @mouseenter="menuService.openDrawer"
       @mouseleave="menuService.closeDrawerDelay"
   >

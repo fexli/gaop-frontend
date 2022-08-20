@@ -27,11 +27,12 @@ watch(menuService.close, (target) => {
     overflowHidden.value = false;
   }
 })
+menuService.openDrawer()
 </script>
 
 <template>
   <div
-      class="sidebar md:close aside-cursor"
+      class="sidebar lg:close aside-cursor"
       @mouseleave="menuService.closeDrawer"
       @mouseenter="menuService.openDrawer"
       :class="{'overflow-hidden':!overflowHidden}"

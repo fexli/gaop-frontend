@@ -25,7 +25,8 @@
     }
 
     .sidebar.close .nav-links li a .link_name {
-        @apply opacity-0 pointer-events-none;
+        @apply opacity-0 pointer-events-none overflow-hidden;
+        width: 230px;
         word-break: keep-all;
     }
 
