@@ -8,8 +8,9 @@ const allrouters = publicRoute.concat(protectedRoute)
 
 
 export const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHistory("#"),
     routes: allrouters,
+    linkActiveClass: 'active',
 });
 
 

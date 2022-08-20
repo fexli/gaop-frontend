@@ -16,19 +16,18 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="breadcrumbs hidden sm:flex">
+  <div class="breadcrumbs hidden sm:flex ml-2">
     <ul>
-      <li class="text-primary" v-for="(bread, index) in breadArr" :key="index">
-        <Logo v-if="bread === 'home'"/>
-        <template v-else>
-          {{
-            t("menu." + bread)
-          }}
-        </template>
+      <li class="text-primary text-lg" v-for="(bread, index) in breadArr" :key="index">
+        {{
+          t("menu." + bread)
+        }}
       </li>
     </ul>
   </div>
-  <Logo class="sm:hidden"/>
+  <div class="sm:hidden text-primary text-lg ml-2">
+    {{ breadArr.length ? t('menu.' + breadArr[breadArr.length - 1]) : "" }}
+  </div>
 </template>
 
 <style lang="scss" scoped>

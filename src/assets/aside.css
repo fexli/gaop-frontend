@@ -1,0 +1,172 @@
+/* Google Fonts Import Link */
+/*@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');*/
+@import "./fonts/poppins/poppins.css";
+
+* {
+    @apply m-0 p-0 box-border;
+    font-family: 'Poppins', sans-serif;
+}
+
+.sidebar {
+    @apply rounded-xl top-[4.2rem] fixed left-4 bg-base-200 bg-opacity-80 backdrop-blur shadow-lg z-20;
+    width: 250px;
+    transition: all 0.3s ease-in-out;
+}
+
+/*.sidebar:hover {*/
+/*    */
+/*}*/
+
+
+
+.sidebar .logo-details {
+    @apply w-full flex items-center;
+    height: 50px;
+}
+
+.sidebar .logo-details .logo-icon {
+    @apply text-center;
+    font-size: 30px;
+    height: 40px;
+    min-width: 50px;
+    line-height: 50px;
+}
+
+.sidebar .logo-details .logo_name {
+    @apply text-primary;
+    font-size: 22px;
+    font-weight: 600;
+    transition: 0.3s ease;
+    transition-delay: 0.1s;
+}
+
+
+.sidebar .nav-links {
+    @apply h-full overflow-auto pt-1 pb-3;
+}
+
+
+.sidebar .nav-links::-webkit-scrollbar {
+    @apply hidden;
+}
+
+.sidebar .nav-links li {
+    @apply relative;
+    list-style: none;
+    transition: all 0.4s ease;
+}
+
+.sidebar .nav-links li:hover {
+    @apply bg-base-300 bg-opacity-40;
+}
+
+.sidebar .nav-links li.current {
+    @apply bg-base-300 bg-opacity-80;
+}
+
+.sidebar .nav-links li .icon-link {
+    @apply flex items-center justify-between;
+}
+
+
+.sidebar .nav-links li .logo-icon {
+    @apply cursor-pointer;
+    height: 50px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    min-width: 50px;
+    text-align: center;
+    line-height: 50px;
+    font-size: 20px;
+    transition: all 0.3s ease;
+}
+
+.sidebar .nav-links li.showMenu i.arrow {
+    transform: rotate(-180deg);
+}
+
+
+.sidebar .nav-links li a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.sidebar .nav-links li a .link_name {
+    @apply text-primary;
+    font-size: 18px;
+    font-weight: 400;
+    transition: all 0.4s ease;
+}
+
+
+.sidebar .nav-links li .sub-menu {
+    @apply bg-base-300;
+    padding: 6px 6px 14px 80px;
+    margin-top: -10px;
+    display: none;
+}
+
+.sidebar .nav-links li.showMenu .sub-menu {
+    display: block;
+}
+
+.sidebar .nav-links li .sub-menu a {
+    @apply text-info opacity-60;
+    font-size: 15px;
+    padding: 5px 0;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.sidebar .nav-links li .sub-menu a:hover {
+    @apply opacity-100;
+}
+
+
+
+.sidebar .nav-links li .sub-menu .link_name {
+    display: none;
+}
+
+
+.sidebar .nav-links li .sub-menu.blank {
+    @apply opacity-0 pointer-events-none;
+    padding: 3px 20px 6px 16px;
+}
+
+.sidebar .nav-links li:hover .sub-menu.blank {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.home-section {
+    @apply relative;
+    background: #E4E9F7;
+    height: 100vh;
+    left: 250px;
+    width: calc(100% - 250px);
+    transition: all 0.5s ease;
+}
+
+
+.home-section .home-content {
+    @apply flex items-center;
+    height: 50px;
+}
+
+.home-section .home-content .bx-menu,
+.home-section .home-content .text {
+    @apply bg-base-300 bg-opacity-80;
+    font-size: 35px;
+}
+
+.home-section .home-content .bx-menu {
+    @apply cursor-pointer;
+    margin: 0 15px;
+}
+
+.home-section .home-content .text {
+    font-size: 26px;
+    font-weight: 600;
+}

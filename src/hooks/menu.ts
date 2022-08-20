@@ -10,7 +10,10 @@ import {
 class Menu {
     public menus = ref<RouteRecordRaw[]>([]);
     public route = ref(null as null | RouteLocationNormalized);
-    public close = ref(false);
+    //@ts-ignore
+    private closeTimeout: NodeJS.Timeout;
+
+    public close = ref(false); // 是否需要关闭侧边栏
 
     constructor() {
         this.menus.value = this.getMenuByRoute();
@@ -54,6 +57,23 @@ class Menu {
     toggleState() {
         console.log("toggleState");
         this.close.value = !this.close.value;
+    }
+
+    openDrawer() {
+        if (this.closeTimeout) {
+            clearTimeout(this.closeTimeout);
+        }
+        this.close.value = true;
+    }
+
+    closeDrawerDelay() {
+        this.closeTimeout = setTimeout(() => {
+            this.close.value = false;
+        }, 300);
+    }
+
+    closeDrawer() {
+        this.close.value = false;
     }
 
     /**

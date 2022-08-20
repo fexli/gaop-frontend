@@ -10,6 +10,7 @@ import "./assets/index.css";
 import "./assets/style.css";
 import "./assets/global.sass";
 import "./assets/animate.css";
+import "./assets/aside.css";
 import {i18n} from "./local";
 import global_const from "./utils/global_const";
 

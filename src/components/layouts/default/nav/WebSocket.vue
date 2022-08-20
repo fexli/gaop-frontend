@@ -3,7 +3,7 @@ import websock from "../../../../hooks/websock";
 </script>
 <template>
   <div
-      class="nav-flex-cc px-2 py-0.5 rounded-2xl transition-colors select-none text-sm cursor-pointer"
+      class="nav-flex-cc px-2 mx-2 py-0.5 rounded-2xl transition-colors select-none text-sm cursor-pointer"
       :class="websock.isActive.value ? 'btn-success':'btn-error'"
       @click="websock.tempT"
   >

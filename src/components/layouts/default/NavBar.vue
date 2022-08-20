@@ -10,8 +10,8 @@ import BreadCrumb from "./nav/BreadCrumb.vue";
 
 <template>
   <div
-      class="z-50 nav-h-lim h-12 lg:m-4 lg:rounded-xl bg-base-200 shadow-lg fixed navbar top-0 inset-x-0
-      w-screen transition-all lg:transition-none lg:w-auto">
+      class="z-10 nav-h-lim h-12 lg:m-4 lg:rounded-xl bg-base-200 bg-opacity-80 backdrop-blur shadow-lg fixed navbar top-0 inset-x-0
+      w-screen transition-all lg:w-auto">
     <div class="nav-flex-cc">
       <Drawer/>
       <BreadCrumb/>

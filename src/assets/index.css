@@ -1,3 +1,54 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@layer utilities {
+    .sidebar.close {
+        width: 50px;
+    }
+
+    .sidebar.close .logo-details .logo_name {
+        @apply opacity-0 pointer-events-none;
+        transition-delay: 0s;
+    }
+
+    .sidebar.close .nav-links {
+        @apply overflow-visible;
+    }
+
+
+    .sidebar.close .nav-links li .icon-link {
+        @apply block;
+    }
+
+    .sidebar.close .nav-links i.arrow {
+        @apply hidden;
+    }
+
+    .sidebar.close .nav-links li a .link_name {
+        @apply opacity-0 pointer-events-none;
+        word-break: keep-all;
+    }
+
+    .sidebar.close .nav-links li .sub-menu {
+        @apply absolute left-full mt-0 opacity-0 block pointer-events-none;
+        top: -10px;
+        padding: 10px 20px;
+        border-radius: 0 6px 6px 0;
+        transition: 0s;
+    }
+
+    .sidebar.close .nav-links li:hover .sub-menu {
+        @apply top-0 opacity-100 pointer-events-auto;
+        transition: all 0.4s ease;
+    }
+
+    .sidebar.close .nav-links li .sub-menu .link_name {
+        @apply opacity-100 block;
+        font-size: 18px;
+    }
+
+    .sidebar.close ~ .home-section {
+        left: 50px;
+        width: calc(100% - 50px);
+    }
+}
