@@ -27,7 +27,6 @@ watch(menuService.close, (target) => {
     overflowHidden.value = false;
   }
 })
-menuService.openDrawer()
 </script>
 
 <template>
