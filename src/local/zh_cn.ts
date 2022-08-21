@@ -181,11 +181,11 @@ export const zhHans = {
         info: '日志内容',
     },
     login: {
-        error:{
+        error: {
             password_empty: '密码不能为空',
             username_empty: '账号不能为空',
         },
-        notice_reg:'加入大群，与我们一同进化',
+        notice_reg: '加入大群，与我们一同进化',
         forget: '忘记密码',
         switch_serv: '切换服务器',
         title: '用户登录',
@@ -199,7 +199,7 @@ export const zhHans = {
         success: 'Dr.{0},欢迎回来~',
     },
     register: {
-        error:{
+        error: {
             username_empty: '注册账号名称不能为空',
             password_empty: '注册密码不能为空',
             invite_empty: '邀请码不能为空',
@@ -283,4 +283,10 @@ export const zhHans = {
         force_switch: '服务器强制切换：“{0}“重定向到{1}://{2}',
         switch_err: '服务器切换失败：数据不全',
     },
+    setting: {
+        logout: '退出登录',
+        settings: '设置',
+        account_mng: '账号管理',
+    },
+    logout: '登出成功！',
 }

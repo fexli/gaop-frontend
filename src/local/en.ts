@@ -187,11 +187,11 @@ export const en = {
         info: 'Info',
     },
     login: {
-        error:{
+        error: {
             password_empty: 'Password cannot be empty',
             username_empty: 'Username cannot be empty',
         },
-        notice_reg:'Or',
+        notice_reg: 'Or',
         forget: 'Forget Password',
         switch_serv: 'Switch Serv',
         title: 'User Login',
@@ -284,4 +284,10 @@ export const en = {
         force_switch: 'Server Force Switch "{0}" to {1}://{2}',
         switch_err: 'Server Switch Error：Data Not Valid',
     },
+    setting: {
+        logout: 'Logout',
+        settings: 'Settings',
+        account_mng: 'Manage Accounts',
+    },
+    logout: 'Logout Successfully',
 }
