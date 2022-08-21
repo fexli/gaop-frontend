@@ -92,6 +92,8 @@ import {authStore} from "../../store/auth";
 import {useLoginPlaceholder} from "../../hooks/computed";
 import {useTranslate} from "../../hooks/translate";
 import {useToast} from "../../hooks/toast";
+import websock from "../../hooks/websock";
+import {accountStore} from "../../store/account";
 
 const {translate} = useTranslate();
 const router = useRouter();
@@ -133,6 +135,10 @@ const onSubmit = async (values: any) => {
     loading.value = false;
     router.push("/dashboard");
     showMessage("login.success", 4000, "success", account.value);
+    websock.initWebSocket()
+    const _account = accountStore()
+    _account.getSyncUserData()
+    _account.getHistoryLog()
   }).catch((err) => {
     loading.value = false;
     console.log(err)

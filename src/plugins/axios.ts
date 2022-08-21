@@ -89,9 +89,9 @@ function post(url: string, params: object = {}) {
                             timeout: 2000,
                             transition: "bounce"
                         })
-                        useRouter().push({
+                        router.push({
                             path: '/auth/login',
-                            query: {redirect: useRouter().currentRoute.value.fullPath}//从哪个页面跳转
+                            // query: {redirect: router.currentRoute.value.query.toString()}//从哪个页面跳转
                         })
                     }
                 }
@@ -158,7 +158,9 @@ export const apiAuthLogin = (username: string, password: string) => post('/auth/
     username,
     password
 })
-export const apiGetMe = () => get("/account/me");
+export const apiGetMe = () => post("/account/me");
+export const syncUserAccounts = () => post('/account/syncUserAccounts');
+export const getLogHistory = () => post('/game/getLogHistory');
 // export const apiRegister = (params: any) => post("Auth", params); // Register
 // export const apiLogin = (params: string) => get(`Auth/${params}`); // Login
 // export const apiReLogin = (token: string) => get(`Auth/${token}`); // ReLogin

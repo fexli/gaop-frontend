@@ -30,6 +30,7 @@ import websock from "./hooks/websock";
 import {loadLanguage} from "./plugins/language";
 import global_const from "./utils/global_const";
 import {useToast} from "./hooks/toast";
+import {accountStore} from "./store/account";
 
 loadTheme(); // LOAD THEME
 loadLanguage(); // LOAD LANGUAGE
@@ -45,6 +46,7 @@ if (access_token.value !== '') {
 
 const {showMessage} = useToast()
 
+// 服务器数据检查
 const _server = serverStore();
 const {serverName} = storeToRefs(_server);
 if (_server.getServerName !== "自定义") {
@@ -61,7 +63,7 @@ if (_server.getServerName !== "自定义") {
 }
 $axios.baseURL = `http${_server.getSecure ? 's' : ''}://${_server.getServer}/`
 
-
+// 初始化 右下角时间
 const curTime = ref('---------- --:--');
 const curTimeSimp = ref('----------');
 const updateTime = () => {
@@ -71,9 +73,17 @@ const updateTime = () => {
 };
 setTimeout(updateTime, 2000);
 
-
+// 初始化 websocket
 websock.setup()
-websock.initWebSocket()
+
+// 如果没有登录，停止后续初始化操作
+if (access_token.value !== '') {
+  websock.initWebSocket()
+  const account = accountStore()
+  account.getSyncUserData()
+  account.getHistoryLog()
+}
+
 
 
 onMounted(() => {
