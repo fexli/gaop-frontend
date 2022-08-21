@@ -27,6 +27,20 @@ watch(menuService.close, (target) => {
     overflowHidden.value = false;
   }
 })
+
+// onMounted(() => {
+//   let arrow = document.querySelectorAll(".arrow");
+//   for (let i = 0; i < arrow.length; i++) {
+//     arrow[i].addEventListener("click", (e) => {
+//       console.log("arrow click");
+//       let arrowParent = (e?.target as unknown as Document).parentElement?.parentElement;
+//       console.log(arrowParent);
+//       if (arrowParent) {
+//         arrowParent.classList.toggle("showMenu");
+//       }
+//     });
+//   }
+// })
 </script>
 
 <template>
@@ -42,10 +56,8 @@ watch(menuService.close, (target) => {
       <span class="logo_name">GoArkOffProxy</span>
     </div>
     <ul class="nav-links">
-      <template v-for="(i,k) of protectedRoute[0].children" v-bind:key="k">
-        <li :class="activeIndex === i.path ? 'current':''">
-          <AsideContent :route="i"/>
-        </li>
+      <template v-for="(i,k) of menuService.menus.value[1].children" v-bind:key="k">
+        <AsideContent :route="i"/>
       </template>
     </ul>
     <BottomEffect/>

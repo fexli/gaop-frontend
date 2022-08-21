@@ -13,12 +13,6 @@
     transition: all 0.3s ease-in-out;
 }
 
-/*.sidebar:hover {*/
-/*    */
-/*}*/
-
-
-
 .sidebar .logo-details {
     @apply w-full flex items-center;
     height: 50px;
@@ -57,7 +51,7 @@
 }
 
 .sidebar .nav-links li:hover {
-    @apply bg-base-300 bg-opacity-40;
+    /*@apply bg-base-300 bg-opacity-40;*/
 }
 
 .sidebar .nav-links li.current {
@@ -93,8 +87,7 @@
 }
 
 .sidebar .nav-links li a .link_name {
-    @apply text-primary;
-    width: 230px;
+    @apply text-primary w-full;
     font-size: 18px;
     font-weight: 400;
     transition: all 0.4s ease;
@@ -102,8 +95,8 @@
 
 
 .sidebar .nav-links li .sub-menu {
-    @apply bg-base-300;
-    padding: 6px 6px 14px 80px;
+    @apply text-primary text-opacity-100  bg-opacity-100;
+    padding: 6px 6px 14px 70px;
     margin-top: -10px;
     display: none;
 }
@@ -113,7 +106,7 @@
 }
 
 .sidebar .nav-links li .sub-menu a {
-    @apply text-info opacity-60;
+    @apply text-info;
     font-size: 15px;
     padding: 5px 0;
     white-space: nowrap;

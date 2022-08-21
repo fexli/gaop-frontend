@@ -24,6 +24,15 @@
         @apply hidden;
     }
 
+
+    .sidebar.close .nav-links li .sub-menu {
+        @apply bg-base-300 bg-opacity-80;
+    }
+
+    .sidebar.close .nav-links li .sub-menu a {
+        @apply opacity-60;
+    }
+
     .sidebar.close .nav-links li a .link_name {
         @apply opacity-0 pointer-events-none overflow-hidden;
         width: 230px;
