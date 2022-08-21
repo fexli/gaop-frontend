@@ -6,6 +6,7 @@ import Translate from "./nav/Translate.vue";
 import WebSocket from "./nav/WebSocket.vue";
 import Logo from "./nav/Logo.vue";
 import BreadCrumb from "./nav/BreadCrumb.vue";
+import Avatar from "./nav/Avatar.vue";
 </script>
 
 <template>
@@ -22,6 +23,7 @@ import BreadCrumb from "./nav/BreadCrumb.vue";
       <Translate/>
       <FullScreen/>
       <DarkMode/>
+      <Avatar/>
     </div>
   </div>
 </template>

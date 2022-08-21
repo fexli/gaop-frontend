@@ -1,9 +1,11 @@
 import {defineStore} from "pinia";
-// @ts-ignore
-import global_const = require("@/utils/global_const");
+import global_const from "../utils/global_const";
 import {authStore} from "./auth"
-import {post} from "../plugins/axios";
-import {useRouter} from "vue-router";
+import {apiGetMe, getLogHistory, post, syncUserAccounts} from "../plugins/axios";
+import {RouteRecordRaw, useRouter} from "vue-router";
+import {router} from "../router/router";
+import menu from "../hooks/menu";
+
 export const accountStore = defineStore("account", {
     state: () => ({
         accountsList: [] as string[],//[str.]
@@ -128,21 +130,33 @@ export const accountStore = defineStore("account", {
             // @ts-ignore
             this.accountInfo[account] = {}
         },
-        async getSyncUserData() {
+        getHistoryLog: function () {
+            getLogHistory().then(
+                (suc) => {
+                    console.log(suc)
+                    // @ts-ignore
+                    this.setBasicLoggerInfo(suc.data)
+                }).catch((err) => {
+                console.log(err)
+            })
+        },
+        getSyncUserData() {
             const auth = authStore()
             if (!auth.getAccessToken)
                 return
-            return post('/account/syncUserAccounts').then(
+            return syncUserAccounts().then(
                 (resp: any) => {
                     console.log('syncUserAccounts', resp)
                     this.gameAccountLi = resp.msg
 
                     let running = 0
-                    let accountTree = []
+                    let accountTree: RouteRecordRaw[] = []
                     let accounts: string[] = []
                     const platformCN = ['IOS', '安卓', 'B服']
                     for (let j = 0; j < resp.msg.length; j++) {
                         accountTree.push({
+                            component: undefined,
+                            redirect: "",
                             path: '/account/dashboard/' + resp.msg[j].platform + '/' + resp.msg[j].account,
                             name: 'account.p' + resp.msg[j].platform + '.' + resp.msg[j].account,
                             meta: {
@@ -151,25 +165,26 @@ export const accountStore = defineStore("account", {
                                 translatable: false,
                                 disp: resp.msg[j].name,
                                 hiddenInMenu: resp.msg[j].status !== 2
-                            },
+                            }
                             // component: () => import('@/views/Account.vue')
                         })
                         accounts.push(['I', 'G', 'B'][resp.msg[j].platform] + resp.msg[j].account)
                         if (resp.msg[j].status >= 1)
                             running++
                     }
-                    console.log(accountTree)
+                    console.log(accountTree, menu.menus.value[1].children)
                     // @ts-ignore
-                    for (let child of useRouter().getRoutes()[0].children) {
+                    for (let child of menu.menus.value[1].children) {
                         if (child.path === '/account') {
-                            // @ts-ignore
+                            console.log("Inject accountTree success", accountTree)
                             child.children = accountTree
                             break
                         }
                     }
                     this.accountsList = accounts
                     this.inRunningAccount = running
-                    post('/account/me').then(
+                    console.log("try get me")
+                    apiGetMe().then(
                         (resp: any) => {
                             this.webUserInfo = resp
                         }
@@ -178,9 +193,11 @@ export const accountStore = defineStore("account", {
                             console.log(err)
                         }
                     )
+
                     return {success: 1, result: resp}
                 }).catch(
                 (err: any) => {
+                    console.log("err", err)
                     return {success: 0, result: err}
                 })
         }
