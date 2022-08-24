@@ -1,7 +1,7 @@
 <template>
-  <div class="w-full h-full absolute text-center flex flex-col items-center justify-center select-none">
-    <div class="w-full text-primary dash" :style="`opacity: ${Math.min(t1o/40,1)}`">{{ t1l[t1t] }}</div>
-    <div @click="$router.push('/account/manage')" class="w-full text-primary dash"
+  <div class="w-full h-full fixed left-0 top-0 text-center flex flex-col justify-center select-none">
+    <div class="w-full text-primary text-dash" :style="`opacity: ${Math.min(t1o/40,1)}`">{{ t1l[t1t] }}</div>
+    <div @click="$router.push('/account/manage')" class="w-full text-primary text-dash"
          :style="`opacity: ${Math.min(t1o/40,1)}`">{{ t2l[t1t] }}
     </div>
   </div>
@@ -44,9 +44,3 @@ onMounted(() => {
   });
 })
 </script>
-
-<style lang="sass" scoped>
-.dash
-  text-shadow: 4px 6px 5px black
-  font-size: 40px
-</style>
