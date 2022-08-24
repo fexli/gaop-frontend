@@ -2,14 +2,13 @@
 import {router} from "../router/router";
 import {
     RouteLocationNormalized,
-    RouteLocationNormalizedLoaded,
+    RouteLocationNormalizedLoaded, Router,
     RouteRecordNormalized,
     RouteRecordRaw
 } from "vue-router";
 
 class Menu {
     public menus = ref<RouteRecordRaw[]>([]);
-    public route = ref(null as null | RouteLocationNormalized);
     //@ts-ignore
     private closeTimeout: NodeJS.Timeout;
 
@@ -63,16 +62,19 @@ class Menu {
         if (this.closeTimeout) {
             clearTimeout(this.closeTimeout);
         }
+        console.log("openDrawer",this.menus.value[1].children);
         this.close.value = true;
     }
 
     closeDrawerDelay() {
+        console.log("closeDrawerDelay");
         this.closeTimeout = setTimeout(() => {
             this.close.value = false;
         }, 300);
     }
 
     closeDrawer() {
+        console.log("closeDrawer");
         this.close.value = false;
     }
 

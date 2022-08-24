@@ -1,48 +1,43 @@
 <template>
-  <div>
-    <div v-if="true">
-      <!-- app-drawer侧边栏 -->
-      <aside-bar/>
-      <!--      <app-drawer class="app&#45;&#45;drawer" ref="drawer"/>-->
-
-      <!-- app-toolbar顶层工具栏 -->
-      <nav-bar/>
-      <!--      <app-toolbar class="app&#45;&#45;toolbar" @side-icon-click="handleDrawerVisiable"/>-->
-
-      <div class="main">
-        <!-- Page Wrapper -->
-<!--        <div class="page-wrapper">-->
-        <div
-            class="w-screen h-screen"
-            :style="`background: url('../${background}');background-size: cover;background-position: center;`"
-        >
-          <router-view
-              :style="($route.path !== '/innerreader' && $route.path !== '/about') ? `opacity: ${Math.max(0.4,opacity)}` : ''"/>
-        </div>
+  <div v-if="true">
+    <aside-bar/>
+    <nav-bar/>
+    <div
+        class="main"
+    >
+      <div
+          class="h-full w-full fixed top-0 left-0"
+          :style="`background: url('../${background}');background-size: cover;background-position: center;`"
+      />
+      <div
+          class="w-full mb-7 pt-[4.2rem] px-4"
+          :style="($route.path !== '/innerreader' && $route.path !== '/about') ? `opacity: ${Math.max(0.4,opacity)}` : ''"
+      >
+        <router-view/>
       </div>
-      <!-- Go to top -->
-<!--      <app-fab/>-->
     </div>
-<!--    <v-overlay-->
-<!--        id="ovl"-->
-<!--        style="transition: filter 1s linear"-->
-<!--        :value="ovl"-->
-<!--        color="rgb(43,43,43)"-->
-<!--        opacity="1"-->
-<!--    >-->
-<!--      <div class="ovlc">-->
-<!--        <img height="320px" :src="lsrc" alt="loading">-->
-<!--        <div class="ovlt">{{ txt }}{{ dot }}</div>-->
-<!--        <v-progress-linear-->
-<!--            :buffer-value="buf"-->
-<!--            style="width: 400px"-->
-<!--            color="success"-->
-<!--            stream-->
-<!--            :value="val"-->
-<!--        ></v-progress-linear>-->
-<!--      </div>-->
-<!--    </v-overlay>-->
+    <!-- Go to top -->
+    <!--      <app-fab/>-->
   </div>
+  <!--    <v-overlay-->
+  <!--        id="ovl"-->
+  <!--        style="transition: filter 1s linear"-->
+  <!--        :value="ovl"-->
+  <!--        color="rgb(43,43,43)"-->
+  <!--        opacity="1"-->
+  <!--    >-->
+  <!--      <div class="ovlc">-->
+  <!--        <img height="320px" :src="lsrc" alt="loading">-->
+  <!--        <div class="ovlt">{{ txt }}{{ dot }}</div>-->
+  <!--        <v-progress-linear-->
+  <!--            :buffer-value="buf"-->
+  <!--            style="width: 400px"-->
+  <!--            color="success"-->
+  <!--            stream-->
+  <!--            :value="val"-->
+  <!--        ></v-progress-linear>-->
+  <!--      </div>-->
+  <!--    </v-overlay>-->
 </template>
 <script lang="ts" setup>
 import {appStore} from "../../store/app";
@@ -52,7 +47,7 @@ import AsideBar from "./default/AsideBar.vue";
 import Translate from "./default/nav/Translate.vue";
 
 const _app = appStore()
-const {background,opacity} = storeToRefs(_app)
+const {background, opacity} = storeToRefs(_app)
 
 const reloadBG = ref(true);
 const fin = ref(false);

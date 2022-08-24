@@ -1,12 +1,10 @@
 <template>
-  <div>
-    <router-view v-slot="{ Component }">
-      <keep-alive>
-        <component :is="Component"/>
-      </keep-alive>
-    </router-view>
-    <SystemBar/>
-  </div>
+  <router-view v-slot="{ Component }">
+    <keep-alive>
+      <component :is="Component"/>
+    </keep-alive>
+  </router-view>
+  <SystemBar/>
 </template>
 <script setup>
 import {loadTheme} from "./plugins/theme";

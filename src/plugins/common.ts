@@ -6,6 +6,7 @@ export const calcWidth = () => {
     cooldown = true;
     setTimeout(() => {
         let w = document.documentElement.clientWidth;
+        globWidth.value = w
         if (w < 768) {
             isSmall.value = true;
             isMedium.value = false;
@@ -45,3 +46,4 @@ export const isMedium = ref(false); // ≥768px <1024px
 export const isLarge = ref(false); // ≥1024px <1280px
 export const isXLarge = ref(false); // ≥1280px <1536px
 export const isXXLarge = ref(false); // ≥1536px
+export const globWidth = ref(0)

@@ -63,6 +63,7 @@ class WebSock {
         const that = this;
         return () => {
             that.isActive.value = false
+            console.log("ws error")
             if (auth.getAccessToken == null || auth.getAccessToken == "") {
                 return
             }
