@@ -6,13 +6,10 @@
         class="main"
     >
       <div
-          class="h-full w-full fixed top-0 left-0"
+          class="h-full w-full fixed top-0 left-0 z-0"
           :style="`background: url('../${background}');background-size: cover;background-position: center;`"
       />
-      <div
-          class="w-full mb-7 pt-[4.2rem] px-4"
-          :style="($route.path !== '/innerreader' && $route.path !== '/about') ? `opacity: ${Math.max(0.4,opacity)}` : ''"
-      >
+      <div class="w-full mb-7 pt-[4.2rem] px-4 z-30">
         <router-view/>
       </div>
     </div>
@@ -47,7 +44,7 @@ import AsideBar from "./default/AsideBar.vue";
 import Translate from "./default/nav/Translate.vue";
 
 const _app = appStore()
-const {background, opacity} = storeToRefs(_app)
+const {background} = storeToRefs(_app)
 
 const reloadBG = ref(true);
 const fin = ref(false);

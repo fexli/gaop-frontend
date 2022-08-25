@@ -8,7 +8,6 @@ export const appStore = defineStore("app", {
         themeColor: '#3f51b5',
         theme: 'indigo',
         language: 'zh_cn',
-        opacity: 0.95,
         use_bg: true,
     }),
     getters: {
@@ -17,9 +16,6 @@ export const appStore = defineStore("app", {
         },
         getTheme: (state) => {
             return state.theme
-        },
-        getOpacity: (state) => {
-            return state.opacity
         },
         getUseBG: (state) => {
             return state.use_bg
@@ -52,9 +48,6 @@ export const appStore = defineStore("app", {
         },
         setLanguage(data: any) {
             this.language = data
-        },
-        setOpacity(data: any) {
-            this.opacity = data
         },
         setUseBG(data: any) {
             this.use_bg = data
