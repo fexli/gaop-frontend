@@ -14,7 +14,7 @@ module.exports = {
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   theme: {
     screens: {
-      'xs': '320px',
+      'xs': '330px',
       ...defaultTheme.screens,
     },
     extend: {
