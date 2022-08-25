@@ -15,7 +15,7 @@
               class="h-12"
           />
           <label for="" class="block text-2xl text-gray-700 text-center font-semibold">
-            {{ t("register.title") }}
+            {{ translate("register.title") }}
           </label>
         </div>
         <div class="alert alert-info shadow-lg">
@@ -25,7 +25,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
-            <span>{{ t("register.notice") }}</span>
+            <span>{{ translate("register.notice") }}</span>
           </div>
         </div>
         <form class="mt-6" @submit.prevent="onSubmit">
@@ -74,8 +74,8 @@
 
           <div class="mt-5 flex">
             <div class="w-full text-left">
-              <a class="underline text-sm text-gray-600 mr-5 hover:text-gray-900" href="/auth/login">
-                {{ t("register.back_login") }}
+              <a class="underline text-sm text-gray-600 mr-5 hover:text-gray-900" href="#/auth/login">
+                {{ translate("register.back_login") }}
               </a>
             </div>
           </div>
@@ -85,14 +85,14 @@
                 :disabled="loading"
                 class="bg-blue-500 w-full py-3 rounded-xl text-white shadow-xl hover:shadow-inner focus:outline-none transition duration-500 ease-in-out transform hover:-translate-x hover:scale-105"
             >
-              {{ t("register.register") }}
+              {{ translate("register.register") }}
             </button>
           </div>
 
           <div class="flex items-center text-center">
             <hr class="border-gray-300 border-1 w-1/2 rounded-md"/>
             <label class="mt-2 block font-medium text-sm text-gray-600 w-full">
-              {{ t("login.notice_reg") }}
+              {{ translate("login.notice_reg") }}
             </label>
             <hr class="border-gray-300 border-1 w-1/2 rounded-md"/>
           </div>
@@ -102,13 +102,13 @@
           <!--                class="mr-5 flex justify-center items-center bg-blue-500 border-none px-4 py-2 rounded-xl cursor-pointer text-white shadow-xl hover:shadow-inner transition duration-500 ease-in-out transform hover:-translate-x hover:scale-105"-->
           <!--            >-->
           <!--              <i-mdi-qqchat style="font-size: 1em; color: #fff"/>-->
-          <!--              <span class="ml-1">{{ t("page.common.login.form.link.btn.qq") }}</span>-->
+          <!--              <span class="ml-1">{{ translate("page.common.login.form.link.btn.qq") }}</span>-->
           <!--            </div>-->
           <!--            <div-->
           <!--                class="flex justify-center items-center bg-green-600 border-none px-4 py-2 rounded-xl cursor-pointer text-white shadow-xl hover:shadow-inner transition duration-500 ease-in-out transform hover:-translate-x hover:scale-105"-->
           <!--            >-->
           <!--              <i-mdi-wechat style="font-size: 1.2em; color: #fff"/>-->
-          <!--              <span class="ml-1">{{ t("page.common.login.form.link.btn.wechat") }}</span>-->
+          <!--              <span class="ml-1">{{ translate("page.common.login.form.link.btn.wechat") }}</span>-->
           <!--            </div>-->
           <!--          </div>-->
         </form>
@@ -122,7 +122,9 @@ import {useRouter} from "vue-router";
 import {authStore} from "../../store/auth";
 import {useLoginPlaceholder} from "../../hooks/computed";
 import {useToast} from "../../hooks/toast";
+import {useTranslate} from "../../hooks/translate";
 
+const {translate} = useTranslate()
 
 const router = useRouter();
 const auth = authStore();

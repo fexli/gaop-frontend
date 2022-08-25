@@ -55,7 +55,7 @@
               </a>
             </div>
             <div class="w-full text-right">
-              <a class="underline text-sm text-gray-600 mr-5 hover:text-gray-900" href="/auth/register">
+              <a class="underline text-sm text-gray-600 mr-5 hover:text-gray-900" href="#/auth/register">
                 {{ t("login.register") }}
               </a>
               <!--              <a class="underline text-sm text-gray-600 hover:text-gray-900" href="#">-->
