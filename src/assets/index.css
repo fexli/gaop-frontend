@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 @layer utilities {
+    /*sidebar close*/
     .sidebar.close {
         width: 50px;
     }
