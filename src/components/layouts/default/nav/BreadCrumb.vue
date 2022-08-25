@@ -25,7 +25,7 @@ watchEffect(() => {
       </li>
     </ul>
   </div>
-  <div class="sm:hidden text-primary text-lg ml-2">
+  <div class="hidden sm:hidden xs:flex text-primary text-lg ml-2">
     {{ breadArr.length ? t('menu.' + breadArr[breadArr.length - 1]) : "" }}
   </div>
 </template>

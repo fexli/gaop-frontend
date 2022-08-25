@@ -1,15 +1,22 @@
+const defaultTheme = require('tailwindcss/defaultTheme')
+
 // this function handles the opacity of color
 function withOpacityValue(variable) {
-  return ({ opacityValue }) => {
+  return ({opacityValue}) => {
     if (opacityValue === undefined) {
       return `hsl(var(${variable}))`;
     }
     return `hsl(var(${variable}) / ${opacityValue})`;
   };
 }
+
 module.exports = {
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   theme: {
+    screens: {
+      'xs': '320px',
+      ...defaultTheme.screens,
+    },
     extend: {
       colors: {
         card: withOpacityValue("--c"),
