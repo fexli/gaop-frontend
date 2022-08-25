@@ -5,6 +5,7 @@
     </keep-alive>
   </router-view>
   <SystemBar/>
+  <DebugInfo/>
 </template>
 <script setup>
 import {loadTheme} from "./plugins/theme";
@@ -19,6 +20,7 @@ import global_const from "./utils/global_const";
 import {useToast} from "./hooks/toast";
 import {accountStore} from "./store/account";
 import SystemBar from "./components/layouts/default/SystemBar.vue";
+import DebugInfo from "./components/layouts/default/DebugInfo.vue";
 
 loadTheme(); // LOAD THEME
 loadLanguage(); // LOAD LANGUAGE

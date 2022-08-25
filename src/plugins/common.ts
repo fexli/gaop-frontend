@@ -6,6 +6,7 @@ export const calcWidth = () => {
     cooldown = true;
     setTimeout(() => {
         let w = document.documentElement.clientWidth;
+        globHeight.value = document.documentElement.clientHeight;
         globWidth.value = w
         if (w < 768) {
             isSmall.value = true;
@@ -47,3 +48,13 @@ export const isLarge = ref(false); // ≥1024px <1280px
 export const isXLarge = ref(false); // ≥1280px <1536px
 export const isXXLarge = ref(false); // ≥1536px
 export const globWidth = ref(0)
+export const globHeight = ref(0)
+
+export const getBreakPoint = () => {
+    if (isXXLarge.value) return "xxl";
+    if (isXLarge.value) return "xl";
+    if (isLarge.value) return "lg";
+    if (isMedium.value) return "md";
+    if (isSmall.value) return "sm";
+    return "xs";
+}
