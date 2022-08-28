@@ -28,6 +28,6 @@ app.config.globalProperties.GLOBAL = global_const;
 app.config.globalProperties.get_rand_bg = function () {
     let total = global_const.loginBG.bg.length + global_const.loginBG.avgs.length
     let select = Math.round(Math.random() * (total - 1))
-    return `static/${select < global_const.loginBG.bg.length ? 'bg' : 'avgs'}/${select < global_const.loginBG.bg.length ? global_const.loginBG.bg[select] : global_const.loginBG.avgs[select - global_const.loginBG.bg.length]}`
+    return `${select < global_const.loginBG.bg.length ? 'static/bg' : 'http://mc.mesord.com:8999/avgs'}/${select < global_const.loginBG.bg.length ? global_const.loginBG.bg[select] : global_const.loginBG.avgs[select - global_const.loginBG.bg.length]}`
 }
 app.use(router).mount("#app");
