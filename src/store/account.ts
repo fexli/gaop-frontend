@@ -13,7 +13,7 @@ export const accountStore = defineStore("account", {
         accountDetails: [],
         loggerStore: {},
         loggerStoreUpdate: false,
-        gameAccountLi: [],//游戏账号管理
+        gameAccountLi: [] as any[],//游戏账号管理
         inRunningAccount: 0,//游戏账号管理
         webUserInfo: {} as any,
         accountAlert: {} as any,
@@ -76,6 +76,7 @@ export const accountStore = defineStore("account", {
             for (let j = 0; j < this.gameAccountLi.length; j++) {
                 let curAccount = this.gameAccountLi[j]
                 if (`${global_const.getPlatform(curAccount['platform'])}${curAccount['account']}` === info.name) {
+                    console.log("setFinalLogInfo", info)
                     // @ts-ignore
                     this.gameAccountLi[j]['finalLog'] = info
                     this.addLoggerInfo(info)
@@ -97,7 +98,8 @@ export const accountStore = defineStore("account", {
                 this.loggerStore[info.name]['lastTs'] = info['ts']
             }
         },
-        setStatusInfo(s: any, t: any, n: any) {
+        setStatusInfo(stn: any) {
+            let {s, t, n} = stn
             for (let j = 0; j < this.gameAccountLi.length; j++) {
                 let curAccount = this.gameAccountLi[j]
                 // if (`${global_const.getPlatform(curAccount['platform'])}${curAccount['account']}` === n) {

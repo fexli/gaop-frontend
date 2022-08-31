@@ -3,6 +3,9 @@ import {authStore} from "../store/auth";
 import {useToast} from "./toast";
 import {ToastType} from "mosha-vue-toastify";
 import {Ref} from "vue";
+import {appStore} from "../store/app";
+import {accountStore} from "../store/account";
+import {_StoreWithState} from "pinia";
 
 
 class WebSock {
@@ -12,6 +15,8 @@ class WebSock {
     public isActive: Ref<boolean> = ref(false);
     public wsReconTime: number = 0;
     private _showMessage: (key: string, timeout?: number, type?: ToastType, ...args: any[]) => void;
+    public _setFinalLogInfo: Function | undefined;
+    public _setStatusInfo: Function | undefined;
 
     constructor() {
         this._showMessage = () => {
@@ -26,6 +31,9 @@ class WebSock {
     setup() {
         const {showMessage} = useToast();
         this._showMessage = showMessage;
+        const account = accountStore();
+        this._setFinalLogInfo = account.setFinalLogInfo;
+        this._setStatusInfo = account.setStatusInfo;
     }
 
     initWebSocket() {
@@ -34,21 +42,50 @@ class WebSock {
         this.clearWebSocket();
         console.log("ws init", wsuri)
         this.wsInstance = new WebSocket(wsuri);
-        this.wsInstance.onmessage = this.onMessage
+        this.wsInstance.onmessage = this.onMessage()
         this.wsInstance.onopen = this.onWsOpen
         this.wsInstance.onerror = this.onWsError()
         this.wsInstance.onclose = this.onWsClose
     }
 
-    public onMessage(e: MessageEvent) {
-        console.log("wsRer", e)
-        if (typeof e.data !== "string") {
-            console.log("wsRer DataNotString", e.data)
-            return;
+    public onMessage() {
+        const that = this;
+        return (e: MessageEvent) => {
+            console.log("wsRer", e)
+            if (typeof e.data !== "string") {
+                console.log("wsRer DataNotString", e.data)
+                return;
+            }
+            const redata = JSON.parse(e.data)
+            console.log('wsRecv', redata)
+            if (redata.errCode === 0) {
+                switch (redata.type) {
+                    case 0: {
+                        // logger info
+                        console.log('logger', redata.data)
+                        // TODO:this.$logger(redata.data)
+                        if (that._setFinalLogInfo) {
+                            that._setFinalLogInfo(redata.data)
+                        }
+                        break
+                    }
+                    case 1: {
+                        // state info
+                        console.log('state', redata.data)
+                        if (that._setStatusInfo) {
+                            that._setStatusInfo(redata.data)
+                        }
+                        break
+                    }
+                    case 2: {
+                        // captcha info
+                        console.log('captcha', redata.data)
+                        // TODO:this.captchaBox.push(redata.data)
+                        // TODO:this.startCaptcha()
+                    }
+                }
+            }
         }
-        const redata = JSON.parse(e.data)
-        console.log('wsRecv', redata)
-        // TODO ws消息处理
     }
 
     public onWsClose() {
@@ -95,7 +132,10 @@ class WebSock {
     public onWsOpen = () => {
         const auth = authStore();
         console.log("wsAcToken", auth.getAccessToken)
-        this.onWsSend(auth.getAccessToken)
+        if (!auth.getAccessToken) {
+            return;
+        }
+        this.wsInstance.send(auth.getAccessToken);
         this.isActive.value = true;
         this.wsReconTime = 0;
     }

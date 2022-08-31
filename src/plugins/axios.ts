@@ -161,31 +161,11 @@ export const apiAuthLogin = (username: string, password: string) => post('/auth/
 export const apiGetMe = () => post("/account/me");
 export const syncUserAccounts = () => post('/account/syncUserAccounts');
 export const getLogHistory = () => post('/game/getLogHistory');
-// export const apiRegister = (params: any) => post("Auth", params); // Register
-// export const apiLogin = (params: string) => get(`Auth/${params}`); // Login
-// export const apiReLogin = (token: string) => get(`Auth/${token}`); // ReLogin
-// export const apiCron = () => get("Nodes"); // Cron
-// export const apiAnnounce = () => get("System/Announcement"); // Announce
-// export const apiAddGame = (params: any) => post("Game", params); // Game
-// export const apiGameLogin = (params: any) => post("Game/Login", params); // Game
-// export const apiListGame = () => get("Game"); // GameList
-// export const apiDelGame = (params: any) => del("Game", params); // Del
-// export const apiScreen = (account: string, platform: string) =>
-//     get(`Game/Screenshot/${account}/${platform}`); // GetScreen
-// export const apiDetails = (account: string, platform: string) =>
-//     get(`Game/${account}/${platform}`); // GetDetails
-// export const apiConf = (account: string, platform: string) =>
-//     get(`Game/Config/${account}/${platform}`); // GetConf
-// export const apiConfEdit = (account: string, platform: number, params: any) =>
-//     post(`Game/Config/${account}/${platform}`, params); // UpdateConfig
-// export const apiLog = (account: string, platform: number, index: string) =>
-//     get(`Log/${account}/${platform}/${index}`); // Log
-// export const apiScreenshots = (account: string, platform: number) =>
-//     get(`Game/Screenshots/${account}/${platform}`); // GetScreen
-// export const apiGetMapList = () => get("System/Maps"); // GetMapList
-//
-// export const apiGetLog = () => get("System/LogFile"); // GetLog
-// export const apiGameDataUpdate = () => post("System/GameDataUpdate", {}); // UpdateData
-// export const apiEditAnnounce = (params: any) =>
-//     post("System/Announcement", params); // EditAnnounce
-// export const apiStatus = () => get("System/Status"); // Status
+export const gameStartAccount = (username: string, platform: number) => post('/game/startAccount', {
+    username,
+    platform
+});
+export const gameStopAccount = (username: string, platform: number) => post('/game/stopAccount', {
+    username,
+    platform
+});
