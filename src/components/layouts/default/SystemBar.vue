@@ -19,7 +19,7 @@ const updateTime = () => {
 setTimeout(updateTime, 2000);
 </script>
 <template>
-  <div class="w-full fixed bottom-0 left-0 system-bar-under bg-base-100 flex px-1">
+  <div class="system-bar-under">
     <span>{{ serverName }}</span>
     <!--      <v-spacer/>-->
     <div class="flex-grow"></div>
