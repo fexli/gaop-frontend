@@ -175,4 +175,9 @@ export const gameCreateAccount = (username: string, password: string, nickname: 
     nickname,
     platform
 });
+
+export const gameDeleteAccount = (username: string, platform: number) => post('/game/deleteAccount', {
+    username,
+    platform
+});
 export const finishCaptcha = (captcha: any) => post('/account/finishCaptcha', captcha);

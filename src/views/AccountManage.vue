@@ -5,9 +5,8 @@ import {storeToRefs} from "pinia/dist/pinia";
 import StatusInfo from "../components/parts/accountManage/StatusInfo.vue";
 import {accountStore} from "../store/account";
 import global_const from "../utils/global_const";
-import {isSmall} from "../plugins/common";
 import LogTextCtx from "../components/parts/accountManage/LogTextCtx.vue";
-import {gameCreateAccount, gameStartAccount, gameStopAccount} from "../plugins/axios";
+import {gameCreateAccount, gameDeleteAccount, gameStartAccount, gameStopAccount} from "../plugins/axios";
 import {useToast} from "../hooks/toast";
 import {router} from "../router/router";
 
@@ -24,10 +23,17 @@ const loadingStopAll = ref(false); // stopall按钮的loading
 const loadingCreateNewAccount = ref(false); // 创建新账号按钮的loading
 
 const createAccountOverlay = ref(false);
+const deleteAccountOverlay = ref(true);
+
 const createUserNickname = ref("");
 const createUserAccount = ref("");
 const createUserPassword = ref("");
 const createUserPlatform = ref(1);
+
+const deleteUserAccount = ref("");
+let deleteUserInfo = {
+  platform: 0,
+};
 
 const currentAccounts = computed(() => {
   return gameAccountLi.value.length + "个"
@@ -171,7 +177,23 @@ function restartAccount(accInfo: any) {
 }
 
 function deleteAccount(accInfo: any) {
-  console.log("deleteAccount", accInfo) // TODO
+  console.log("deleteAccount", accInfo)
+  deleteUserInfo = accInfo
+  deleteUserAccount.value = accInfo.account
+  deleteAccountOverlay.value = true
+}
+
+function confirmDeleteAccount() {
+  console.log('CONFIRM DELETE')
+  gameDeleteAccount(deleteUserAccount.value, deleteUserInfo.platform).then((success: any) => {
+    console.log(success)
+    deleteAccountOverlay.value = false
+    showMessage(success.msg, 2000, 'success', deleteUserAccount.value)
+    syncGameAccounts()
+  }).catch(err => {
+    console.log(err)
+    showMessage(err.data.msg, 2000, 'danger', deleteUserAccount.value)
+  })
 }
 
 function jumpToConsole(accInfo: any) {
@@ -433,6 +455,27 @@ function closeCreateAccount(withReset: boolean = true) {
             </template>
             </tbody>
           </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="overlay" v-show="deleteAccountOverlay">
+    <div class="card w-96 bg-neutral text-neutral-content">
+      <div class="card-body items-center text-center">
+        <div class="flex gap-1 items-center">
+          <svg class="text-warning w-6 h-6" viewBox="0 0 24 24">
+            <path fill="currentColor"
+                  d="M8.27,3L3,8.27V15.73L8.27,21H15.73C17.5,19.24 21,15.73 21,15.73V8.27L15.73,3M9.1,5H14.9L19,9.1V14.9L14.9,19H9.1L5,14.9V9.1M11,15H13V17H11V15M11,7H13V13H11V7"/>
+          </svg>
+          <h2 class="card-title text-warning">{{ translate('account.delete_title', deleteUserAccount) }}</h2>
+        </div>
+        <p class="text-warning">{{ translate('account.delete_confirm') }}</p>
+        <div class="card-actions justify-end">
+          <button class="btn btn-primary" @click="confirmDeleteAccount">{{ translate('account.delete_btn') }}</button>
+          <button class="btn btn-ghost" @click="deleteAccountOverlay = false">{{
+              translate('account.delete_deny')
+            }}
+          </button>
         </div>
       </div>
     </div>
