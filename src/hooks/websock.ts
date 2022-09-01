@@ -6,6 +6,7 @@ import {Ref} from "vue";
 import {appStore} from "../store/app";
 import {accountStore} from "../store/account";
 import {_StoreWithState} from "pinia";
+import geetest from "../plugins/geetest";
 
 
 class WebSock {
@@ -80,8 +81,8 @@ class WebSock {
                     case 2: {
                         // captcha info
                         console.log('captcha', redata.data)
-                        // TODO:this.captchaBox.push(redata.data)
-                        // TODO:this.startCaptcha()
+                        geetest.captchaBox.push(redata.data)
+                        geetest.startCaptcha()
                     }
                 }
             }

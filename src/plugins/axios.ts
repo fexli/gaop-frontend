@@ -175,3 +175,4 @@ export const gameCreateAccount = (username: string, password: string, nickname: 
     nickname,
     platform
 });
+export const finishCaptcha = (captcha: any) => post('/account/finishCaptcha', captcha);

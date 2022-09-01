@@ -5,6 +5,17 @@
     </keep-alive>
   </router-view>
   <SystemBar/>
+  <div class="overlay bg-base-200 bg-opacity-50" v-show="geetest.captchaOverlay.value">
+    <div class="card max-w-sm shadow-lg rounded-xl"
+         :style="`background-image: url('static/im/captcha.jpg');background-repeat: no-repeat;background-size: cover;background-position: center`">
+      <div class="bg-white bg-opacity-40 p-8">
+        <h2 class="text-xl text-neutral font-bold">{{ translate('captcha.title') }}</h2>
+        <p class="text-neutral pt-4 pb-1">{{ translate('captcha.desc') }}</p>
+        <div id="geetest" style="height: 45px"></div>
+        <p class="text-neutral pt-1">{{ translate('captcha.status', geetest.captchaType.value) }}</p>
+      </div>
+    </div>
+  </div>
   <DebugInfo/>
 </template>
 <script setup>
@@ -21,12 +32,14 @@ import {useToast} from "./hooks/toast";
 import {accountStore} from "./store/account";
 import SystemBar from "./components/layouts/default/SystemBar.vue";
 import DebugInfo from "./components/layouts/default/DebugInfo.vue";
+import geetest from "./plugins/geetest";
+import {useTranslate} from "./hooks/translate";
 
 loadTheme(); // LOAD THEME
 loadLanguage(); // LOAD LANGUAGE
 const _auth = authStore();
 const {access_token} = storeToRefs(_auth);
-
+const {translate} = useTranslate();
 const $axios =
     getCurrentInstance().appContext.config.globalProperties.$axios.defaults;
 
@@ -52,9 +65,13 @@ if (_server.getServerName !== "自定义") {
 }
 $axios.baseURL = `http${_server.getSecure ? 's' : ''}://${_server.getServer}/`
 
+// captcha
+// geetest.setup();
+
 
 // 初始化 websocket
-websock.setup()
+websock.setup();
+
 
 // 如果没有登录，停止后续初始化操作
 if (access_token.value !== '') {
