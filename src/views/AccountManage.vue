@@ -10,7 +10,6 @@ import LogTextCtx from "../components/parts/accountManage/LogTextCtx.vue";
 import {gameCreateAccount, gameStartAccount, gameStopAccount} from "../plugins/axios";
 import {useToast} from "../hooks/toast";
 import {router} from "../router/router";
-import FloatInput from "../components/element/FloatInput.vue";
 
 const {translate} = useTranslate();
 const auth = authStore();
@@ -438,7 +437,7 @@ function closeCreateAccount(withReset: boolean = true) {
       </div>
     </div>
   </div>
-  <div class="overlay bg-base-200 bg-opacity-50" v-show="createAccountOverlay">
+  <div class="overlay" v-show="createAccountOverlay">
     <div class="card w-96 max-w-md glass">
       <figure class="select-none"><img src="static/im/create_user.jpg" alt="welcome"></figure>
       <div class="absolute right-0 top-0 p-2" @click="closeCreateAccount">
@@ -450,6 +449,7 @@ function closeCreateAccount(withReset: boolean = true) {
       <div class="create-user-card-body">
         <h2 class="card-title text-neutral">{{ translate('account.create_btn') }}</h2>
         <p class="text-neutral">{{ translate('account.create_welcome') }}</p>
+
         <div class="relative  h-16">
           <input
               v-model="createUserNickname"
