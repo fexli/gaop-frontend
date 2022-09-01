@@ -292,5 +292,10 @@ export const en = {
         settings: 'Settings',
         account_mng: 'Manage Accounts',
     },
+    captcha:{
+        title: 'Need Captcha',
+        desc:"Current account requires captcha login, please wait for the following captcha operation to complete",
+        status: "Status：{0}",
+    },
     logout: 'Logout Successfully',
 }
