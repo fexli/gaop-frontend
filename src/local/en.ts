@@ -164,6 +164,8 @@ export const en = {
         reload_account: 'sync',
         sync_success: 'Successfully synchronized {0} account information',
         create_btn: 'Create',
+        create_welcome: 'Welcome to create a new game account',
+        create_account_empty: 'Empty field in form：{0}',
         delete_btn: 'Delete {0}',
         delete_confirm: 'Warning: deletion will not be recoverable, and all account records and account information will be cleared!',
         delete_title: 'Confirm delete {0}',
@@ -190,6 +192,7 @@ export const en = {
         error: {
             password_empty: 'Password cannot be empty',
             username_empty: 'Username cannot be empty',
+            nickname_empty: 'Nickname cannot be empty',
         },
         notice_reg: 'Or',
         forget: 'Forget Password',

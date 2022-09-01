@@ -110,15 +110,18 @@ const loadingGIF = [
 const platformSelector = [
     {
         text: 'IOS',
-        value: 0
+        value: 0,
+        disabled: true,
     },
     {
         text: '安卓',
-        value: 1
+        value: 1,
+        disabled: false,
     },
     {
         text: 'B服',
-        value: 2
+        value: 2,
+        disabled: false,
     }
 ]
 const statusType = {

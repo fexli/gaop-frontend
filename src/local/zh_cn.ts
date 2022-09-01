@@ -158,6 +158,8 @@ export const zhHans = {
         reload_account: '刷新账号列表',
         sync_success: '同步游戏账号数据成功，已同步{0}个账号信息',
         create_btn: '创建账号',
+        create_welcome: '欢迎来到创建账号向导，您可以在这里创建一个新的游戏账号，并将其托管到GAOP。',
+        create_account_empty: '添加账号表单部分为空：{0}',
         delete_btn: '删除账号{0}',
         delete_confirm: '警告：删除操作将不可恢复，所有账号记录及账号信息将被清除！',
         delete_title: '确认删除账号{0}',
@@ -184,6 +186,7 @@ export const zhHans = {
         error: {
             password_empty: '密码不能为空',
             username_empty: '账号不能为空',
+            nickname_empty: '昵称不能为空',
         },
         notice_reg: '加入大群，与我们一同进化',
         forget: '忘记密码',

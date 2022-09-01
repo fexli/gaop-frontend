@@ -33,7 +33,7 @@
             </label>
           </div>
 
-          <div class="mt-4relative">
+          <div class="mt-4 relative">
             <input
                 v-model="password"
                 type="password"

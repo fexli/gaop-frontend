@@ -7,9 +7,10 @@ import {accountStore} from "../store/account";
 import global_const from "../utils/global_const";
 import {isSmall} from "../plugins/common";
 import LogTextCtx from "../components/parts/accountManage/LogTextCtx.vue";
-import {gameStartAccount, gameStopAccount} from "../plugins/axios";
+import {gameCreateAccount, gameStartAccount, gameStopAccount} from "../plugins/axios";
 import {useToast} from "../hooks/toast";
 import {router} from "../router/router";
+import FloatInput from "../components/element/FloatInput.vue";
 
 const {translate} = useTranslate();
 const auth = authStore();
@@ -21,6 +22,14 @@ const {gameAccountLi, inRunningAccount, webUserInfo} = storeToRefs(account);
 const cardLoading = ref(false);
 const loadingReload = ref(false); // reload按钮的loading
 const loadingStopAll = ref(false); // stopall按钮的loading
+const loadingCreateNewAccount = ref(false); // 创建新账号按钮的loading
+
+const createAccountOverlay = ref(false);
+const createUserNickname = ref("");
+const createUserAccount = ref("");
+const createUserPassword = ref("");
+const createUserPlatform = ref(1);
+
 const currentAccounts = computed(() => {
   return gameAccountLi.value.length + "个"
 })
@@ -188,7 +197,43 @@ function reloadGameAccount() {
 }
 
 function addGameAccount() {
-  console.log("addGameAccount") // TODO
+  console.log("addGameAccount")
+  createAccountOverlay.value = true
+}
+
+function addNewGameAccount() {
+  console.log("addNewGameAccount")
+  loadingCreateNewAccount.value = true
+  if (createUserAccount.value === '' || createUserNickname.value === '' || createUserPassword.value === '') {
+    let infos = ""
+    if (createUserAccount.value === '') {
+      infos += translate('login.username') + " "
+    }
+    if (createUserNickname.value === '') {
+      infos += translate('login.nickname') + " "
+    }
+    if (createUserPassword.value === '') {
+      infos += translate('login.password') + " "
+    }
+    showMessage('account.create_account_empty', 2000, 'danger', infos)
+    loadingCreateNewAccount.value = false
+    return
+  }
+  gameCreateAccount(createUserAccount.value, createUserPassword.value, createUserNickname.value, createUserPlatform.value).then(
+      (suc: any) => {
+        showMessage(suc.msg, 2000, 'success', createUserAccount.value)
+        loadingCreateNewAccount.value = false
+        createAccountOverlay.value = false
+        setTimeout(() => {
+          syncGameAccounts(true)
+        }, 300)
+      }
+  ).catch(
+      (err: any) => {
+        showMessage(err.data.msg, 2000, 'danger', createUserAccount.value)
+        loadingCreateNewAccount.value = false
+      }
+  )
 }
 
 function stopAllAccount() {
@@ -205,7 +250,7 @@ function stopAllAccount() {
           (suc: any) => {
             len--
             showMessage(suc.msg, 2000, 'success', acc.account)
-            if (len === 0){
+            if (len === 0) {
               syncGameAccounts(true)
               loadingStopAll.value = false
               showMessage("account.stop_all_account_success", 2000, 'success', acc.account)
@@ -222,9 +267,21 @@ function stopAllAccount() {
       )
     }
   }
-  if (!has){
+  if (!has) {
     loadingStopAll.value = false
   }
+}
+
+function closeCreateAccount(withReset: boolean = true) {
+  console.log("closeCreateAccount")
+  createAccountOverlay.value = false
+  if (withReset) {
+    createUserAccount.value = ''
+    createUserNickname.value = ''
+    createUserPassword.value = ''
+    createUserPlatform.value = 1
+  }
+  loadingCreateNewAccount.value = false
 }
 </script>
 <template>
@@ -315,7 +372,9 @@ function stopAllAccount() {
                 <td>{{ i.name }}</td>
                 <td>{{ i.account }}</td>
                 <td>{{ global_const.platformSelector[i.platform]?.text || '未知' }}</td>
-                <td class="no-hidden" style="word-break: normal!important" :style="`color: ${global_const.statusType[i.status.toString()]}`">{{ i.statusText }}</td>
+                <td class="no-hidden" style="word-break: normal!important"
+                    :style="`color: ${global_const.statusType[i.status.toString()]}`">{{ i.statusText }}
+                </td>
                 <td>
                   <h4 v-if="i.finalLog === null">-</h4>
                   <h4 v-else class="nowrap-hidden-ellipsis">
@@ -357,7 +416,8 @@ function stopAllAccount() {
                             d="M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8.46,11.88L9.87,10.47L12,12.59L14.12,10.47L15.53,11.88L13.41,14L15.53,16.12L14.12,17.53L12,15.41L9.88,17.53L8.47,16.12L10.59,14L8.46,11.88M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z"/>
                     </svg>
                   </button>
-                  <button :class="i.status <= 0 ? 'btn-disabled bg-opacity-0' : ''" class="btn btn-ghost btn-circle btn-xs mr-1" @click="jumpToConsole(i)">
+                  <button :class="i.status <= 0 ? 'btn-disabled bg-opacity-0' : ''"
+                          class="btn btn-ghost btn-circle btn-xs mr-1" @click="jumpToConsole(i)">
                     <svg class="w-4 h-4" viewBox="0 0 24 24">
                       <path fill="currentColor"
                             d="M2,3H22C23.05,3 24,3.95 24,5V19C24,20.05 23.05,21 22,21H2C0.95,21 0,20.05 0,19V5C0,3.95 0.95,3 2,3M14,6V7H22V6H14M14,8V9H21.5L22,9V8H14M14,10V11H21V10H14M8,13.91C6,13.91 2,15 2,17V18H14V17C14,15 10,13.91 8,13.91M8,6A3,3 0 0,0 5,9A3,3 0 0,0 8,12A3,3 0 0,0 11,9A3,3 0 0,0 8,6Z"/>
@@ -374,6 +434,76 @@ function stopAllAccount() {
             </template>
             </tbody>
           </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="overlay bg-base-200 bg-opacity-50" v-show="createAccountOverlay">
+    <div class="card w-96 max-w-md glass">
+      <figure class="select-none"><img src="static/im/create_user.jpg" alt="welcome"></figure>
+      <div class="absolute right-0 top-0 p-2" @click="closeCreateAccount">
+        <svg class="w-8 h-8" viewBox="0 0 24 24">
+          <path fill="currentColor"
+                d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+        </svg>
+      </div>
+      <div class="create-user-card-body">
+        <h2 class="card-title text-neutral">{{ translate('account.create_btn') }}</h2>
+        <p class="text-neutral">{{ translate('account.create_welcome') }}</p>
+        <div class="relative  h-16">
+          <input
+              v-model="createUserNickname"
+              :placeholder="translate('login.nickname')"
+              class="fe-input"
+          />
+          <label class="label mt-[-0.1rem]">
+              <span class="label-text-alt text-error">
+                {{ createUserNickname === '' ? translate("login.error.nickname_empty") : "" }}
+              </span>
+          </label>
+        </div>
+
+        <div class="relative h-16">
+          <input
+              v-model="createUserAccount"
+              :placeholder="translate('login.username')"
+              class="fe-input"
+          />
+          <label class="label mt-[-0.1rem]">
+              <span class="label-text-alt text-error">
+                {{ createUserAccount === '' ? translate("login.error.username_empty") : "" }}
+              </span>
+          </label>
+        </div>
+
+        <div class="relative h-16">
+          <input
+              v-model="createUserPassword"
+              type="password"
+              :placeholder="translate('login.password')"
+              class="fe-input"
+          >
+          <label class="label mt-[-0.1rem]">
+              <span class="label-text-alt text-error">
+                {{ createUserPassword === '' ? translate("login.error.password_empty") : "" }}
+              </span>
+          </label>
+        </div>
+        <div class="card-actions flex flex-row">
+          <select v-model="createUserPlatform" class="fe-select h-16">
+            <!--            <option disabled>{{ translate('account.platform') }}</option>-->
+            <template v-for="i of global_const.platformSelector">
+              <option :disabled="i.disabled" :value="i.value" :selected="i.value === createUserPlatform.value">{{
+                  i.text
+                }}
+              </option>
+            </template>
+          </select>
+          <div class="spacer"></div>
+          <button @click="addNewGameAccount" :class="loadingCreateNewAccount ? 'loading disabled pl-6':''"
+                  class="btn rounded-xl btn-md h-8 btn-primary">
+            {{ loadingCreateNewAccount ? '' : translate('account.create_btn') }}
+          </button>
         </div>
       </div>
     </div>

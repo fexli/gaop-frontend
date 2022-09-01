@@ -169,3 +169,9 @@ export const gameStopAccount = (username: string, platform: number) => post('/ga
     username,
     platform
 });
+export const gameCreateAccount = (username: string, password: string, nickname: string, platform: number) => post('/game/createAccount', {
+    username,
+    password,
+    nickname,
+    platform
+});
