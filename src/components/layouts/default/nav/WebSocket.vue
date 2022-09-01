@@ -5,7 +5,7 @@ import websock from "../../../../hooks/websock";
   <div
       class="nav-flex-cc px-2 mx-2 py-0.5 rounded-2xl transition-colors select-none text-sm cursor-pointer"
       :class="websock.isActive.value ? 'btn-success':'btn-error'"
-      @click="websock.tempT"
+      @click="websock.reconnect"
   >
     <div class="w-6 h-6">
       <svg stroke="currentColor" class="w-6 h-6 absolute transition-opacity"

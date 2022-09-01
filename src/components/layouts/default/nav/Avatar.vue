@@ -17,7 +17,10 @@ const {showMessage} = useToast();
 const logout = () => {
   if (window.confirm('Are you sure to logout?')) {
     auth.logout()
-    websock.wsInstance.close()
+    if (websock.wsInstance){
+      websock.wsInstance.close()
+      console.log("websocket closed")
+    }
 
     showMessage('logout', 2000, 'success')
     setTimeout(() => {

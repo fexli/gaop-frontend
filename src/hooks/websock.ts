@@ -25,8 +25,12 @@ class WebSock {
         }
     }
 
-    tempT() {
-        this.isActive.value = !this.isActive.value;
+    reconnect() {
+        if (!this.isActive.value){
+            if (this.wsInstance)
+                this.wsInstance.close();
+            this.initWebSocket()
+        }
     }
 
     setup() {
@@ -44,9 +48,9 @@ class WebSock {
         console.log("ws init", wsuri)
         this.wsInstance = new WebSocket(wsuri);
         this.wsInstance.onmessage = this.onMessage()
-        this.wsInstance.onopen = this.onWsOpen
+        this.wsInstance.onopen = this.onWsOpen()
         this.wsInstance.onerror = this.onWsError()
-        this.wsInstance.onclose = this.onWsClose
+        this.wsInstance.onclose = this.onWsClose()
     }
 
     public onMessage() {
@@ -90,10 +94,13 @@ class WebSock {
     }
 
     public onWsClose() {
-        this.isActive.value = false;
-        this.hasAuthed = false;
-        this.wsReconTime = 0;
-        console.log("ws close");
+        const that = this
+        return () => {
+            that.isActive.value = false;
+            that.hasAuthed = false;
+            that.wsReconTime = 0;
+            console.log("ws close");
+        }
     }
 
     public onWsError() {
@@ -130,15 +137,19 @@ class WebSock {
         this.wsInstance.send(data);
     }
 
-    public onWsOpen = () => {
+    public onWsOpen(){
         const auth = authStore();
-        console.log("wsAcToken", auth.getAccessToken)
-        if (!auth.getAccessToken) {
-            return;
+        const that = this;
+        return ()=> {
+            console.log("wsAcToken", auth.getAccessToken)
+            if (!auth.getAccessToken) {
+                return;
+            }
+            that.wsInstance.send(auth.getAccessToken);
+            that.isActive.value = true;
+            that.wsReconTime = 0;
         }
-        this.wsInstance.send(auth.getAccessToken);
-        this.isActive.value = true;
-        this.wsReconTime = 0;
+
     }
 
     private clearWebSocket() {
