@@ -23,7 +23,7 @@ const loadingStopAll = ref(false); // stopall按钮的loading
 const loadingCreateNewAccount = ref(false); // 创建新账号按钮的loading
 
 const createAccountOverlay = ref(false);
-const deleteAccountOverlay = ref(true);
+const deleteAccountOverlay = ref(false);
 
 const createUserNickname = ref("");
 const createUserAccount = ref("");
@@ -70,11 +70,13 @@ const gameAccountHeaders = [
   {
     text: computed(() => translate('account.platform')),
     value: 'platform',
+    class: 'text-center',
     width: '6%'
   },
   {
     text: computed(() => translate('account.status')),
     value: 'status',
+    class: 'text-center',
     width: '11%'
   },
   {
@@ -383,7 +385,7 @@ function closeCreateAccount(withReset: boolean = true) {
             <thead>
             <tr>
               <template v-for="(i,k) of gameAccountHeaders" v-bind:key="k">
-                <th :style="'width: '+i['width']">{{ i.text.value }}</th>
+                <th :style="'width: '+i['width']" :class="i['class']">{{ i.text.value }}</th>
               </template>
             </tr>
             </thead>
@@ -392,8 +394,8 @@ function closeCreateAccount(withReset: boolean = true) {
               <tr>
                 <td>{{ i.name }}</td>
                 <td>{{ i.account }}</td>
-                <td>{{ global_const.platformSelector[i.platform]?.text || '未知' }}</td>
-                <td class="no-hidden" style="word-break: normal!important"
+                <td class="text-center">{{ global_const.platformSelector[i.platform]?.text || '未知' }}</td>
+                <td class="no-hidden text-center" style="white-space: break-spaces!important;padding: 0!important;word-break: keep-all;"
                     :style="`color: ${global_const.statusType[i.status.toString()]}`">{{ i.statusText }}
                 </td>
                 <td>
