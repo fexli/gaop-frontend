@@ -20,7 +20,7 @@ const props = defineProps({
 const {translate} = useTranslate()
 </script>
 <template>
-  <div class="stats shadow w-fit">
+  <div class="stats bg-base-200 shadow w-fit">
     <div class="stat">
       <div class="stat-figure text-primary">
         <slot name="icon"/>

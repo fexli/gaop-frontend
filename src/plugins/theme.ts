@@ -12,9 +12,9 @@ export function setTheme(name: string) {
 
 export function setByDarkMode(mode: boolean) {
     if (mode) {
-        setTheme("halloween");
+        setTheme("dark");
     } else {
-        setTheme("cmyk");
+        setTheme("light");
     }
 }
 

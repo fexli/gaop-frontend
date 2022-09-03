@@ -2,7 +2,7 @@ import {planRecruit, getRecruitDetail, combinations} from "./recruit_planner"
 
 const loggerLvlType = {
     1: {
-        color: 'cyan',
+        color: '#007eff',
         name: 'DEBUG'
     },
     2: {
@@ -126,9 +126,9 @@ const platformSelector = [
 ]
 const statusType = {
     '-1': 'red',
-    '0': 'cyan',
+    '0': '#007eff',
     '1': 'green',
-    '2': 'cyan',
+    '2': '#007eff',
     '3': 'red',
 }
 const aopVersion = '2.1a - 1.8.61'
