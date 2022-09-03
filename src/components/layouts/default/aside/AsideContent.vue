@@ -16,9 +16,6 @@ const toggleShowMenu = () => {
   showMenu.value = !showMenu.value;
   console.log("showMenu", showMenu.value)
 }
-
-const {route, activeIndex} = toRefs(props);
-console.log("ctx", route)
 </script>
 <template>
   <!--  icon designed from https://materialdesignicons.com/-->

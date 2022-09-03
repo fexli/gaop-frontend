@@ -25,13 +25,12 @@ class Menu {
      * @param title 用于连接面包屑名称
      */
     getNestedMenuByRoute(m: RouteRecordRaw, routerMap: Map<string, string>, title = "") {
+        console.log("getNestedMenuByRoute", m, title);
         m.children?.forEach((c) => {
-            title !== "" ? (title = `${title}-${c.meta?.title}`) : (title = `${m.meta?.title}-${c.meta?.title}`);
-            routerMap.set(c.path, title);
+            let subtitle = title !== "" ? `${title}-${c.meta?.title}` : `${m.meta?.title}-${c.meta?.title}`;
+            routerMap.set(c.path, subtitle);
             if (c.children) {
-                this.getNestedMenuByRoute(c, routerMap, title);
-            } else {
-                title = "";
+                this.getNestedMenuByRoute(c, routerMap, subtitle);
             }
         });
     }
@@ -39,6 +38,7 @@ class Menu {
     getCurrentMenu(route: RouteLocationNormalizedLoaded) {
         const routerMap = new Map();
         this.menus.value.forEach((m) => {
+            console.log("getCurrentMenu", m);
             this.getNestedMenuByRoute(m, routerMap);
         });
         console.log("routerMap", routerMap)
@@ -62,7 +62,7 @@ class Menu {
         if (this.closeTimeout) {
             clearTimeout(this.closeTimeout);
         }
-        console.log("openDrawer",this.menus.value[1].children);
+        console.log("openDrawer", this.menus.value[1].children);
         this.close.value = true;
     }
 
