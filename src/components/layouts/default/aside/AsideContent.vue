@@ -19,7 +19,7 @@ const toggleShowMenu = () => {
 </script>
 <template>
   <!--  icon designed from https://materialdesignicons.com/-->
-  <li :class="{'current':activeIndex === route.path,'showMenu':showMenu}">
+  <li :class="{'current':activeIndex === route.path,'showMenu':showMenu}" v-if="!(route?.meta['hiddenInMenu'])">
     <div class="icon-link">
       <a :href="'#'+route.path">
         <svg class="logo-icon" stroke="currentColor" viewBox="0 0 24 24">
@@ -41,7 +41,7 @@ const toggleShowMenu = () => {
     <ul class="sub-menu" :class="{'blank':!route.children?.length}">
       <li><a class="link_name" :href="'#'+route.path">{{ t("menu." + route.meta['title']) }}</a></li>
       <template v-if="route.children?.length">
-        <li v-for="child in route.children" :key="child.path">
+        <li v-for="child in route.children" :key="child.path" v-if="!child?.meta['hiddenInMenu']">
           <a :href="'#'+child.path">{{
               child.meta['translatable'] ? t("menu." + child.meta['title']) : child.meta['title']
             }}</a>

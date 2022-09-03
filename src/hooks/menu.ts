@@ -7,6 +7,24 @@ import {
     RouteRecordRaw
 } from "vue-router";
 
+export interface MenuCurrentIface {
+    name: string,
+    translatable: boolean,
+    href: string,
+}
+
+export class MenuCurrent implements MenuCurrentIface {
+    name: string;
+    translatable: boolean;
+    href: string;
+
+    constructor(name: string, translatable: boolean, href: string) {
+        this.name = name;
+        this.translatable = translatable;
+        this.href = href;
+    }
+}
+
 class Menu {
     public menus = ref<RouteRecordRaw[]>([]);
     //@ts-ignore
@@ -24,10 +42,18 @@ class Menu {
      * @param routerMap 用于存储路由名称对应的面包屑名称
      * @param title 用于连接面包屑名称
      */
-    getNestedMenuByRoute(m: RouteRecordRaw, routerMap: Map<string, string>, title = "") {
+    getNestedMenuByRoute(m: RouteRecordRaw, routerMap: Map<string, MenuCurrent[]>, title: MenuCurrent[] = []) {
         console.log("getNestedMenuByRoute", m, title);
         m.children?.forEach((c) => {
-            let subtitle = title !== "" ? `${title}-${c.meta?.title}` : `${m.meta?.title}-${c.meta?.title}`;
+            let subtitle: MenuCurrent[]
+            if (title.length) {
+                subtitle = [...title, new MenuCurrent(c.meta?.title as string, c.meta?.translatable == null ? true : c.meta?.translatable as boolean, c.path)];
+            } else {
+                subtitle = [
+                    new MenuCurrent(m.meta?.title as string, m.meta?.translatable == null ? true : m.meta?.translatable as boolean, m.path),
+                    new MenuCurrent(c.meta?.title as string, c.meta?.translatable == null ? true : c.meta?.translatable as boolean, c.path),
+                ]
+            }
             routerMap.set(c.path, subtitle);
             if (c.children) {
                 this.getNestedMenuByRoute(c, routerMap, subtitle);
@@ -36,7 +62,7 @@ class Menu {
     }
 
     getCurrentMenu(route: RouteLocationNormalizedLoaded) {
-        const routerMap = new Map();
+        const routerMap = new Map<string, MenuCurrent[]>();
         this.menus.value.forEach((m) => {
             console.log("getCurrentMenu", m);
             this.getNestedMenuByRoute(m, routerMap);

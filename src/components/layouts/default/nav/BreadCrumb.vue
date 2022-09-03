@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import menu from "../../../../hooks/menu";
+import menu, {MenuCurrent} from "../../../../hooks/menu";
 
 import {useI18n} from "vue-next-i18n";
 import Logo from "./Logo.vue";
@@ -7,11 +7,10 @@ import Logo from "./Logo.vue";
 const route = useRoute();
 const {t} = useI18n();
 const currentBread = ref<string>("");
-const breadArr = ref<string[]>([]);
+const breadArr = ref<MenuCurrent[]>([]);
 
 watchEffect(() => {
-  currentBread.value = menu.getCurrentMenu(route) as unknown as string;
-  breadArr.value = currentBread.value?.split("-");
+  breadArr.value = menu.getCurrentMenu(route) as MenuCurrent[];
 });
 </script>
 
@@ -19,9 +18,9 @@ watchEffect(() => {
   <div class="breadcrumbs hidden sm:flex ml-2">
     <ul>
       <li class="text-primary text-lg" v-for="(bread, index) in breadArr" :key="index">
-        {{
-          t("menu." + bread)
-        }}
+        <a>{{
+            bread.translatable ? t("menu." + bread.name) : bread.name
+          }}</a>
       </li>
     </ul>
   </div>
