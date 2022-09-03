@@ -13,6 +13,7 @@ const buf: Ref = ref(0);
 const val: Ref = ref(0);
 const tmlVal: Ref = ref(0);
 const max: Ref = ref(0);
+const loadingFinished: Ref = ref(false);
 const loadingSrc = `/static/skaddd/${global_const.loadingGIF[Math.round(Math.random() * (global_const.loadingGIF.length - 1))]}.gif`;
 
 watch(() => val.value, (v) => {
@@ -21,6 +22,9 @@ watch(() => val.value, (v) => {
     percent.value = ''
     overlay.value = false;
     dot.value = '';
+    setTimeout(() => {
+      loadingFinished.value = true
+    }, 1000)
   }
 })
 
@@ -201,7 +205,7 @@ function loadNextAsset() {
 startLoadAssets()
 </script>
 <template>
-  <div class="overlay asset-loading" :style="`filter: opacity(${overlay ? '1':'0'})`">
+  <div v-if="!loadingFinished" class="overlay bg-base-200 asset-loading" :style="`filter: opacity(${overlay ? '1':'0'})`">
     <div class="flex flex-col items-center">
       <div
           :style="`height: 320px;width: 340px;background-repeat: no-repeat;background-size: contain;background-image: url('${loadingSrc}')`"
