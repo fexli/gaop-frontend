@@ -106,17 +106,20 @@
 }
 
 .sidebar .nav-links li .sub-menu a {
-    @apply text-info;
+    @apply text-primary;
     font-size: 15px;
     padding: 5px 0;
     white-space: nowrap;
     transition: all 0.3s ease;
 }
 
+.sidebar .nav-links li .sub-menu li:not(:first-child) a {
+    @apply text-info;
+}
+
 .sidebar .nav-links li .sub-menu a:hover {
     @apply opacity-100;
 }
-
 
 
 .sidebar .nav-links li .sub-menu .link_name {

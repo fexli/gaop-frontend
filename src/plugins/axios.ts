@@ -1,8 +1,6 @@
 import axios from "axios";
 import {createToast} from "mosha-vue-toastify";
 import {authStore} from "../store/auth";
-import {useRouter} from "vue-router";
-import Vue, {getCurrentInstance} from "vue";
 import {router} from "../router/router";
 import {useI18n} from "vue-next-i18n";
 

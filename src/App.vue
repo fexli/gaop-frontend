@@ -5,7 +5,7 @@
     </keep-alive>
   </router-view>
   <SystemBar/>
-  <div class="overlay" v-show="geetest.captchaOverlay.value">
+  <div class="overlay bg-opacity-50" v-show="geetest.captchaOverlay.value">
     <div class="card max-w-sm shadow-lg rounded-xl"
          :style="`background-image: url('static/im/captcha.jpg');background-repeat: no-repeat;background-size: cover;background-position: center`">
       <div class="bg-white bg-opacity-40 p-8 backdrop-blur-sm">

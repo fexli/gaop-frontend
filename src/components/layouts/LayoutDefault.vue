@@ -13,28 +13,8 @@
         <router-view/>
       </div>
     </div>
-    <!-- Go to top -->
-    <!--      <app-fab/>-->
   </div>
-  <!--    <v-overlay-->
-  <!--        id="ovl"-->
-  <!--        style="transition: filter 1s linear"-->
-  <!--        :value="ovl"-->
-  <!--        color="rgb(43,43,43)"-->
-  <!--        opacity="1"-->
-  <!--    >-->
-  <!--      <div class="ovlc">-->
-  <!--        <img height="320px" :src="lsrc" alt="loading">-->
-  <!--        <div class="ovlt">{{ txt }}{{ dot }}</div>-->
-  <!--        <v-progress-linear-->
-  <!--            :buffer-value="buf"-->
-  <!--            style="width: 400px"-->
-  <!--            color="success"-->
-  <!--            stream-->
-  <!--            :value="val"-->
-  <!--        ></v-progress-linear>-->
-  <!--      </div>-->
-  <!--    </v-overlay>-->
+  <AssetLoading/>
 </template>
 <script lang="ts" setup>
 import {appStore} from "../../store/app";
@@ -42,6 +22,7 @@ import {storeToRefs} from "pinia/dist/pinia";
 import NavBar from "./default/NavBar.vue";
 import AsideBar from "./default/AsideBar.vue";
 import Translate from "./default/nav/Translate.vue";
+import AssetLoading from "../parts/global/AssetLoading.vue";
 
 const _app = appStore()
 const {background} = storeToRefs(_app)

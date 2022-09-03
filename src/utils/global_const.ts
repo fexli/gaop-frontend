@@ -155,6 +155,7 @@ const servers = [
         secure: false,
     },
 ]
+const gameData: Record<string, any> = {}
 
 export const getPlatformAka = function (platform: number) {
     return ['A', 'G', 'B'][platform]
@@ -182,5 +183,6 @@ export default {
     // baseUrl,
     // secures,
     getPlatform: getPlatformAka,
-    getUserLogName
+    getUserLogName,
+    gameData,
 }

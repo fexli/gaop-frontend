@@ -461,7 +461,7 @@ function closeCreateAccount(withReset: boolean = true) {
       </div>
     </div>
   </div>
-  <div class="overlay" v-show="deleteAccountOverlay">
+  <div class="overlay bg-opacity-50" v-show="deleteAccountOverlay">
     <div class="card w-96 bg-neutral text-neutral-content">
       <div class="card-body items-center text-center">
         <div class="flex gap-1 items-center">
@@ -482,7 +482,7 @@ function closeCreateAccount(withReset: boolean = true) {
       </div>
     </div>
   </div>
-  <div class="overlay" v-show="createAccountOverlay">
+  <div class="overlay bg-opacity-50" v-show="createAccountOverlay">
     <div class="card w-96 max-w-md glass">
       <figure class="select-none"><img src="static/im/create_user.jpg" alt="welcome"></figure>
       <div class="absolute right-0 top-0 p-2" @click="closeCreateAccount">
