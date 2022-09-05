@@ -30,7 +30,9 @@ watchEffect(() => {
     </ul>
   </div>
   <div class="hidden sm:hidden xs:flex text-primary text-lg ml-2">
-    {{ breadArr.length ? t('menu.' + breadArr[breadArr.length - 1]) : "" }}
+    {{
+      breadArr.length ? breadArr[breadArr.length - 1].translatable ? t(breadArr[breadArr.length - 1].name) : breadArr[breadArr.length - 1].name : ""
+    }}
   </div>
 </template>
 
