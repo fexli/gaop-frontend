@@ -168,7 +168,7 @@ export const zhHans = {
         stop_all_account_success: '已停止所有账号',
         tabs: {
             info: '玩家信息',
-            setting: '设置',
+            setting: '账号设置',
             inventory: '玩家仓库',
             troop: '干员列表',
             analytics: '数据分析',
@@ -260,7 +260,7 @@ export const zhHans = {
         reader: '剧情浏览器',
         home: '主页',
         dashboard: '状态汇总',
-        me: '账号',
+        accounts: '账号',
         account_manage: '账号管理',
         settings: '设置',
         test: '测试页面',
