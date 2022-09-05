@@ -51,11 +51,11 @@
 }
 
 .sidebar .nav-links li:hover {
-    /*@apply bg-base-300 bg-opacity-40;*/
+    @apply bg-base-300 bg-opacity-40;
 }
 
 .sidebar .nav-links li.current {
-    @apply bg-base-300 bg-opacity-80;
+    @apply bg-base-300 bg-opacity-80 text-primary;
 }
 
 .sidebar .nav-links li .icon-link {

@@ -37,32 +37,7 @@ const ovl = ref(true);
 const showDrawer = ref(true);
 
 </script>
-<!--<script>-->
-<!--import AppDrawer from '@/components/AppDrawer'-->
-<!--import AppToolbar from '@/components/AppToolbar'-->
-<!--import AppFab from '@/components/AppFab'-->
-<!--import {PushableDict} from "@/utils/recruit_planner";-->
 
-<!--export default {-->
-<!--  data() {-->
-<!--    return {-->
-<!--      lsrc: `/static/skaddd/${this.GLOBAL.loadingGIF[Math.round(Math.random() * (this.GLOBAL.loadingGIF.length - 1))]}.gif`,-->
-<!--    }-->
-<!--  },-->
-<!--  watch: {-->
-<!--    val(v) {-->
-<!--      if (v <= 99) return 0-->
-<!--      setTimeout(() => {-->
-<!--        this.fin = true-->
-<!--        let d = document.getElementById('ovl')-->
-<!--        if (!d) return -1-->
-<!--        d.style.filter = 'opacity(0)'-->
-<!--        setTimeout(() => {-->
-<!--          this.ovl = false-->
-<!--        }, 1000)-->
-<!--      }, 200)-->
-<!--    }-->
-<!--  },-->
 <!--  created() {-->
 <!--    console.log("created", this.$store.getters.getBackground)-->
 <!--    if (this.$store.getters.getBackground === '') {-->
@@ -82,42 +57,6 @@ const showDrawer = ref(true);
 <!--        that.reloadBG = true-->
 <!--      })-->
 <!--    },-->
-<!--    dot_run() {-->
-<!--      switch (this.dot) {-->
-<!--        case "...":-->
-<!--          this.dot = ""-->
-<!--          break-->
-<!--        default:-->
-<!--          this.dot += "."-->
-<!--          break-->
-<!--      }-->
-<!--      if (this.fin) {-->
-<!--        return-->
-<!--      }-->
-<!--      setTimeout(() => {-->
-<!--        this.dot_run()-->
-<!--      }, 400)-->
-<!--    },-->
-<!--    handleDrawerVisiable() {-->
-<!--      this.$refs.drawer.toggleDrawer()-->
-<!--    },-->
-<!--    getLocalFile(url, asyncs = false, callback = null, method = 'GET', mime = 'application/json') {-->
-<!--      let xhr = new XMLHttpRequest()-->
-<!--      if (asyncs) {-->
-<!--        xhr.onloadend = () => {-->
-<!--          if (callback) {-->
-<!--            callback(xhr)-->
-<!--          }-->
-<!--        }-->
-<!--      }-->
-<!--      xhr.overrideMimeType(mime)-->
-<!--      xhr.open(method, url, asyncs)-->
-<!--      xhr.send(null)-->
-<!--      if (!asyncs) {-->
-<!--        return xhr.response-->
-<!--      }-->
-<!--    }-->
-<!--  },-->
 <!--  activated() {-->
 <!--    const that = this-->
 <!--    window.changeBg = function (bg) {-->
@@ -128,131 +67,9 @@ const showDrawer = ref(true);
 <!--        that.$store.commit("setBackground", that.get_rand_bg())-->
 <!--      }-->
 <!--    }-->
-<!--    this.dot_run()-->
-<!--    const load_list = [-->
-<!--      {-->
-<!--        name: 'item_data',-->
-<!--        title: '物品数据',-->
-<!--        field: 'itemData',-->
-<!--        loc: '/static/gamedata/excel/item_table.json',-->
-<!--        parser: (resp) => {-->
-<!--          return JSON.parse(resp)['items']-->
-<!--        }-->
-<!--      },-->
-<!--      {-->
-<!--        name: 'character_data',-->
-<!--        title: '干员数据',-->
-<!--        field: "characterData",-->
-<!--        loc: '/static/gamedata/excel/character_table.json',-->
-<!--        parser: (resp) => {-->
-<!--          let data = JSON.parse(resp)-->
-<!--          let rT = new PushableDict([1, 2, 3, 4, 5, 6])-->
-<!--          for (let entr of Object.values(data)) {-->
-<!--            rT.push(entr.rarity + 1, entr.name)-->
-<!--          }-->
-<!--          that.GLOBAL.charRateTag = rT-->
-<!--          return data-->
-<!--        }-->
-<!--      },-->
-<!--      {-->
-<!--        name: 'game_const_data',-->
-<!--        title: '常量数据',-->
-<!--        field: 'gameConstData',-->
-<!--        loc: '/static/gamedata/excel/gamedata_const.json',-->
-<!--      },-->
-<!--      {-->
-<!--        name: 'skill_data',-->
-<!--        title: '技能数据',-->
-<!--        field: 'skillData',-->
-<!--        loc: '/static/gamedata/excel/skill_table.json',-->
-<!--      },-->
-<!--      {-->
-<!--        name: 'building_data',-->
-<!--        title: '基建数据',-->
-<!--        field: 'buildingData',-->
-<!--        loc: '/static/gamedata/excel/building_data.json',-->
-<!--      },-->
-<!--      {-->
-<!--        name: 'uniequip_table',-->
-<!--        title: '模组数据',-->
-<!--        field: 'uniequipTable',-->
-<!--        loc: '/static/gamedata/excel/uniequip_table.json',-->
-<!--      },-->
-<!--      {-->
-<!--        name: 'gacha_data',-->
-<!--        title: '卡池数据',-->
-<!--        field: 'gachaData',-->
-<!--        loc: '/static/gamedata/excel/gacha_table.json',-->
-<!--        parser: (resp) => {-->
-<!--          let data = JSON.parse(resp)-->
-<!--          that.GLOBAL.recruitTags = {}-->
-<!--          for (let tags of data.gachaTags) {-->
-<!--            that.GLOBAL.recruitTags[tags.tagId.toString()] = tags-->
-<!--          }-->
-<!--          that.GLOBAL.recruitPool = {}-->
-<!--          for (let Tt of data.recruitPool['recruitTimeTable']) {-->
-<!--            that.GLOBAL.recruitPool[Tt['timeLength'].toString()] = Tt-->
-<!--          }-->
-<!--          return data-->
-<!--        }-->
-<!--      },-->
-<!--      {-->
-<!--        name: 'recruit_data',-->
-<!--        title: '公招数据',-->
-<!--        field: 'recruitData',-->
-<!--        loc: '/static/recruit/RecruitData.json',-->
-<!--      },-->
-<!--      {-->
-<!--        name: 'stage_table',-->
-<!--        title: '关卡数据',-->
-<!--        field: 'stageTable',-->
-<!--        loc: '/static/gamedata/excel/stage_table.json',-->
-<!--      }-->
-<!--    ]-->
-<!--    for (let task of load_list) {-->
-<!--      this.buf += 100 / load_list.length-->
-<!--      if (!this.GLOBAL[task.field]) {-->
-<!--        console.log('try fetch ' + task.name)-->
-<!--        this.txt = "获取" + task.title + "中"-->
-<!--        this.getLocalFile(task.loc, true, (xhr) => {-->
-<!--          if (task.parser !== undefined) {-->
-<!--            try {-->
-<!--              that.GLOBAL[task.field] = task.parser(xhr.response)-->
-<!--            } catch (e) {-->
-<!--              console.error(`catch exception at ${task.name} ${e}`)-->
-<!--            }-->
-<!--          } else {-->
-<!--            this.GLOBAL[task.field] = JSON.parse(xhr.response)-->
-<!--          }-->
-<!--          that.val += 100 / load_list.length-->
-<!--        })-->
-<!--      } else {-->
-<!--        console.log('from cache load' + task.name)-->
-<!--        that.val += 100 / load_list.length-->
-<!--      }-->
-<!--    }-->
-<!--  },-->
-<!--}-->
-<!--</script>-->
 
 <style lang="sass" scoped>
 .page-wrapper
   min-height: calc(100vh - 112px - 48px)
 
-.ovlt
-  font-size: 25px
-
-.ovlc
-  display: flex
-  flex-direction: column
-  align-items: center
-
-.layout-default
-  height: 100%
-  width: 100%
-  position: fixed
-  top: 0
-  left: 0
-  content: ""
-  z-index: 0
 </style>

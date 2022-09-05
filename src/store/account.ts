@@ -9,7 +9,7 @@ import menu from "../hooks/menu";
 export const accountStore = defineStore("account", {
     state: () => ({
         accountsList: [] as string[],//[str.]
-        accountInfo: {}, //[gameUD]
+        accountInfo: {} as Record<string, any>, //[gameUD]
         accountDetails: [],
         loggerStore: {},
         loggerStoreUpdate: false,

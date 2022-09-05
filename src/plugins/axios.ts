@@ -179,3 +179,11 @@ export const gameDeleteAccount = (username: string, platform: number) => post('/
     platform
 });
 export const finishCaptcha = (captcha: any) => post('/account/finishCaptcha', captcha);
+export const getGameUserCard = (username: string, platform: number) => post('/game/userCard', {
+    username,
+    platform
+});
+export const getGameSortAlert = (username: string, platform: number) => post('/game/getSortAlert', {
+    username,
+    platform
+});

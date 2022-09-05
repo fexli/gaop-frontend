@@ -239,7 +239,7 @@ function addNewGameAccount() {
       infos += translate('login.password') + " "
     }
     showMessage('account.create_account_empty', 2000, 'danger', infos)
-    loadingCreateNewAccount.value = false
+    closeCreateAccount()
     return
   }
   gameCreateAccount(createUserAccount.value, createUserPassword.value, createUserNickname.value, createUserPlatform.value).then(
