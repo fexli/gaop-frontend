@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {globWidth, globHeight, getBreakPoint} from "../../../plugins/common";
 
+const route = useRoute()
 const display = ref(true);
 </script>
 <template>
@@ -14,7 +15,8 @@ const display = ref(true);
       <a class="cursor-pointer pointer-events-auto" @click="display = false">[HIDE]</a>
     </a>
     <a>SCR {{ globWidth }}*{{ globHeight }} @{{ getBreakPoint() }}</a>
-    <a class="transition-all">ROU {{ $route.path }}</a>
+    <a>ROU {{ $route.path }}</a>
+    <a>PRM {{ route.params }}</a>
   </div>
 </template>
 
