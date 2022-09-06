@@ -202,6 +202,16 @@ export const accountStore = defineStore("account", {
                     console.log("err", err)
                     return {success: 0, result: err}
                 })
+        },
+        setAccountInfo(account: string, platform: Number, data: any) {
+            let gameUserID = global_const.getUserLogName(account, platform as number)
+            this.setAccountInfoById(gameUserID, data)
+        },
+        setAccountInfoById(userId: string, data: any) {
+            if (this.accountInfo[userId] == null) {
+                this.accountInfo[userId] = {}
+            }
+            this.accountInfo[userId] = Object.assign(this.accountInfo[userId], data)
         }
     },
 });

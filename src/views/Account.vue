@@ -9,6 +9,7 @@ import {useTranslate} from "../hooks/translate";
 import GameAccountInfo from "../components/parts/account/GameAccountInfo.vue";
 import GameInventory from "../components/parts/account/GameInventory.vue";
 import {isLarge} from "../plugins/common";
+import GameItemInfoCard from "../components/parts/account/GameItemInfoCard.vue";
 
 
 const account = accountStore();
@@ -25,6 +26,10 @@ const stopListen: Ref = ref(false)
 const contentIsShow: Ref = ref(true)
 const currentTab: Ref = ref("#info")
 const currentTabIndex: Ref = ref(0)
+
+const itemClicked: Ref = ref({})
+const itemCardOverlay: Ref = ref(false)
+const itemCardTransition: Ref = ref(false)
 
 const infoTabHeaders = [
   {
@@ -98,9 +103,7 @@ function goManage() {
 }
 
 function mergeGameData(userName: string, dataObj: any) {
-  if (account.accountInfo[userName] == null)
-    account.accountInfo[userName] = {}
-  account.accountInfo[userName] = Object.assign(account.accountInfo[userName], dataObj)
+  account.setAccountInfoById(userName, dataObj)
   console.log("mergeGameData", account.accountInfo)
 }
 
@@ -201,6 +204,23 @@ function changeTab(item: any, index: number) {
   }
 }
 
+function showItemInfo(item: any) {
+  console.log("showItemInfo", item)
+  itemClicked.value = item
+  itemCardOverlay.value = true
+  setTimeout(() => {
+    itemCardTransition.value = true
+  }, 100)
+}
+
+function hideItemCard() {
+  itemCardTransition.value = false
+  setTimeout(() => {
+    itemCardOverlay.value = false
+    itemClicked.value = {}
+  }, 100)
+}
+
 onMounted(() => {
   listenCtxUpdate()
   console.log("Mounted")
@@ -238,7 +258,13 @@ onUnmounted(() => {
             :alerts="getAccountAlert"
             :game-user-name="global_const.getPlatform(gamePlatform) + gameUserName"
         />
-        <GameInventory v-if="inventoryLoaded" v-show="currentTab === '#inventory'"/>
+        <GameInventory
+            v-if="inventoryLoaded"
+            v-show="currentTab === '#inventory'"
+            :game-user-name="gameUserName"
+            :game-platform="gamePlatform"
+            :clicker="showItemInfo"
+        />
       </div>
     </div>
   </div>
@@ -258,6 +284,14 @@ onUnmounted(() => {
         content="error.account_not_found" translate-content
         btn="go_account_manage" translate-btn
         :back="goManage"
+    />
+  </div>
+  <div class="overlay bg-base-200 bg-opacity-40" v-if="itemCardOverlay">
+    <div class="fixed w-full h-full left-0 top-0" @click="hideItemCard"/>
+    <GameItemInfoCard
+        v-show="itemCardTransition"
+        class="transform fixed top-1/4 right-1"
+        :select-item="itemClicked"
     />
   </div>
 </template>

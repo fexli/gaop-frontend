@@ -187,3 +187,7 @@ export const getGameSortAlert = (username: string, platform: number) => post('/g
     username,
     platform
 });
+export const getGameUserInventory = (username: string, platform: number) => post('/game/inventory', {
+    username,
+    platform
+});

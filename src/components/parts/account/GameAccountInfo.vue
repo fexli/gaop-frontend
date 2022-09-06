@@ -28,7 +28,7 @@ const currentAp = computed(() => {
   <div>
     <div class="flex flex-col">
       <div v-for="(item,index) in alerts[0]" v-bind:key="10+index">
-        <div class="alert shadow-lg text-white p-1 px-3 my-1 rounded-xl" :style="`background-color:${item.color}`">
+        <div class="alert shadow-lg text-white p-1 px-3 mt-1 rounded-xl" :style="`background-color:${item.color}`">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                  class="stroke-current flex-shrink-0 w-6 h-6">

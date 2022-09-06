@@ -68,6 +68,6 @@
     }
 
     .tab-content {
-        @apply ml-[8.75rem];
+        @apply ml-[9.25rem];
     }
 }
