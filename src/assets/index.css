@@ -62,4 +62,12 @@
         left: 50px;
         width: calc(100% - 50px);
     }
+
+    .tab-account {
+        @apply fixed;
+    }
+
+    .tab-content {
+        @apply ml-[8.75rem];
+    }
 }
