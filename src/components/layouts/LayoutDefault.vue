@@ -9,7 +9,7 @@
           class="h-full w-full fixed top-0 left-0 z-0"
           :style="`background: url('../${background}');background-size: cover;background-position: center;`"
       />
-      <div class="w-full mb-7 pt-[4.2rem] px-4 z-30">
+      <div class="w-full mb-7 pt-[4.25rem] px-4 z-30">
         <router-view/>
       </div>
     </div>

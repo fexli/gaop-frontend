@@ -308,7 +308,7 @@ function closeCreateAccount(withReset: boolean = true) {
 }
 </script>
 <template>
-  <div class="hidden xs:flex shadow-lg h-10 mb-1 mt-1 rounded-xl bg-base-200 bg-opacity-80">
+  <div class="hidden xs:flex shadow-lg h-10 rounded-xl bg-base-200 bg-opacity-80">
     <div class="w-full flex items-center justify-center">
       <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6 text-primary" fill="none"
            viewBox="0 0 24 24">

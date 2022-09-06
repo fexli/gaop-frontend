@@ -231,7 +231,7 @@ onUnmounted(() => {
 })
 </script>
 <template>
-  <div v-if="gameStart" class="mt-1">
+  <div v-if="gameStart">
     <div class="flex h-full">
       <div class="tabs-horizontal tabs tabs-boxeds lg:tab-account">
         <div
