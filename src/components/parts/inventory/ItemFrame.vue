@@ -33,12 +33,19 @@ function handleClicker() {
 </script>
 <template>
   <div class="card bg-base-200 rounded-xl" v-if="count !== 0 && global_const.gameData.itemData[itemId].sortId >= -10">
-    <FeImg :src="global_const.assetServer+'items/'+global_const.gameData.itemData[itemId].iconId+'.png'"
-           class="item-image"
-           @click="handleClicker"/>
+    <FeImg
+        :src="global_const.assetServer+'items/'+global_const.gameData.itemData[itemId]['iconId']+'.png'"
+        class="item-image"
+    />
     <p class="item-content" v-if="content != null">{{ content }}</p>
     <p class="item-count">{{ count }}</p>
     <p class="item-time" v-if="ts !== -1">{{ formatter.formatConsumeTime(ts) }}</p>
+    <div
+        class="select-none px-3 w-full h-full z-10 transition-opacity opacity-0 hover:opacity-100 flex absolute left-0 top-0 bg-base-200 bg-opacity-40 justify-center items-center text-center"
+        @click="handleClicker"
+    >
+      {{ global_const.gameData.itemData[itemId].name }}
+    </div>
   </div>
 </template>
 
@@ -61,7 +68,6 @@ function handleClicker() {
   background-color: rgba(0, 0, 0, .6)
   padding: 2.5px 5px
   margin: 0
-  pointer-events: none !important
 
 .item-content
   color: white
@@ -71,7 +77,6 @@ function handleClicker() {
   background-color: rgba(0, 0, 0, .6)
   padding: 2.5px 5px
   margin: 0
-  pointer-events: none !important
 
 .item-time
   color: white
@@ -81,5 +86,4 @@ function handleClicker() {
   background-color: rgba(0, 0, 0, .6)
   padding: 2.5px 5px
   margin: 0
-  pointer-events: none !important
 </style>

@@ -27,7 +27,7 @@ const currentAp = computed(() => {
 <template>
   <div>
     <div class="flex flex-col">
-      <div v-for="(item,index) in alerts[0]" v-bind:key="10+index">
+      <div class="px-1" v-for="(item,index) in alerts[0]" v-bind:key="10+index">
         <div class="alert shadow-lg text-white p-1 px-3 mt-1 rounded-xl" :style="`background-color:${item.color}`">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -94,7 +94,7 @@ const currentAp = computed(() => {
           :game-user-name="gameUserName"
       />
       <div class="divider m-0"></div>
-      <div v-for="(item,index) in alerts[1]" v-bind:key="index">
+      <div class="px-1" v-for="(item,index) in alerts[1]" v-bind:key="index">
         <div class="alert shadow-lg text-white p-1 px-3 rounded-xl" :style="`background-color:${item.color}`">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
