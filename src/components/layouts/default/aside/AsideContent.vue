@@ -15,6 +15,10 @@ const toggleShowMenu = () => {
   showMenu.value = !showMenu.value;
   console.log("showMenu", showMenu.value)
 }
+const routeChildren = computed(()=> {
+      return props.route?.children || [];
+    }
+)
 </script>
 <template>
   <!--  icon designed from https://materialdesignicons.com/-->
@@ -32,18 +36,18 @@ const toggleShowMenu = () => {
         </svg>
         <span class="link_name">{{ t("menu." + route.meta['title']) }}</span>
       </a>
-      <i v-if="route.children?.length" class='arrow w-10 flex justify-center' @click="toggleShowMenu">
+      <i v-if="routeChildren?.length" class='arrow w-10 flex justify-center' @click="toggleShowMenu">
         <svg style="width:24px;height:24px" viewBox="0 0 24 24">
           <path fill="currentColor" d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/>
         </svg>
       </i>
     </div>
-    <ul class="sub-menu" :class="{'blank':!route.children?.length}">
+    <ul class="sub-menu" :class="{'blank':!routeChildren?.length}">
       <li><a class="link_name" :href="'#'+route.path">{{ t("menu." + route.meta['title']) }}</a></li>
-      <template v-if="route.children?.length">
-        <li v-for="child in route.children" :key="child.path" v-if="!child?.meta['hiddenInMenu']">
-          <a :href="'#'+child.path">{{
-              child.meta['translatable'] ? t("menu." + child.meta['title']) : child.meta['title']
+      <template v-for="child2 in routeChildren" v-if="routeChildren?.length">
+        <li v-bind:key="child2.path" v-if="!child2?.meta['hiddenInMenu']">
+          <a :href="'#'+child2.path">{{
+              child2.meta['translatable'] ? t("menu." + child2.meta['title']) : child2.meta['title']
             }}</a>
         </li>
       </template>

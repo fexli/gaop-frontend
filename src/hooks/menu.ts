@@ -43,7 +43,6 @@ class Menu {
      * @param title 用于连接面包屑名称
      */
     getNestedMenuByRoute(m: RouteRecordRaw, routerMap: Map<string, MenuCurrent[]>, title: MenuCurrent[] = []) {
-        console.log("getNestedMenuByRoute", m, title);
         m.children?.forEach((c) => {
             let subtitle: MenuCurrent[]
             if (title.length) {
@@ -64,7 +63,6 @@ class Menu {
     getCurrentMenu(route: RouteLocationNormalizedLoaded) {
         const routerMap = new Map<string, MenuCurrent[]>();
         this.menus.value.forEach((m) => {
-            console.log("getCurrentMenu", m);
             this.getNestedMenuByRoute(m, routerMap);
         });
         console.log("routerMap", routerMap)

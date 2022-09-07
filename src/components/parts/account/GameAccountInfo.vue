@@ -35,7 +35,7 @@ const currentAp = computed(() => {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     :d="alertTypeCvt[item.type]"></path>
             </svg>
-            <span>{{ translate(item['msg'], ...item.args) }}</span>
+            <span>{{ translate(item['msg'], ...(item.args || [])) }}</span>
           </div>
         </div>
       </div>

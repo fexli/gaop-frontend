@@ -3,7 +3,7 @@ import {useTranslate} from "../../hooks/translate";
 
 defineProps({
   value: {
-    type: String,
+    type: [String, Number],
     default: '',
   },
   description: {
@@ -24,7 +24,8 @@ const {translate} = useTranslate()
       <h2 style="font-size: 2.3rem;font-weight: bold">{{ value }}</h2>
       <p class="-mt-2">{{ translateDescription ? translate(description) : description }}</p>
     </div>
-    <img class="absolute -bottom-5 right-0 w-36 opacity-5 pointer-events-none" :src="'/static/icon/'+icon+'.png'" :alt="icon"/>
+    <img class="absolute -bottom-5 right-0 w-36 opacity-5 pointer-events-none" :src="'/static/icon/'+icon+'.png'"
+         :alt="icon"/>
   </div>
 </template>
 
