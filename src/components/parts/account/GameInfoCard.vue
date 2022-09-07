@@ -15,7 +15,7 @@ const {accountInfo} = storeToRefs(account)
 const warnHidden: Ref = ref(false)
 </script>
 <template>
-  <div class="outpacker bg-base-100 rounded-xl select-none">
+  <div class="outpacker bg-base-100 rounded-xl select-none text-white">
     <div class="ucard-full-overlay"/>
     <div class="ucard-full-ren"/>
     <FeImg
@@ -57,7 +57,7 @@ const warnHidden: Ref = ref(false)
         style="top: 220px;width: 65px;height: 116px"
     />
     <div class="ucard-full-item" style="left: 28px;top:230px;font-size: 20px">作战进度</div>
-    <div class="ucard-full-item flex" style="left: 100px;top:257px;font-size: 55px;align-items: center">
+    <div class="ucard-full-item flex" style="left: 100px;top:257px;font-size: 55px;align-items: center;">
       <div class="ucard-text-shadow">
         {{ userCard.stageP.code }}/
       </div>
@@ -67,7 +67,7 @@ const warnHidden: Ref = ref(false)
     </div>
     <div class="ucard-full-item ucard-text-shadow" style="left: 25px;top: 340px;font-size: 18px">家具保有数</div>
     <div class="ucard-full-item ucard-text-shadow"
-         style="left: 25px;top: 362px;font-size: 18px;">
+         style="left: 25px;top: 362px;font-size: 18px;font-family: 'AEwide', cursive;">
       {{ userCard.furniCnt || 'N+' }}
     </div>
     <FeImg
@@ -197,8 +197,10 @@ const warnHidden: Ref = ref(false)
     width: 45px
 
   &__register-time
+    padding-right: 2px
     background-color: white
-    width: 90px
+    width: fit-content
+    white-space: nowrap
     font-weight: bold
 
 .ucard-full-ast
@@ -252,6 +254,7 @@ const warnHidden: Ref = ref(false)
   left: 29px
   color: white
   top: 410px
+  font-family: 'AEwide'
   height: 75px
   font-size: 60px
 
