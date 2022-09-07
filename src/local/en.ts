@@ -10,6 +10,10 @@ export const en = {
         error_reconn_t: 'the WS connection has been disconnect, reconnect after {0} second',
     },
     game: {
+        troop:{
+            filter_star: 'Rarity Filter',
+            filter_prof: 'Profession Filter',
+        },
         restart: {
             success: 'Account {0} restart successfully~',
         },

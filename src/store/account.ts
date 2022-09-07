@@ -76,7 +76,6 @@ export const accountStore = defineStore("account", {
             for (let j = 0; j < this.gameAccountLi.length; j++) {
                 let curAccount = this.gameAccountLi[j]
                 if (`${global_const.getPlatform(curAccount['platform'])}${curAccount['account']}` === info.name) {
-                    console.log("setFinalLogInfo", info)
                     // @ts-ignore
                     this.gameAccountLi[j]['finalLog'] = info
                     this.addLoggerInfo(info)
@@ -86,7 +85,6 @@ export const accountStore = defineStore("account", {
             }
         },
         addLoggerInfo(info: any) {
-            console.log('ADD_LOGGER_INFO', info)
             // @ts-ignore
             if (this.loggerStore[info.name] === undefined) {
                 // @ts-ignore

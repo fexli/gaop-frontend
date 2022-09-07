@@ -191,3 +191,7 @@ export const getGameUserInventory = (username: string, platform: number) => post
     username,
     platform
 });
+export const getGameUserTroop = (username: string, platform: number) => post('/game/troop', {
+    username,
+    platform
+});

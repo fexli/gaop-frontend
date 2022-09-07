@@ -535,7 +535,7 @@ function closeCreateAccount(withReset: boolean = true) {
           </label>
         </div>
         <div class="card-actions flex flex-row">
-          <select v-model="createUserPlatform" class="fe-select h-16">
+          <select v-model="createUserPlatform" class="fe-select h-11 w-1/2">
             <!--            <option disabled>{{ translate('account.platform') }}</option>-->
             <template v-for="i of global_const.platformSelector">
               <option :disabled="i.disabled" :value="i.value" :selected="i.value === createUserPlatform.value">{{

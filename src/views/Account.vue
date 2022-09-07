@@ -10,6 +10,7 @@ import GameAccountInfo from "../components/parts/account/GameAccountInfo.vue";
 import GameInventory from "../components/parts/account/GameInventory.vue";
 import {isLarge} from "../plugins/common";
 import GameItemInfoCard from "../components/parts/account/GameItemInfoCard.vue";
+import GameTroop from "../components/parts/account/GameTroop.vue";
 
 
 const account = accountStore();
@@ -261,6 +262,13 @@ onUnmounted(() => {
         <GameInventory
             v-if="inventoryLoaded"
             v-show="currentTab === '#inventory'"
+            :game-user-name="gameUserName"
+            :game-platform="gamePlatform"
+            :clicker="showItemInfo"
+        />
+        <GameTroop
+            v-if="troopLoaded"
+            v-show="currentTab === '#troop'"
             :game-user-name="gameUserName"
             :game-platform="gamePlatform"
             :clicker="showItemInfo"

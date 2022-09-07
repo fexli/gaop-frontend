@@ -10,6 +10,10 @@ export const zhHans = {
         error_reconn_t: 'WS连接已断开，{0}秒后尝试重连',
     },
     game: {
+        troop:{
+          filter_star: '筛选星级',
+          filter_prof: '筛选职业',
+        },
         restart: {
             success: '账号 {0} 重启完成~',
         },
