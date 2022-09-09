@@ -260,6 +260,6 @@ function mergeColorTo(o, n) {
       />
     </template>
   </span>
-  <span v-else :style="parseColorStyle(mergeColorTo(prevColor,color))">{{ log }}</span>
+  <span v-else class="font-sans" :style="parseColorStyle(mergeColorTo(prevColor,color))">{{ log }}</span>
 </template>
 

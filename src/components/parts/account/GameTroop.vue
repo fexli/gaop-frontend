@@ -218,7 +218,7 @@ onMounted(() => {
       </div>
       <div class="bg-base-100 px-2 py-1 rounded-xl">
         <p class="text-primary">{{ translate('game.troop.filter_prof') }}: {{ filterProfStr }}</p>
-        <select v-model="filterProf" class="fe-select h-6 w-full max-w-xs">
+        <select v-model="filterProf" class="mt-1 pl-2 fe-select h-6 w-full max-w-xs">
           <template v-for="i of profList" v-bind:key="i">
             <option :value="i" :selected="filterProf === i">{{ profNick[i] || i }}</option>
           </template>

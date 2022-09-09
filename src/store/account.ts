@@ -11,7 +11,7 @@ export const accountStore = defineStore("account", {
         accountsList: [] as string[],//[str.]
         accountInfo: {} as Record<string, any>, //[gameUD]
         accountDetails: [],
-        loggerStore: {},
+        loggerStore: {} as Record<string, any>,
         loggerStoreUpdate: false,
         gameAccountLi: [] as any[],//游戏账号管理
         inRunningAccount: 0,//游戏账号管理
