@@ -73,7 +73,7 @@ export const zhHans = {
             aa: 'TND'
         },
         anal: {
-            gamedata: '游戏数据分析',
+            gamedata: '游戏数据',
             wealth: '资产分析',
             building: '基建分析',
             gacha: '招募分析',
@@ -86,6 +86,14 @@ export const zhHans = {
                 get: '获取',
                 dump: '保存',
             },
+            action:{
+                ref_gd: '成功刷新游戏元数据',
+                getall_success: '成功获取全部游戏元数据',
+                getall_success_gsp: '成功获取全部GSP数据',
+                getall_err: '获取全部游戏元数据失败！',
+                getall_err_gsp: '获取游戏GSP数据失败！',
+                ref_gsp: '成功刷新GSP数据',
+            }
         },
         create: {
             user_not_exist: '你在做什么？',

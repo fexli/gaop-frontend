@@ -26,7 +26,7 @@ class WebSock {
     }
 
     reconnect() {
-        if (!this.isActive.value){
+        if (!this.isActive.value) {
             if (this.wsInstance)
                 this.wsInstance.close();
             this.initWebSocket()
@@ -89,6 +89,8 @@ class WebSock {
                         geetest.startCaptcha()
                     }
                 }
+            } else {
+                that._showMessage(redata.msg, 4000, "danger");
             }
         }
     }
@@ -137,10 +139,10 @@ class WebSock {
         this.wsInstance.send(data);
     }
 
-    public onWsOpen(){
+    public onWsOpen() {
         const auth = authStore();
         const that = this;
-        return ()=> {
+        return () => {
             console.log("wsAcToken", auth.getAccessToken)
             if (!auth.getAccessToken) {
                 return;

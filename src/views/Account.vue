@@ -11,6 +11,7 @@ import GameInventory from "../components/parts/account/GameInventory.vue";
 import {isLarge} from "../plugins/common";
 import GameItemInfoCard from "../components/parts/account/GameItemInfoCard.vue";
 import GameTroop from "../components/parts/account/GameTroop.vue";
+import GameAnalytics from "../components/parts/account/GameAnalytics.vue";
 
 
 const account = accountStore();
@@ -234,7 +235,7 @@ onUnmounted(() => {
 <template>
   <div v-if="gameStart">
     <div class="flex h-full">
-      <div class="tabs-horizontal tabs tabs-boxeds lg:tab-account">
+      <div class="tabs-horizontal tabs lg:tab-account">
         <div
             :style="`transform: translate${isLarge ? 'Y':'X'}(${currentTabIndex}rem)`"
             class="tab-select-back absolute bg-primary w-32 h-8 mx-1 rounded-xl transition-all duration-200"
@@ -251,7 +252,7 @@ onUnmounted(() => {
           </div>
         </template>
       </div>
-      <div class="bg-base-200 rounded-xl w-full p-1 ml-1 lg:tab-content">
+      <div class="w-full lg:tab-content">
         <GameAccountInfo
             v-if="infoLoaded"
             v-show="currentTab === '#info'"
@@ -272,6 +273,12 @@ onUnmounted(() => {
             :game-user-name="gameUserName"
             :game-platform="gamePlatform"
             :clicker="showItemInfo"
+        />
+        <GameAnalytics
+            v-if="analyticsLoaded"
+            v-show="currentTab === '#analytics'"
+            :game-user-name="gameUserName"
+            :game-platform="gamePlatform"
         />
       </div>
     </div>

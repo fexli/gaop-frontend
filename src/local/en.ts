@@ -10,7 +10,7 @@ export const en = {
         error_reconn_t: 'the WS connection has been disconnect, reconnect after {0} second',
     },
     game: {
-        troop:{
+        troop: {
             filter_star: 'Rarity Filter',
             filter_prof: 'Profession Filter',
         },
@@ -79,7 +79,7 @@ export const en = {
             aa: 'TND'
         },
         anal: {
-            gamedata: 'GameData',
+            gamedata: 'GameDB',
             wealth: 'Wealth',
             building: 'Building',
             gacha: 'Gacha',
@@ -92,6 +92,14 @@ export const en = {
                 get: 'Get',
                 dump: 'Dump',
             },
+            action: {
+                ref_gd: 'Refresh successfully',
+                getall_success: 'GameData get successfully',
+                getall_success_gsp: 'GSP Data refresh successfully',
+                getall_err: 'GameData get failed',
+                getall_err_gsp: 'GSP Data get failed',
+                ref_gsp: 'Refresh successfully',
+            }
         },
         create: {
             user_not_exist: 'what are you doing?',
@@ -297,9 +305,9 @@ export const en = {
         settings: 'Settings',
         account_mng: 'Manage Accounts',
     },
-    captcha:{
+    captcha: {
         title: 'Need Captcha',
-        desc:"Current account requires captcha login, please wait for the following captcha operation to complete",
+        desc: "Current account requires captcha login, please wait for the following captcha operation to complete",
         status: "Status：{0}",
     },
     logout: 'Logout Successfully',
