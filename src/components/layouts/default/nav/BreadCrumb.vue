@@ -35,11 +35,3 @@ watchEffect(() => {
     }}
   </div>
 </template>
-
-<style lang="scss" scoped>
-@media screen and(max-width: 768px) {
-  .breadcrumb {
-    display: none;
-  }
-}
-</style>

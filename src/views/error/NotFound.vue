@@ -40,7 +40,7 @@ const props = defineProps({
 
 
 function back2() {
-  if (props.back){
+  if (props.back) {
     props.back()
   } else {
     router.push("/");
@@ -990,11 +990,3 @@ function back2() {
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped>
-@media screen and(max-width: 768px) {
-  svg {
-    width: 90%;
-  }
-}
-</style>
