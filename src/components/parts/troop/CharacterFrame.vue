@@ -100,7 +100,7 @@ defineProps({
         alt="pot"
         class="char-image char-image__potential"/>
     <img
-        :src="'http://mc.mesord.com:8999/skills/skill_icon_'+skillId+'.png'"
+        :src="global_const.assetServer+'skills/skill_icon_'+skillId+'.png'"
         alt="skico"
         class="char-image char-image__skill"/>
     <div class="char-image char-image__name">{{ global_const.gameData.characterData[charId].name }}</div>

@@ -195,3 +195,11 @@ export const getGameUserTroop = (username: string, platform: number) => post('/g
     username,
     platform
 });
+export const getGameUserCustomAll = (username: string, platform: number) => post('/game/custom/all', {
+    username,
+    platform
+});
+export const getGameInfoGSP = (username: string, platform: number) => post('/game/info/gs_poster', {
+    username,
+    platform
+});

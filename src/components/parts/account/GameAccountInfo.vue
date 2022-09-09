@@ -25,7 +25,7 @@ const currentAp = computed(() => {
 })
 </script>
 <template>
-  <div>
+  <div class="p-1 bg-base-200 rounded-xl">
     <div class="flex flex-col">
       <div class="px-1" v-for="(item,index) in alerts[0]" v-bind:key="10+index">
         <div class="alert shadow-lg text-white p-1 px-3 mt-1 rounded-xl" :style="`background-color:${item.color}`">

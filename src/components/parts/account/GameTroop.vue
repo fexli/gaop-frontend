@@ -188,11 +188,11 @@ onMounted(() => {
 })
 </script>
 <template>
-  <div class="text-center flex justify-center" v-if="isLoading">
+  <div class="text-center flex justify-center bg-base-200 rounded-xl" v-if="isLoading">
     <p>LOADING...</p>
   </div>
-  <div v-else>
-    <div v-if="hasError" class="m-1">
+  <div v-else class="bg-base-200 rounded-xl">
+    <div v-if="hasError" class="p-2">
       <div class="alert alert-warning shadow-lg text-white p-1 px-3 rounded-xl">
         <div>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -206,7 +206,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    <div class="m-1 flex justify-center">
+    <div class="flex justify-center">
       <div class="bg-base-100 px-2 py-1 rounded-xl">
         <p class="text-primary">{{ translate('game.troop.filter_star') }}: {{ filterStarStr }}</p>
         <div class="rating">

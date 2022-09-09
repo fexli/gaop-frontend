@@ -99,20 +99,22 @@ onMounted(() => {
 })
 </script>
 <template>
-  <div class="text-center flex justify-center" v-if="isLoading">
+  <div class="text-center flex justify-center bg-base-200 rounded-xl" v-if="isLoading">
     <p>LOADING...</p>
   </div>
-  <div v-else>
-    <div v-if="hasError" class="alert alert-warning shadow-lg text-white p-1 px-3 my-1 rounded-xl">
-      <div>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-             class="stroke-current flex-shrink-0 w-6 h-6">
-          <path
-              stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-          ></path>
-        </svg>
-        <span>{{ translate("error.data_not_up_to_date", errItem.join(", ")) }}</span>
+  <div v-else class="bg-base-200 rounded-xl">
+    <div v-if="hasError" class="p-2">
+      <div class="alert alert-warning shadow-lg text-white p-1 px-3 rounded-xl">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+               class="stroke-current flex-shrink-0 w-6 h-6">
+            <path
+                stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            ></path>
+          </svg>
+          <span>{{ translate("error.data_not_up_to_date", errItem.join(", ")) }}</span>
+        </div>
       </div>
     </div>
 
