@@ -153,6 +153,7 @@ export const en = {
             game_failed: 'The current login has expired (remote login), please close and reopen it!',
             campaign: 'You still haven\'t obtained {0} Diam. in the operation this week. Don\'t miss it',
             info_share: 'You have met the conditions for starting communication.',
+            consumable: 'Some of your consumables are about to expire: {0}, please pay attention to using!',
             recruit_finish: 'You have {0} recruitment completed. Remember to hire in time~',
             mission_d: 'You haven\'t finished all your tasks today. You can\'t rest yet~',
             mission_w: 'Your tasks have not been completed this week. Please check and complete them in time',

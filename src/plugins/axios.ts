@@ -195,6 +195,23 @@ export const getGameUserTroop = (username: string, platform: number) => post('/g
     username,
     platform
 });
+export const getGameUserBuilding = (username: string, platform: number) => post('/game/custom/building', {
+    username,
+    platform
+});
+export const getGameSettings = (username: string, platform: number) => post('/game/getSettings', {
+    username,
+    platform
+});
+export const setGameSettings = (username: string, platform: number, data: any) => post('/game/setSettings', {
+    username,
+    platform,
+    setting: data
+});
+export const resetGameSettings = (username: string, platform: number) => post('/game/resetSettings', {
+    username,
+    platform
+});
 export const getGameUserCustomAll = (username: string, platform: number) => post('/game/custom/all', {
     username,
     platform
