@@ -484,7 +484,7 @@ function closeCreateAccount(withReset: boolean = true) {
   </div>
   <div class="overlay bg-base-200 bg-opacity-50" v-show="createAccountOverlay">
     <div class="card w-96 max-w-md glass">
-      <figure class="select-none"><img src="static/im/create_user.jpg" alt="welcome"></figure>
+      <figure class="select-none"><img :src="`static/im/create_user.jpg`" alt="welcome"></figure>
       <div class="absolute right-0 top-0 p-2" @click="closeCreateAccount">
         <svg class="w-8 h-8" viewBox="0 0 24 24">
           <path fill="currentColor"
