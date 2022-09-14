@@ -33,26 +33,26 @@ const infoTabHeaders = [
     icon: "gold",
     ref: "#wealth",
   },
-  {
-    title: "game.anal.gacha",
-    icon: "account-multiple",
-    ref: "#gacha",
-  },
-  {
-    title: "game.anal.building",
-    icon: "domain",
-    ref: "#building",
-  },
-  {
-    title: "game.anal.troop",
-    icon: "human-queue",
-    ref: "#troop",
-  },
-  {
-    title: "game.anal.dungeon",
-    icon: "map-legend",
-    ref: "#dungeon",
-  },
+  // {
+  //   title: "game.anal.gacha",
+  //   icon: "account-multiple",
+  //   ref: "#gacha",
+  // },
+  // {
+  //   title: "game.anal.building",
+  //   icon: "domain",
+  //   ref: "#building",
+  // },
+  // {
+  //   title: "game.anal.troop",
+  //   icon: "human-queue",
+  //   ref: "#troop",
+  // },
+  // {
+  //   title: "game.anal.dungeon",
+  //   icon: "map-legend",
+  //   ref: "#dungeon",
+  // },
   // {
   //   title: "game.anal.about",
   //   icon: "information",

@@ -22,6 +22,22 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  placeholder: {
+    type: String,
+    default: "",
+  },
+  padding: {
+    type: String,
+    default: 'p-1 py-2'
+  },
+  textClass: {
+    type: String,
+    default: ''
+  },
+  width: {
+    type: String,
+    default: 'w-fit'
+  },
 })
 
 const isDisabled = computed(() => {
@@ -71,21 +87,21 @@ function onAsScroll(e: WheelEvent) {
 }
 </script>
 <template>
-  <div class="form-control w-fit">
-    <label class="label">
-      <div class="flex gap-2 items-center cursor-pointer">
-        <input
-            :onmousewheel="onAsScroll"
-            v-model="settings[field]"
-            type="text" class="input input-bordered input-primary input-xs"
-        />
-        <span
-            :class="{'text-base-content text-opacity-20':isDisabled}"
-            class="label-text text-lg">{{ title }}
+  <div class="form-control" :class="padding">
+    <div class="flex gap-2 items-center">
+      <input
+          :placeholder="placeholder"
+          :onmousewheel="onAsScroll"
+          v-model="settings[field]"
+          type="text" class="input input-bordered input-primary input-xs px-1"
+          :class="width"
+      />
+      <span
+          :class="(isDisabled ? 'text-base-content text-opacity-20 ': ' ') + textClass"
+          class="label-text text-lg">{{ title }}
         </span>
-        <slot name="extra"/>
-      </div>
-    </label>
+      <slot name="extra"/>
+    </div>
   </div>
 </template>
 

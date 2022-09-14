@@ -114,12 +114,12 @@ const tryFilterJson = computed(() => {
           </div>
         </fieldset>
         <div class="spacer"></div>
-        <button @click="refreshJsonView(true)" class="fe-btn h-8 min-h-6">{{
+        <button @click="refreshJsonView(true)" class="fe-btn fe-btn_dft">{{
             translate("game.anal.btn.refresh")
           }}
         </button>
-        <button @click="getAllGameDataJson" class="fe-btn h-8 min-h-6">{{ translate("game.anal.btn.get_all") }}</button>
-        <button @click="saveGameDataJson" class="fe-btn h-8 min-h-6">{{ translate("game.anal.btn.dump") }}</button>
+        <button @click="getAllGameDataJson" class="fe-btn fe-btn_dft">{{ translate("game.anal.btn.get_all") }}</button>
+        <button @click="saveGameDataJson" class="fe-btn fe-btn_dft">{{ translate("game.anal.btn.dump") }}</button>
       </div>
       <JsonView style="margin-top: 10px" v-if="onGameDataShow"
                 :json="tryFilterJson"/>
@@ -128,8 +128,8 @@ const tryFilterJson = computed(() => {
       <div class="flex gap-1 justify-center items-center">
         <h1 class="card-title">Game Server Poster/用户-服务器传递数据</h1>
         <div class="spacer"></div>
-        <button @click="getAllGameServerPosterJson" class="fe-btn h-8 min-h-6">{{ translate("game.anal.btn.get") }}</button>
-        <button @click="saveGameServerPosterJson" class="fe-btn h-8 min-h-6">{{ translate("game.anal.btn.dump") }}</button>
+        <button @click="getAllGameServerPosterJson" class="fe-btn fe-btn_dft">{{ translate("game.anal.btn.get") }}</button>
+        <button @click="saveGameServerPosterJson" class="fe-btn fe-btn_dft">{{ translate("game.anal.btn.dump") }}</button>
       </div>
       <JsonView style="margin-top: 10px" :json="gsPosterData"/>
     </div>

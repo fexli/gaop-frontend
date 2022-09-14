@@ -28,6 +28,10 @@ const props = defineProps({
   disabled: {
     type: Boolean,
     default: undefined,
+  },
+  textLeft: {
+    type: Boolean,
+    default: false,
   }
 })
 
@@ -40,20 +44,24 @@ const isDisabled = computed(() => {
 
 </script>
 <template>
-  <div class="form-control w-fit my-2 ml-1">
-    <div class="flex gap-2 items-center cursor-pointer">
+  <div class="form-control w-fit p-1 py-2">
+    <div class="flex gap-2 items-center cursor-pointer" :class="textLeft ? 'flex-row-reverse' : ''">
       <select v-model="settings[field]" class="select select-primary select-xs w-fit max-w-xs">
         <template v-for="i of list">
-          <option :value="i[itemValue]">{{ i[itemText] }}</option>
+          <option selected :value="i[itemValue]">
+            {{ i[itemText] }}
+          </option>
         </template>
       </select>
-      <span
-          :class="{'text-base-content text-opacity-20':isDisabled}"
-          class="text-lg"
-      >
-        {{ title }}
+      <div class="flex justify-center items-center gap-1">
+        <span
+            :class="{'text-base-content text-opacity-20':isDisabled}"
+            class="text-lg"
+        >
+          {{ title }}
         </span>
-      <slot name="extra"/>
+        <slot name="extra"/>
+      </div>
     </div>
   </div>
 </template>

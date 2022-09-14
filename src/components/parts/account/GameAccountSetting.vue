@@ -5,12 +5,15 @@ import {storeToRefs} from "pinia";
 import {Ref} from "vue";
 import {useToast} from "../../../hooks/toast";
 import global_const from "../../../utils/global_const";
-import Toggle from "../settings/Toggle.vue";
+import Toggle from "../settings/SettingToggle.vue";
 import Explain from "../../element/Explain.vue";
-import Slider from "../settings/Slider.vue";
-import TextInput from "../settings/TextInput.vue";
+import Slider from "../settings/SettingSlider.vue";
+import TextInput from "../settings/SettingTextInput.vue";
 import {useTranslate} from "../../../hooks/translate";
-import Select from "../settings/Select.vue";
+import Select from "../settings/SettingSelect.vue";
+import SettingBtn from "../settings/SettingBtn.vue";
+import AutoBattleMapEdit from "../settings/AutoBattleMapEdit.vue";
+import {parseSingleBattleParamToStr} from "../../../utils/autoBattleMapProc";
 
 const account = accountStore();
 const {gameAccountLi} = storeToRefs(account)
@@ -27,12 +30,12 @@ const accEnable: Ref = ref(false) // 基建控制中心等级大于3级 允许�
 const maxLaborValue: Ref = ref(200) // 最大基建无人机默认值
 const maxApValue: Ref = ref(140) // 最大理智默认值
 const buildingAccelerateData: Ref = ref([]) // 基建加速slot
-const bTypeDesc: Ref = ref([]); // 战斗类型描述
 const stageItems: Ref = ref([]); // 全部关卡列表
 const valuedSettings: Ref = ref({}) // 服务器返回数据+前端修改，与backed用于判断是否有修改
 const backedSettings: Ref = ref({}) // 服务器返回的设置数据的备份
 
 const resetOverlay: Ref = ref(false) // 重置确认弹窗
+const autoBattleOverlay: Ref = ref(false) // 自动战斗地图设置弹窗
 
 const defaultSettings: Ref = ref({
   "accelerateSlot": null,
@@ -71,13 +74,7 @@ const defaultSettings: Ref = ref({
   "useSweep": null
 })
 
-const bTypes = {
-  AUTO: '随机选择[任意地图]',
-  RANDOM: '随机选择[指定地图中]',
-  FIRST: '顺序选择[指定地图中首个可进攻关卡]',
-  MANAGED: '指定干员练度优先',
-  MAPARG: '指定地图顺序进攻',
-} as Record<string, any>
+
 const bTypeIdents = { // [0, 1, 2, 3]=>[开放，开启关卡选择器，开启MAPT，开启MNG-CHR]
   AUTO: [true, false, false, false],
   RANDOM: [true, true, false, false],
@@ -85,22 +82,7 @@ const bTypeIdents = { // [0, 1, 2, 3]=>[开放，开启关卡选择器，开启M
   MANAGED: [true, false, true, false],
   MAPARG: [true, false, false, true],
 }
-const stageTypes = {
-  MAIN: '主线',
-  SUB: '主线S',
-  SPECIAL_STORY: '故事',
-  ACTIVITY: '活动',
-  GUIDE: '教程',
-  DAILY: '资源',
-  CAMPAIGN: '剿灭',
-} as Record<string, any>
-const diffGrpInfo = {
-  EASY: "(剧情)",
-  NORMAL: "(标准)",
-  TOUGH: "(磨难)",
-  ALL: "(剧情关)",
-  NONE: "",
-} as Record<string, any>
+
 const isOffline = computed(() => {
   for (let i = 0; i < gameAccountLi.value.length; i++) {
     if (gameAccountLi.value[i].account === props.gameUserName && gameAccountLi.value[i].platform === props.gamePlatform) {
@@ -109,6 +91,18 @@ const isOffline = computed(() => {
   }
   return true
 })
+
+const parseBattleMap = computed(() => {
+  return valuedSettings.value['autoBattleMap']
+})
+
+function showAutoBattle() {
+  autoBattleOverlay.value = true
+}
+
+function closeAutoBattleOverlay() {
+  autoBattleOverlay.value = false
+}
 
 function getSetting() {
   getGameSettings(props.gameUserName as string, props.gamePlatform as number).then((res: any) => {
@@ -267,34 +261,6 @@ function showResetOverlay() {
 
 onMounted(() => {
   getSetting()
-  for (let key in bTypes) {
-    bTypeDesc.value.push({
-      type: key,
-      value: bTypes[key]
-    })
-  }
-  let stageInfo = global_const.gameData.stageTable['stages']
-  if (stageInfo == null) {
-    return
-  }
-  for (let stageId in stageInfo) {
-    if (!stageInfo.hasOwnProperty(stageId)) {
-      continue
-    }
-    let isHard = false
-    if (stageId.indexOf('#f#') !== -1) {
-      isHard = true
-    }
-    stageItems.value.push({
-      id: stageId,
-      code: (isHard ? '突袭' : '') + stageInfo[stageId].code,
-      stageType: (stageTypes[stageInfo[stageId].stageType] || stageInfo[stageId].stageType) + (stageInfo[stageId].stageType === 'MAIN' ? diffGrpInfo[stageInfo[stageId]['diffGroup']] || "" : ""),
-      apCost: stageInfo[stageId].apCost || 0,
-      name: stageInfo[stageId].name || '*未知关卡代号*',
-      isHard: isHard,
-      canAdd: !isHard && !(stageInfo[stageId].stageType === 'GUIDE') && !(stageInfo[stageId].stageType === 'CAMPAIGN') && (stageInfo[stageId].apCost || 0) > 0
-    })
-  }
 })
 onUnmounted(() => {
   console.log('GameAccountSetting Unmounted')
@@ -434,7 +400,10 @@ onUnmounted(() => {
               </Explain>
             </template>
           </Slider>
-          <Toggle :settings="valuedSettings" field="useApSupply" title="使用理智药恢复理智">
+          <Toggle
+              :disabled="valuedSettings['useApSupply'] == null || !valuedSettings['enableAutoBattle']"
+              :settings="valuedSettings" field="useApSupply" title="使用理智药恢复理智"
+          >
             <template #extra>
               <Explain>
                 <template #explain>
@@ -444,7 +413,7 @@ onUnmounted(() => {
             </template>
           </Toggle>
           <Slider
-              :disabled="valuedSettings['useApSupplyBefore'] == null || !valuedSettings['useApSupply']"
+              :disabled="valuedSettings['useApSupplyBefore'] == null || !valuedSettings['useApSupply'] || !valuedSettings['enableAutoBattle']"
               :settings="valuedSettings" field="useApSupplyBefore" title="使用几日内到期的理智药"
               :max="30"
           >
@@ -462,12 +431,25 @@ onUnmounted(() => {
               <Explain on-top>
                 <template #explain>
                   碎石兑换理智数量，在理智不足时自动使用源石兑换理智
-                  <span class="text-warning">只会在没有理智时申请碎石，每次只会碎1块，该设置会动态减少，请在保存设置前注意源石使用量！</span>
+                  <span
+                      class="text-warning">只会在没有理智时申请碎石，每次只会碎1块，该设置会动态减少，请在保存设置前注意源石使用量！</span>
                 </template>
               </Explain>
             </template>
           </TextInput>
-          <h1>~~~~~~~~~这里是关卡设置~~~~~~</h1>
+          <SettingBtn
+              :settings="valuedSettings" field="autoBattleMap"
+              :disabled="!valuedSettings['enableAutoBattle'] || valuedSettings['autoBattleMap'] == null"
+              title="进攻关卡设置" :title-btn="parseSingleBattleParamToStr(parseBattleMap)" :clicker="showAutoBattle"
+          >
+            <template #extra>
+              <Explain>
+                <template #explain>
+                  进攻关卡设置
+                </template>
+              </Explain>
+            </template>
+          </SettingBtn>
           <div class="divider m-0">
             <h1 class="text-2xl ml-1">基建设置</h1>
           </div>
@@ -542,7 +524,8 @@ onUnmounted(() => {
                 <template #explain>
                   收取自己已经收集到，但是没有好友赠送的好友线索
                   <span class="text-info">此选项目的在于优先使用好友带有时间限制的线索而非自己收集的线索</span>
-                  <span class="text-primary">例：自己收集到了N个`线索7`，但是没有收集到好友赠送的`线索7`，此时如果有好友送`线索7`则会收取</span>
+                  <span
+                      class="text-primary">例：自己收集到了N个`线索7`，但是没有收集到好友赠送的`线索7`，此时如果有好友送`线索7`则会收取</span>
                 </template>
               </Explain>
             </template>
@@ -600,6 +583,7 @@ onUnmounted(() => {
               </Explain>
             </template>
           </Toggle>
+          <h1 class="text-info">~~~~~~~~~这里是赠送名单设置~~~~~~</h1>
           <div class="divider m-0">
             <h1 class="text-2xl ml-1">公招设置</h1>
           </div>
@@ -701,6 +685,9 @@ onUnmounted(() => {
           </div>
         </div>
       </div>
+    </div>
+    <div class="overlay bg-base-200 bg-opacity-40" v-if="autoBattleOverlay">
+      <AutoBattleMapEdit :close="closeAutoBattleOverlay" :settings="valuedSettings" field="autoBattleMap"/>
     </div>
   </div>
 </template>

@@ -24,7 +24,11 @@ const props = defineProps({
   disabled: {
     type: Boolean,
     default: undefined,
-  }
+  },
+  padding: {
+    type: String,
+    default: 'p-1 py-2'
+  },
 })
 
 const isDisabled = computed(() => {
@@ -35,14 +39,14 @@ const isDisabled = computed(() => {
 })
 </script>
 <template>
-  <div class="form-control w-fit">
-    <label class="label">
+  <div class="form-control w-fit" :class="padding">
+    <label class="label p-0">
       <div class="flex gap-2 items-center cursor-pointer">
         <input :disabled="isDisabled" v-model="settings[field]" type="checkbox"
                class="toggle toggle-primary"/>
         <span
             :class="{'text-base-content text-opacity-20':isDisabled}"
-            class="label-text text-lg">{{ title }}:{{ settings[field] ? enableText : disableText }}
+            class="label-text text-lg">{{ title }}{{ title ? ':' : '' }}{{ settings[field] ? enableText : disableText }}
         </span>
         <slot name="extra"/>
       </div>

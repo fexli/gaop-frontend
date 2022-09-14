@@ -14,8 +14,8 @@ const genRandAsr = (k: number): string => {
   return result
 }
 const getRandDelay = (): string => {
-  return ''
-  // return 'animation-delay: ' + ((Math.random() * 10) - 5).toFixed(1) + 's'
+  // return ''
+  return 'animation-delay: ' + ((Math.random() * 10) - 5).toFixed(1) + 's'
 }
 </script>
 <template>

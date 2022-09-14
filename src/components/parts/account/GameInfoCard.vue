@@ -120,7 +120,7 @@ const warnHidden: Ref = ref(false)
       <div class="ucard-full-warn-content">您的游戏账号以便在您停止托管后快速重新开启托管</div>
       <div class="ucard-full-warn-content">在您删除账号后网站将<span style="color: red">完全移除</span>您的账号数据
       </div>
-      <div class="ucard-full-warn-content" style="color: darkred">请勿肆处宣扬本网站,请勿泄露您的任何游戏账号</div>
+      <div class="ucard-full-warn-content text-warning">请勿肆处宣扬本网站,请勿泄露您的任何游戏账号</div>
       <div class="ucard-full-warn-content"><span style="color: cyan">感谢您相信并使用GAOP工程</span>
       </div>
     </div>

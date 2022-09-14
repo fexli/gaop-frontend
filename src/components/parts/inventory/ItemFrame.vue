@@ -15,7 +15,15 @@ const props = defineProps({
     default: -1
   },
   consume: Boolean,
-  clicker: Function
+  clicker: Function,
+  fontSize: {
+    type: [Number, String],
+    default: "0.875rem"
+  },
+  fontOverlay: {
+    type: Boolean,
+    default: false
+  },
 })
 
 function handleClicker() {
@@ -30,18 +38,23 @@ function handleClicker() {
     })
   }
 }
+const isValid = computed(()=>{
+  return global_const.gameData.itemData[props.itemId || ""] != null
+})
 </script>
 <template>
-  <div class="card bg-base-200 rounded-xl" v-if="count !== 0 && global_const.gameData.itemData[itemId].sortId >= -10">
+  <div class="card rounded-xl" v-if="isValid && count !== 0 && global_const.gameData.itemData[itemId].sortId >= -10">
     <FeImg
         :src="global_const.assetServer+'items/'+global_const.gameData.itemData[itemId]['iconId']+'.png'"
         class="item-image"
     />
     <p class="item-content" v-if="content != null">{{ content }}</p>
-    <p class="item-count">{{ count }}</p>
+    <p class="item-count" v-if="count > 0">{{ count }}</p>
     <p class="item-time" v-if="ts !== -1">{{ formatter.formatConsumeTime(ts) }}</p>
     <div
-        class="select-none px-3 w-full h-full z-10 transition-opacity opacity-0 hover:opacity-100 flex absolute left-0 top-0 bg-base-200 bg-opacity-40 justify-center items-center text-center"
+        :style="`font-size: ${fontSize};`"
+        :class="fontOverlay ? 'bg-base-200 bg-opacity-40' : ''"
+        class="select-none px-3 w-full h-full z-10 transition-opacity opacity-0 hover:opacity-100 flex absolute left-0 top-0 justify-center items-center text-center"
         @click="handleClicker"
     >
       {{ global_const.gameData.itemData[itemId].name }}
@@ -52,8 +65,8 @@ function handleClicker() {
 <style lang="sass">
 .item-image
   position: relative
-  width: 120px
-  height: 120px
+  width: 100%
+  height: 100%
 
 //.item-clicker
 //  position: absolute

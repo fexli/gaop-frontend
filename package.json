@@ -26,7 +26,8 @@
     "vue": "^3.2.25",
     "vue-next-i18n": "^1.0.11",
     "vue-router": "^4.0.16",
-    "vue3-click-away": "^1.2.4"
+    "vue3-click-away": "^1.2.4",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.5",
