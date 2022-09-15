@@ -60,7 +60,7 @@
         <template #item="{ element }">
           <StageInfo
               :index="checkRightIndex(element)" :removable="removeFromRight" :info="element"
-              :settings="list2" :apply-change="uploadChange"
+              :settings="list2" :apply-change="uploadChange" :has-times="hasTimes"
           />
         </template>
       </draggable>
@@ -224,6 +224,7 @@ function checkStage(stageInfo, stageId) {
     name: stageInfo[stageId].name || '*未知关卡代号*',
     isHard: isHard,
     canAdd: !isHard && !(stageInfo[stageId].stageType === 'GUIDE') && !(stageInfo[stageId].stageType === 'CAMPAIGN') && ((stageInfo[stageId].apCost || 0) > 0),
+    times: 1
   }
 }
 
@@ -280,22 +281,9 @@ function uploadChange() {
 
 onMounted(() => {
   initStage() // 初始化关卡列表
-  if (props.hasTimes) {
-    initSelected(props.settings[props.fieldMapT]) // 初始化已选关卡
-  } else {
-    initSelected(props.settings[props.fieldMap])
-  }
-  watch(() => props.settings[props.fieldMap], (v) => {
-    initSelected(v)
-  })
-  watch(() => props.settings[props.fieldMapT], (v) => {
-    initSelected(v)
-  })
+  initSelected(props.settings[props.hasTimes ? props.fieldMapT : props.fieldMap]) // 初始化已选关卡
   watch(() => props.hasTimes, (v) => {
-    initSelected(props.settings[v ? props.fieldMapT : props.fieldMap])
-  })
-  watch(() => props.needApply, (v) => {
-    uploadChange()
+    initSelected(v ? props.settings[props.fieldMapT] : props.settings[props.fieldMap])
   })
 })
 </script>

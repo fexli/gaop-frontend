@@ -34,8 +34,15 @@ const props = defineProps({
     default: () => {
     },
   },
+  hasTimes: {
+    type: Boolean,
+    default: false,
+  },
 })
 
+watch(() => props.info.times, (value) => {
+  props.applyChange()
+})
 </script>
 <template>
   <div
@@ -43,11 +50,11 @@ const props = defineProps({
     <div class="font-bold text-xl absolute top-1" v-if="index > -1">[{{ index + 1 }}]</div>
     <div
         class="text-info text-3xl font-bold -rotate-12 si-text"
-        :class="(info['times'] != null || index > -1)? 'pt-4' : ''"
+        :class="(hasTimes || index > -1)? 'pt-4' : ''"
     >{{ info['code'] }}
     </div>
     <SettingTextInput
-        v-if="info['times'] != null"
+        v-if="hasTimes"
         :settings="info" field="times" title="次" number-only padding="p-0"
         class="font-bold text-xl absolute top-1" width="w-10" text-class="-ml-1"
     ></SettingTextInput>
