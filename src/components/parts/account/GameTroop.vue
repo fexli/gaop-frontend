@@ -30,20 +30,10 @@ const filterStarStr = computed(() => {
 const rarityList: Ref = ref([])
 const profList: Ref = ref([])
 
-const profNick = {
-  CASTER: "术士",
-  PIONEER: "先锋",
-  TANK: "重装",
-  SNIPER: "狙击",
-  SUPPORT: "辅助",
-  MEDIC: "医疗",
-  SPECIAL: "特种",
-  WARRIOR: "近卫",
-  "": "未筛选",
-} as Record<string, string>
+
 const filterProf: Ref = ref("");
 const filterProfStr = computed(() => {
-  return profNick[filterProf.value] || filterProf.value || "无"
+  return global_const.profNick[filterProf.value] || filterProf.value || "无"
 })
 
 const props = defineProps({
@@ -220,7 +210,7 @@ onMounted(() => {
         <p class="text-primary">{{ translate('game.troop.filter_prof') }}: {{ filterProfStr }}</p>
         <select v-model="filterProf" class="mt-1 pl-2 fe-select h-6 w-full max-w-xs">
           <template v-for="i of profList" v-bind:key="i">
-            <option :value="i" :selected="filterProf === i">{{ profNick[i] || i }}</option>
+            <option :value="i" :selected="filterProf === i">{{ global_const.profNick[i] || i }}</option>
           </template>
         </select>
       </div>

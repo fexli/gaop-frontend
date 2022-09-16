@@ -213,6 +213,18 @@ const mdiPath: Record<string, string> = {
 }
 const gameData: Record<string, any> = {}
 
+const profNick = {
+    CASTER: "术士",
+    PIONEER: "先锋",
+    TANK: "重装",
+    SNIPER: "狙击",
+    SUPPORT: "辅助",
+    MEDIC: "医疗",
+    SPECIAL: "特种",
+    WARRIOR: "近卫",
+    "": "未筛选",
+} as Record<string, string>
+
 export const getPlatformAka = function (platform: number) {
     return ['I', 'G', 'B'][platform]
 }
@@ -243,4 +255,5 @@ export default {
     gameData,
     mdiPath,
     assetServer,
+    profNick
 }

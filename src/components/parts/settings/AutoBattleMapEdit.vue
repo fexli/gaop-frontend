@@ -6,6 +6,7 @@ import Explain from "../../element/Explain.vue";
 import StageSelector from "../battleMapEdit/StageSelector.vue";
 import {BattleParam, bTypeDesc, parseSingleBattleParam} from "../../../utils/autoBattleMapProc";
 import {useToast} from "../../../hooks/toast";
+import CharUpgSelector from "../battleMapEdit/CharUpgSelector.vue";
 
 const {showMessage} = useToast()
 
@@ -46,9 +47,11 @@ watch(() => settingParsed.value, (val) => {
 function resetBattleSetting() {
   selectAttackSettings.value = parseSingleBattleParam(props.settings[props.field])
 }
+
 const data = ref({
   needApply: false,
 })
+
 function applyBattleSetting() {
   console.log(selectAttackSettings)
   // NOTE: 在apply前通知各模块进行数据汇报
@@ -107,6 +110,11 @@ onMounted(() => {
               :settings="selectAttackSettings" field-map="Map" field-map-t="MapT"
           />
         </div>
+        <div v-else-if="selectAttackSettings['Type'] === 'MANAGED'" class="ab-inner">
+          <CharUpgSelector
+              :settings="selectAttackSettings" field="Managed"
+          />
+        </div>
       </div>
     </div>
     <div class="basis-1/4 border-base-content border rounded-r-lg px-1 flex flex-col">
@@ -120,9 +128,9 @@ onMounted(() => {
         </button>
       </div>
       <div class="w-full h-[26rem] border border-base-content rounded-md relative">
-        <div class="absolute p-1">{{ selectAttackSettings }}</div>
-        <div class="absolute p-1 bottom-0 break-all">{{ settings[field] }}</div>
-        <div class="bg-base-200 bg-opacity-40 relative w-full h-full flex items-center justify-center text-primary">
+        <div class="absolute p-1 text-xs">{{ selectAttackSettings }}</div>
+        <div class="absolute p-1 bottom-0 break-all text-xs">{{ settings[field] }}</div>
+        <div class="bg-base-200 bg-opacity-40 relative w-full h-full flex items-center justify-center text-primary text-opacity-60 select-none">
           <svg class="w-16 h-16 animate-spin-slow-2x" viewBox="0 0 24 24">
             <path fill="currentColor" :d="global_const.mdiPath['cog-outline']"/>
           </svg>

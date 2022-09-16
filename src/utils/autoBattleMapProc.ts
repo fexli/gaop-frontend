@@ -37,13 +37,19 @@ export class ManagedCharTrainingInfo {
         let s = this.CharId + "/"
         switch (this.TrainType) {
             case "e":
+                if (this.EliteTo === 0) {
+                    return "";
+                }
                 s += "e/" + this.EliteTo;
                 break;
             case "s":
+                if (this.SkillTarget.length === 0) {
+                    return "";
+                }
                 s += "s/";
                 for (let i = 0; i < this.SkillTarget.length; i++) {
                     if (i > 0) {
-                        s += ",";
+                        s += "/";
                     }
                     s += this.SkillTarget[i].SkillId + "-" + this.SkillTarget[i].Target;
                 }
@@ -70,7 +76,7 @@ export class BattleParam implements Record<any, any> {
         return "TYPE=" + this.Type +
             (this.Map.length > 0 ? "|MAP=" + this.Map.join(",") : "") +
             (this.MapT.length > 0 ? "|MAPT=" + this.MapT.map((v) => v.Map + "~" + v.Times).join(",") : "") +
-            (this.Managed.length > 0 ? "|MNG=" + this.Managed.map((v) => v.Marshal()).join(",") : "");
+            (this.Managed.length > 0 ? "|MNG=" + this.Managed.map((v) => v.Marshal()).filter((v) => v !== '').join(",") : "");
     }
 }
 
@@ -124,27 +130,27 @@ export const parseMatWithTimes = function (ctx: string): Array<BattleMapWithTime
 
 export const parseCharManaged = function (ctx: string): Array<ManagedCharTrainingInfo> {
     let result: Array<ManagedCharTrainingInfo> = [];
-    let parts = ctx.split(",");
+    let parts = ctx.split(","); // parts[0] = char_xxx/s/1-7
     for (let i = 0; i < parts.length; i += 1) {
-        let part = parts[i].split("/");
+        let part = parts[i].split("/"); // part = char,s,1-7
         if (part.length < 3) {
             continue;
         }
         let tmp = new ManagedCharTrainingInfo();
-        tmp.CharId = parts[0];
-        tmp.TrainType = parts[1];
+        tmp.CharId = part[0];
+        tmp.TrainType = part[1];
         if (tmp.TrainType === "e") {
-            tmp.EliteTo = parseInt(parts[i]) || 0;
+            tmp.EliteTo = parseInt(part[2]) || 0;
         }
         if (tmp.TrainType === "s") {
-            for (let i = 2; i < parts.length; i++) {
-                let parts2 = parts[i].split("-");
+            for (let j = 2; j < part.length; j++) {
+                let parts2 = part[j].split("-");
                 if (parts2.length !== 2) {
                     continue;
                 }
                 let skillTarget = new ManagedSkillTarget();
-                skillTarget.SkillId = parseInt(parts[i]) || 0;
-                skillTarget.Target = parseInt(parts[i + 1]) || 0;
+                skillTarget.SkillId = parseInt(parts2[0]) || 0;
+                skillTarget.Target = parseInt(parts2[1]) || 0;
                 tmp.SkillTarget.push(skillTarget);
             }
         }

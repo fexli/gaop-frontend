@@ -22,6 +22,14 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  numberMax: {
+    type: Number,
+    default: undefined,
+  },
+  numberMin: {
+    type: Number,
+    default: undefined,
+  },
   placeholder: {
     type: String,
     default: "",
@@ -32,7 +40,7 @@ const props = defineProps({
   },
   textClass: {
     type: String,
-    default: ''
+    default: 'text-lg'
   },
   width: {
     type: String,
@@ -61,6 +69,12 @@ watch(() => inputValue.value, (value) => {
   let v = parseInt(value)
   if (isNaN(v)) {
     v = 0
+  }
+  if (props.numberMax !== undefined && v > props.numberMax) {
+    v = props.numberMax
+  }
+  if (props.numberMin !== undefined && v < props.numberMin) {
+    v = props.numberMin
   }
   inputValue.value = v
   props.settings[props.field] = v
@@ -93,12 +107,13 @@ function onAsScroll(e: WheelEvent) {
           :placeholder="placeholder"
           :onmousewheel="onAsScroll"
           v-model="settings[field]"
+          :disabled="isDisabled"
           type="text" class="input input-bordered input-primary input-xs px-1"
           :class="width"
       />
       <span
           :class="(isDisabled ? 'text-base-content text-opacity-20 ': ' ') + textClass"
-          class="label-text text-lg">{{ title }}
+          class="label-text">{{ title }}
         </span>
       <slot name="extra"/>
     </div>

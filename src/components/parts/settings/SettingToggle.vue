@@ -29,6 +29,10 @@ const props = defineProps({
     type: String,
     default: 'p-1 py-2'
   },
+  textClass: {
+    type: String,
+    default: 'text-lg'
+  },
 })
 
 const isDisabled = computed(() => {
@@ -45,8 +49,8 @@ const isDisabled = computed(() => {
         <input :disabled="isDisabled" v-model="settings[field]" type="checkbox"
                class="toggle toggle-primary"/>
         <span
-            :class="{'text-base-content text-opacity-20':isDisabled}"
-            class="label-text text-lg">{{ title }}{{ title ? ':' : '' }}{{ settings[field] ? enableText : disableText }}
+            :class="(isDisabled ? 'text-base-content text-opacity-20' : '') + ' ' + textClass"
+            class="label-text">{{ title }}{{ title ? ':' : '' }}{{ settings[field] ? enableText : disableText }}
         </span>
         <slot name="extra"/>
       </div>
