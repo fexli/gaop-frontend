@@ -92,7 +92,7 @@ function uploadChange() {
       for (let j = 0; j < item.skillInfo.total; j++) {
         if (item['skill_' + j]) {
           let el2 = new ManagedSkillTarget()
-          el2.SkillId = j + 1
+          el2.SkillId = j
           el2.Target = item['skill_' + j]
           el.SkillTarget.push(el2)
         }
