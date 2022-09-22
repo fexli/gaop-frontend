@@ -36,7 +36,7 @@ const props = defineProps({
   },
   padding: {
     type: String,
-    default: 'p-1 py-2'
+    default: 'p-1'
   },
   textClass: {
     type: String,
@@ -108,7 +108,7 @@ function onAsScroll(e: WheelEvent) {
           :onmousewheel="onAsScroll"
           v-model="settings[field]"
           :disabled="isDisabled"
-          type="text" class="input input-bordered input-primary input-xs px-1"
+          type="text" class="input input-bordered input-primary hover:input-info input-xs px-1 pt-3.5 pb-3" style="font-size: 1rem"
           :class="width"
       />
       <span

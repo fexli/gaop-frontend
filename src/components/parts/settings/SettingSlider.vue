@@ -71,8 +71,8 @@ function onAsScroll(e: WheelEvent) {
 }
 </script>
 <template>
-  <div>
-    <div class="flex gap-2 items-center ml-1">
+  <div class="p-1">
+    <div class="flex gap-2 items-center">
       <input
           :disabled="isDisabled"
           :onmousewheel="onAsScroll"

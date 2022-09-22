@@ -35,7 +35,7 @@ const isDisabled = computed(() => {
 })
 </script>
 <template>
-  <div class="flex gap-2 items-center ml-1 mb-2">
+  <div class="flex gap-2 items-center p-1">
     <div class="fe-btn fe-btn_set" @click="clicker">
       {{ titleBtn }}
     </div>

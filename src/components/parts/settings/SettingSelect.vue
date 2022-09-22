@@ -1,5 +1,7 @@
 <script setup lang="ts">
 
+import Select from "../../element/Select.vue";
+
 const props = defineProps({
   settings: {
     type: Object,
@@ -42,17 +44,20 @@ const isDisabled = computed(() => {
   return props.disabled
 })
 
+function changedValue(v: any) {
+  props.settings[props.field] = v
+}
 </script>
 <template>
-  <div class="form-control w-fit p-1 py-2">
+  <div class="form-control w-fit p-1">
     <div class="flex gap-2 items-center cursor-pointer" :class="textLeft ? 'flex-row-reverse' : ''">
-      <select v-model="settings[field]" class="select select-primary select-xs w-fit max-w-xs">
-        <template v-for="i of list">
-          <option selected :value="i[itemValue]">
-            {{ i[itemText] }}
-          </option>
-        </template>
-      </select>
+      <Select
+          :list="list"
+          :item-text="itemText"
+          :item-value="itemValue"
+          :value="settings[field]"
+          @valueSelect="changedValue"
+      />
       <div class="flex justify-center items-center gap-1">
         <span
             :class="{'text-base-content text-opacity-20':isDisabled}"

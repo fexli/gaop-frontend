@@ -127,7 +127,7 @@ onMounted(() => {
           </svg>
         </button>
       </div>
-      <div class="w-full h-[26rem] border border-base-content rounded-md relative">
+      <div class="w-full h-full mb-1 border border-base-content rounded-md relative">
         <div class="absolute p-1 text-xs">{{ selectAttackSettings }}</div>
         <div class="absolute p-1 bottom-0 break-all text-xs">{{ settings[field] }}</div>
         <div class="bg-base-200 bg-opacity-40 relative w-full h-full flex items-center justify-center text-primary text-opacity-60 select-none">
@@ -140,7 +140,6 @@ onMounted(() => {
           </div>
         </div>
       </div>
-      <div class="spacer"/>
       <button @click="resetBattleSetting" type="button" class="fe-btn ab-btn-rst rounded-md w-full text-primary mb-1">
         重置
       </button>

@@ -27,7 +27,7 @@ const props = defineProps({
   },
   padding: {
     type: String,
-    default: 'p-1 py-2'
+    default: 'p-1'
   },
   textClass: {
     type: String,
@@ -47,7 +47,7 @@ const isDisabled = computed(() => {
     <label class="label p-0">
       <div class="flex gap-2 items-center cursor-pointer">
         <input :disabled="isDisabled" v-model="settings[field]" type="checkbox"
-               class="toggle toggle-primary"/>
+               class="toggle toggle-primary bg-info"/>
         <span
             :class="(isDisabled ? 'text-base-content text-opacity-20' : '') + ' ' + textClass"
             class="label-text">{{ title }}{{ title ? ':' : '' }}{{ settings[field] ? enableText : disableText }}

@@ -214,13 +214,46 @@ function mergeBuildingAcc(data: Record<any, any>) {
   console.log('accEnable', accEnable.value)
   if (!accEnable.value) return
   // TODO:自动加速，以及指定类型的加速
-  // buildingAccelerateData.value.push({
-  //   slot: 'auto',
-  //   text: `自动加速`,
-  //   type: 'AUTO',
-  //   value: 'aaa',
-  //   data: ''
-  // })
+  // BuildingAccelerateTypeManuExp  = "manu_exp"
+  // BuildingAccelerateTypeManuLmb  = "manu_lmb"
+  // BuildingAccelerateTypeManuDiam = "manu_diam"
+  // BuildingAccelerateTypeTradLmb  = "trad_lmb"
+  // BuildingAccelerateTypeTradDiam = "trad_diam"
+  buildingAccelerateData.value.push({
+    slot: 'manu_exp',
+    text: `自动:制造站-经验`,
+    type: 'AUTO',
+    value: 'aaa',
+    data: ''
+  })
+  buildingAccelerateData.value.push({
+    slot: 'manu_lmb',
+    text: `自动:制造站-赤金`,
+    type: 'AUTO',
+    value: 'aaa',
+    data: ''
+  })
+  buildingAccelerateData.value.push({
+    slot: 'manu_diam',
+    text: `自动:制造站-合成玉`,
+    type: 'AUTO',
+    value: 'aaa',
+    data: ''
+  })
+  buildingAccelerateData.value.push({
+    slot: 'trad_lmb',
+    text: `自动:贸易站-赤金`,
+    type: 'AUTO',
+    value: 'aaa',
+    data: ''
+  })
+  buildingAccelerateData.value.push({
+    slot: 'trad_diam',
+    text: `自动:贸易站-合成玉`,
+    type: 'AUTO',
+    value: 'aaa',
+    data: ''
+  })
   for (let entr of Object.entries(data.rooms)) {
     switch (entr[0]) {
       case "MANUFACTURE": {
