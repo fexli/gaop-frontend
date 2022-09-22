@@ -391,7 +391,7 @@ function closeCreateAccount(withReset: boolean = true) {
             </thead>
             <tbody>
             <template v-for="(i,k) of account.getGameAccounList" v-bind:key="k">
-              <tr>
+              <tr class="hover:bg-base-300 transition-all">
                 <td>{{ i.name }}</td>
                 <td>{{ i.account }}</td>
                 <td class="text-center">{{ global_const.platformSelector[i.platform]?.text || '未知' }}</td>

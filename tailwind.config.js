@@ -36,7 +36,7 @@ module.exports = {
       {
         light: {
           ...require("daisyui/src/colors/themes")["[data-theme=autumn]"],
-          primary:"#c23370",
+          primary: "#c23370",
           // success: "#6cce96",
           // info: "#7E57C2",
           "--c": "212 96% 78%",
@@ -46,9 +46,12 @@ module.exports = {
       {
         dark: {
           ...require("daisyui/src/colors/themes")["[data-theme=halloween]"],
-          info:"#8AB4F8",
+          info: "#8AB4F8",
           "--c": "215 14% 34%",
           "--t": "25 95% 53%",
+          "--b1": "0 0% 16%",
+          "--b2": "0 0% 12%",
+          "--b3": "0 0%  6%",
         },
       },
     ],

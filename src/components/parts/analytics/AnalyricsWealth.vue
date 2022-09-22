@@ -191,6 +191,7 @@ onMounted(() => {
           <tr>
             <th>
               <ItemFrame
+                  class="w-28 h-28"
                   :item-id="item.item"
                   :count="item.count"
                   :content="item.info"

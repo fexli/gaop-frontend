@@ -170,7 +170,8 @@ defineProps({
     height: 4.88vw
 
   &__exp
-    left: 0.09vw
+    @apply relative
+    left: 0
     top: 16.51vw
     width: 5.89vw
     height: 5.58vw
@@ -182,12 +183,12 @@ defineProps({
 
 
   &__level
-    font-family: 'AEwide'
-    left: 0.32vw
-    width: 5.43vw
+    @apply text-center justify-center
+    font-family: 'AEwide', serif
+    left: 1.2vw
+    width: 3.63vw
     top: 17.28vw
     padding: 0
-    text-align: center
     font-size: 2.79vw
 
   &__skill
