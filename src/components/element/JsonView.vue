@@ -18,8 +18,14 @@
         </p>
         <div v-if="!innerclosed && length" class="json-body">
           <template v-for="(item, index) in items">
-            <JsonView :closed="closed" v-if="item.isJSON" :key="index" :json="item.value"
-                      :jsonKey="item.key" :isLast="index === items.length - 1"></JsonView>
+            <JsonView
+                :closed="childClosed"
+                v-if="item.isJSON"
+                :key="index"
+                :json="item.value"
+                :jsonKey="item.key"
+                :isLast="index === items.length - 1"
+            ></JsonView>
             <p class="json-item" v-else>
               <span class="json-key">
                   {{ (isArray ? '' : '"' + item.key + '"') }}
@@ -49,7 +55,7 @@ const props = defineProps({
     default: ''
   },
   closed: {
-    type: Boolean,
+    type: [Boolean, Array],
     default: true
   },
   isLast: {
@@ -63,15 +69,30 @@ const props = defineProps({
   lineHeight: {
     type: Number,
     default: 6
-  }
+  },
 })
 
 const innerclosed = ref(true);
 
+function checkClose() {
+  if (Array.isArray(props.closed) && props.closed.length) {
+    innerclosed.value = props.closed[0]
+  } else {
+    innerclosed.value = props.closed as boolean;
+  }
+}
+
+const childClosed = computed(() => {
+  if (Array.isArray(props.closed) && props.closed.length) {
+    return props.closed.slice(1)
+  } else {
+    return props.closed as boolean;
+  }
+})
 onMounted(() => {
-  innerclosed.value = props.closed
+  checkClose()
   watch(() => props.closed, () => {
-    innerclosed.value = props.closed
+    checkClose()
   })
 })
 

@@ -9,6 +9,7 @@ import global_const from "../../../utils/global_const";
 import {useToast} from "../../../hooks/toast";
 import {getGameInfoGSP, getGameUserCustomAll} from "../../../plugins/axios";
 import FileSaver from "file-saver";
+
 const account = accountStore();
 const {accountInfo} = storeToRefs(account)
 const {translate} = useTranslate();
@@ -52,10 +53,12 @@ function getAllGameServerPosterJson() {
     showMessage("game.anal.action.getall_err_gsp", 2000, "danger")
   })
 }
+
 function saveGameDataJson() {
   const blob = new Blob([JSON.stringify(accountInfo.value[global_const.getUserLogName(props.gameUserName || "", props.gamePlatform as number)])], {type: "application/json;charset=utf-8"})
   FileSaver.saveAs(blob, `userGameData_${props.gameUserName}_${props.gamePlatform}.json`)
 }
+
 function saveGameServerPosterJson() {
   const blob = new Blob([JSON.stringify(gsPosterData.value)], {type: "application/json;charset=utf-8"})
   FileSaver.saveAs(blob, `userGameServerPoster_${props.gameUserName}_${props.gamePlatform}.json`)
@@ -65,20 +68,23 @@ const tryFilterJson = computed(() => {
   let fs = filterJsonStr.value.split(".")
   let gd = accountInfo.value[global_const.getUserLogName(props.gameUserName || "", props.gamePlatform as number)]
   if (filterJsonStr.value.length === 0) {
-    return gd // direct return game data
+    return [gd, true] // direct return game data
   }
   let rst: Record<string, any> = {}
   let cur = rst
+  let clo: boolean[] = []
   for (let i = 0; i < fs.length; i++) {
     if (gd[fs[i]] === undefined) {
       if (i === 0) {
-        return gd
+        return [gd, true]
       }
       cur[fs[i - 1]] = gd
-      return rst
+      clo.push(false)
+      return [rst, clo]
     }
     if (i >= 1) {
       cur = cur[fs[i - 1]]
+      clo.push(false)
     }
     gd = gd[fs[i]]
     if (i === fs.length - 1) {
@@ -87,7 +93,8 @@ const tryFilterJson = computed(() => {
       cur[fs[i]] = {} as Record<string, any>
     }
   }
-  return rst
+  clo.push(false)
+  return [rst, clo]
 })
 </script>
 <template>
@@ -121,15 +128,25 @@ const tryFilterJson = computed(() => {
         <button @click="getAllGameDataJson" class="fe-btn fe-btn_dft">{{ translate("game.anal.btn.get_all") }}</button>
         <button @click="saveGameDataJson" class="fe-btn fe-btn_dft">{{ translate("game.anal.btn.dump") }}</button>
       </div>
-      <JsonView style="margin-top: 10px" v-if="onGameDataShow"
-                :json="tryFilterJson"/>
+      <JsonView
+          style="margin-top: 10px"
+          v-if="onGameDataShow"
+          :json="tryFilterJson[0]"
+          :closed="tryFilterJson[1]"
+      />
     </div>
     <div class="flex card border-primary border w-full mt-2 p-2">
       <div class="flex gap-1 justify-center items-center">
         <h1 class="card-title">Game Server Poster/用户-服务器传递数据</h1>
         <div class="spacer"></div>
-        <button @click="getAllGameServerPosterJson" class="fe-btn fe-btn_dft">{{ translate("game.anal.btn.get") }}</button>
-        <button @click="saveGameServerPosterJson" class="fe-btn fe-btn_dft">{{ translate("game.anal.btn.dump") }}</button>
+        <button @click="getAllGameServerPosterJson" class="fe-btn fe-btn_dft">{{
+            translate("game.anal.btn.get")
+          }}
+        </button>
+        <button @click="saveGameServerPosterJson" class="fe-btn fe-btn_dft">{{
+            translate("game.anal.btn.dump")
+          }}
+        </button>
       </div>
       <JsonView style="margin-top: 10px" :json="gsPosterData"/>
     </div>
