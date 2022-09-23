@@ -147,7 +147,7 @@ const statusType = {
     '2': '#007eff',
     '3': 'red',
 }
-const aopVersion = '2.1a - 1.8.61'
+const aopVersion = '2.1a - 1.8.81'
 
 const servers = [
     {

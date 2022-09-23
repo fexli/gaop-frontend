@@ -125,6 +125,9 @@ const drag = ref(false)
 const list2 = ref([])
 const canRightPut = ref(true)
 
+const rightIndex = ref(0)
+let rightIndexResetTimeout = null;
+
 const stageTypes = {
   MAIN: '主线',
   SUB: '主线S',
@@ -175,7 +178,24 @@ function addToRight(i) {
   }
   let newItem = {...i}
   newItem.times = 1
-  list2.value.push(newItem)
+  if (rightIndexResetTimeout != null) {
+    console.log("not Null", rightIndex.value)
+    clearTimeout(rightIndexResetTimeout)
+    // split
+    list2.value = [...list2.value.splice(0, rightIndex.value), newItem, ...list2.value]
+    rightIndex.value++
+    rightIndexResetTimeout = setTimeout(() => {
+      rightIndexResetTimeout = null
+      rightIndex.value = 0
+    }, 5000)
+  } else {
+    list2.value = [newItem, ...list2.value]
+    rightIndex.value = 1
+    rightIndexResetTimeout = setTimeout(() => {
+      rightIndexResetTimeout = null
+      rightIndex.value = 0
+    }, 5000)
+  }
   uploadChange()
 }
 
