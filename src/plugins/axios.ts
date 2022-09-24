@@ -220,3 +220,4 @@ export const getGameInfoGSP = (username: string, platform: number) => post('/gam
     username,
     platform
 });
+export const getMonitorInfos = () => post('/account/monitorAccounts', {});

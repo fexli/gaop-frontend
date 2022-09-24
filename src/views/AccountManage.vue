@@ -9,6 +9,8 @@ import LogTextCtx from "../components/parts/accountManage/LogTextCtx.vue";
 import {gameCreateAccount, gameDeleteAccount, gameStartAccount, gameStopAccount} from "../plugins/axios";
 import {useToast} from "../hooks/toast";
 import {router} from "../router/router";
+import AccountMonitor from "../components/parts/accountManage/AccountMonitor.vue";
+import {Ref} from "vue";
 
 const {translate} = useTranslate();
 const auth = authStore();
@@ -29,6 +31,9 @@ const createUserNickname = ref("");
 const createUserAccount = ref("");
 const createUserPassword = ref("");
 const createUserPlatform = ref(1);
+
+const isMonitorType: Ref<Boolean> = ref(false);
+const isMonitorLoaded = ref(false);
 
 const deleteUserAccount = ref("");
 let deleteUserInfo = {
@@ -210,11 +215,20 @@ function changeAccountSetting(accInfo: any) {
 }
 
 function changeMinotorType() {
-  console.log("changeMinotorType") // TODO
+  console.log("changeMinotorType")
+  isMonitorType.value = !isMonitorType.value
+  isMonitorLoaded.value = true
 }
 
 function reloadGameAccount() {
   console.log("reloadGameAccount")
+  if (isMonitorLoaded.value) {
+    isMonitorType.value = false
+    nextTick(() => {
+      isMonitorType.value = true
+    })
+    return
+  }
   loadingReload.value = true
   syncGameAccounts()
 }
@@ -346,7 +360,7 @@ function closeCreateAccount(withReset: boolean = true) {
         </template>
       </StatusInfo>
     </div>
-    <div class="ml-0 lg:ml-1 mt-1">
+    <div class="ml-0 lg:ml-1 mt-1 w-full">
       <div class="overflow-hidden rounded-xl">
         <div class="flex items-center bg-base-200 py-2 px-1 font-bold">
           <div class="text-xl ml-2 py-2 nowrap-hidden-ellipsis">{{ translate('account.game_account') }}</div>
@@ -381,7 +395,7 @@ function closeCreateAccount(withReset: boolean = true) {
           </div>
         </div>
         <div class="px-1 bg-base-200 overflow-x-auto">
-          <table class="text-left table-fixed w-full text-sm table-compact">
+          <table v-if="!isMonitorType" class="text-left table-fixed w-full text-sm table-compact">
             <thead>
             <tr>
               <template v-for="(i,k) of gameAccountHeaders" v-bind:key="k">
@@ -395,7 +409,8 @@ function closeCreateAccount(withReset: boolean = true) {
                 <td>{{ i.name }}</td>
                 <td>{{ i.account }}</td>
                 <td class="text-center">{{ global_const.platformSelector[i.platform]?.text || '未知' }}</td>
-                <td class="no-hidden text-center" style="white-space: break-spaces!important;padding: 0!important;word-break: keep-all;"
+                <td class="no-hidden text-center"
+                    style="white-space: break-spaces!important;padding: 0!important;word-break: keep-all;"
                     :style="`color: ${global_const.statusType[i.status.toString()]}`">{{ i.statusText }}
                 </td>
                 <td>
@@ -458,6 +473,12 @@ function closeCreateAccount(withReset: boolean = true) {
             </tbody>
           </table>
         </div>
+      </div>
+      <div v-if="isMonitorLoaded" v-show="isMonitorType"
+           class="w-full h-fit mt-1 flex flex-wrap justify-around space-y-1">
+        <AccountMonitor
+            :watching="isMonitorType"
+        />
       </div>
     </div>
   </div>
