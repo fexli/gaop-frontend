@@ -157,6 +157,7 @@ export const en = {
             recruit_finish: 'You have {0} recruitment completed. Remember to hire in time~',
             mission_d: 'You haven\'t finished all your tasks today. You can\'t rest yet~',
             mission_w: 'Your tasks have not been completed this week. Please check and complete them in time',
+            climb_tower:'Your climb tower has not been completed!',
         }
     },
     account: {
@@ -173,6 +174,7 @@ export const en = {
         refresh_monitor: 'Refresh monitor',
         logger: 'latest log',
         change_type: 'swich monitor',
+        change_simple: 'switch type',
         create_account: 'create',
         reload_account: 'sync',
         sync_success: 'Successfully synchronized {0} account information',

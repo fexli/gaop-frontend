@@ -95,6 +95,12 @@ const load_list: Record<string, any>[] = [
     field: 'uniequipTable',
     loc: 'excel/uniequip_table.json',
   },
+  // {
+  //   name: 'skin_table',
+  //   title: '皮肤数据',
+  //   field: 'skinTable',
+  //   loc: 'excel/skin_table.json',
+  // },
   {
     name: 'gacha_data',
     title: '卡池数据',

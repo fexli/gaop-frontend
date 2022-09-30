@@ -34,6 +34,7 @@ const createUserPlatform = ref(1);
 
 const isMonitorType: Ref<Boolean> = ref(false);
 const isMonitorLoaded = ref(false);
+const isMonitorSimple: Ref<Boolean> = ref(false);
 
 const deleteUserAccount = ref("");
 let deleteUserInfo = {
@@ -220,9 +221,14 @@ function changeMinotorType() {
   isMonitorLoaded.value = true
 }
 
+function changeMinotorIsSimple() {
+  console.log("changeMinotorIsSimple")
+  isMonitorSimple.value = !isMonitorSimple.value
+}
+
 function reloadGameAccount() {
   console.log("reloadGameAccount")
-  if (isMonitorLoaded.value) {
+  if (isMonitorLoaded.value && isMonitorType.value) {
     isMonitorType.value = false
     nextTick(() => {
       isMonitorType.value = true
@@ -322,7 +328,7 @@ function closeCreateAccount(withReset: boolean = true) {
 }
 </script>
 <template>
-  <div class="hidden xs:flex shadow-lg h-10 rounded-xl bg-base-200 bg-opacity-80">
+  <div v-if="!isMonitorType" class="hidden xs:flex shadow-lg h-10 rounded-xl bg-base-200 bg-opacity-80">
     <div class="w-full flex items-center justify-center">
       <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6 text-primary" fill="none"
            viewBox="0 0 24 24">
@@ -333,7 +339,7 @@ function closeCreateAccount(withReset: boolean = true) {
     </div>
   </div>
   <div class="flex flex-col lg:flex-row overflow-hidden">
-    <div class="flex flex-wrap flex-row lg:flex-col">
+    <div v-if="!isMonitorType" class="flex flex-wrap flex-row lg:flex-col">
       <StatusInfo class="mr-1 lg:mr-0 mt-1" title="account.current" :content="currentAccounts">
         <template v-slot:icon>
           <svg class="w-6 h-6" stroke="currentColor" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -365,6 +371,13 @@ function closeCreateAccount(withReset: boolean = true) {
         <div class="flex items-center bg-base-200 py-2 px-1 font-bold">
           <div class="text-xl ml-2 py-2 nowrap-hidden-ellipsis">{{ translate('account.game_account') }}</div>
           <div class="spacer"></div>
+          <div v-if="isMonitorType" class="table-head-btn" @click="changeMinotorIsSimple">
+            <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+              <path fill="currentColor"
+                    d="M20 5L20 19L4 19L4 5H20M20 3H4C2.89 3 2 3.89 2 5V19C2 20.11 2.89 21 4 21H20C21.11 21 22 20.11 22 19V5C22 3.89 21.11 3 20 3M18 15H6V17H18V15M10 7H6V13H10V7M12 9H18V7H12V9M18 11H12V13H18V11Z"/>
+            </svg>
+            <div class="hidden md:flex">{{ translate('account.change_simple') }}</div>
+          </div>
           <div class="table-head-btn" @click="changeMinotorType">
             <svg style="width:24px;height:24px" viewBox="0 0 24 24">
               <path fill="currentColor"
@@ -474,12 +487,14 @@ function closeCreateAccount(withReset: boolean = true) {
           </table>
         </div>
       </div>
-      <div v-if="isMonitorLoaded" v-show="isMonitorType"
-           class="w-full h-fit mt-1 flex flex-wrap justify-around space-y-1">
-        <AccountMonitor
-            :watching="isMonitorType"
-        />
-      </div>
+      <AccountMonitor
+          v-if="isMonitorLoaded" v-show="isMonitorType"
+          :watching="isMonitorType"
+          :is-simple="isMonitorSimple"
+          :start-func="startAccount"
+          :stop-func="stopAccount"
+          :restart-func="restartAccount"
+      />
     </div>
   </div>
   <div class="overlay bg-base-200 bg-opacity-50" v-show="deleteAccountOverlay">

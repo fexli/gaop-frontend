@@ -151,6 +151,7 @@ export const zhHans = {
             recruit_finish: '您有{0}个公招已完成，记得及时去聘用~',
             mission_d: '您本日任务还未全部完成，还不可以休息哦~',
             mission_w: '您本周任务还未全部完成，请及时查看并完成',
+            climb_tower:'您本次保全派驻周期还未完成，请及时完成！',
         }
     },
     account: {
@@ -167,6 +168,7 @@ export const zhHans = {
         refresh_monitor: '刷新监控列表',
         logger: '最新日志',
         change_type: '切换监控状态',
+        change_simple: '切换监控布局',
         create_account: '新建账号',
         reload_account: '刷新账号列表',
         sync_success: '同步游戏账号数据成功，已同步{0}个账号信息',
