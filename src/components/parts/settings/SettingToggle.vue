@@ -43,7 +43,7 @@ const isDisabled = computed(() => {
 })
 </script>
 <template>
-  <div class="form-control w-fit" :class="padding">
+  <div :class="padding" class="form-control w-fit">
     <label class="label p-0">
       <div class="flex gap-2 items-center cursor-pointer">
         <input :disabled="isDisabled" v-model="settings[field]" type="checkbox"

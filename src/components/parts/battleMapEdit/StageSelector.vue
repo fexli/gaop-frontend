@@ -2,11 +2,12 @@
   <div class="flex w-full gap-1">
     <div class="ss-map-select">
       <div class="flex items-center mt-0.5">
-        <span class="text-primary font-bold">关卡列表</span>
-        <SettingTextInput placeholder="关卡检索..." padding="pl-1" :settings="data" field="filterStr"/>
+        <span class="text-primary font-bold overflow-hidden whitespace-nowrap">关卡列表</span>
+        <SettingTextInput width="w-32" placeholder="关卡检索..." padding="pl-1" :settings="data" field="filterStr"/>
+        <div class="spacer"/>
         <SettingToggle :settings="data" field="showAll" enable-text="" disable-text="" padding="">
           <template #extra>
-            <span class="text-primary font-bold">{{ data['showAll'] ? '全部' : '可攻' }}</span>
+            <span class="text-primary font-bold overflow-hidden whitespace-nowrap">{{ data['showAll'] ? '全部' : '可攻' }}</span>
           </template>
         </SettingToggle>
       </div>
@@ -29,6 +30,7 @@
       >
         <template #item="{ element }">
           <StageInfo
+              :inventory="inventory"
               :addable="addToRight"
               :info="element"
           />
@@ -59,6 +61,7 @@
       >
         <template #item="{ element }">
           <StageInfo
+              :inventory="inventory"
               :index="checkRightIndex(element)" :removable="removeFromRight" :info="element"
               :settings="list2" :apply-change="uploadChange" :has-times="hasTimes"
           />
@@ -117,6 +120,10 @@ const props = defineProps({
   needApply: {
     type: Boolean,
     default: false,
+  },
+  inventory: {
+    type: Object,
+    default: {},
   },
 })
 const item = ref([])

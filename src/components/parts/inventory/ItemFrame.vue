@@ -24,6 +24,30 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+  countX: {
+    type: [String, Number],
+    default: "12px"
+  },
+  countY: {
+    type: [String, Number],
+    default: "12px"
+  },
+  countIsLeft: {
+    type: Boolean,
+    default: false
+  },
+  countIsTop: {
+    type: Boolean,
+    default: false
+  },
+})
+const countValid = computed(() => {
+  // is number
+  if (typeof props.count === "number") {
+    return props.count > 0;
+  }
+  // is string
+  return props.count && props.count !== "0";
 })
 
 function handleClicker() {
@@ -38,7 +62,8 @@ function handleClicker() {
     })
   }
 }
-const isValid = computed(()=>{
+
+const isValid = computed(() => {
   return global_const.gameData.itemData[props.itemId || ""] != null
 })
 </script>
@@ -49,7 +74,12 @@ const isValid = computed(()=>{
         class="item-image"
     />
     <p class="item-content" v-if="content != null">{{ content }}</p>
-    <p class="item-count" v-if="count > 0">{{ count }}</p>
+    <p
+        class="item-count"
+        :style="`${countIsLeft?'left':'right'}:${countX};${countIsTop?'top':'bottom'}:${countY};`"
+        v-if="countValid">
+      {{ count }}
+    </p>
     <p class="item-time" v-if="ts !== -1">{{ formatter.formatConsumeTime(ts) }}</p>
     <div
         :style="`font-size: ${fontSize};`"
@@ -74,29 +104,20 @@ const isValid = computed(()=>{
 //  height: 120px
 
 .item-count
-  color: white
-  position: absolute
-  right: 12px
-  bottom: 12px
+  @apply rounded-md text-white absolute m-0
   background-color: rgba(0, 0, 0, .6)
   padding: 2.5px 5px
-  margin: 0
 
 .item-content
-  color: white
-  position: absolute
+  @apply rounded-md text-white absolute m-0
   right: 12px
   bottom: 40px
   background-color: rgba(0, 0, 0, .6)
   padding: 2.5px 5px
-  margin: 0
 
 .item-time
-  color: white
-  position: absolute
-  left: 0
+  @apply rounded-md text-white absolute m-0 left-0
   bottom: 12px
   background-color: rgba(0, 0, 0, .6)
   padding: 2.5px 5px
-  margin: 0
 </style>

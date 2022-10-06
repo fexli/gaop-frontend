@@ -49,10 +49,10 @@
           </div>
 
           <div class="mt-5 flex">
-            <div class="w-full text-left">
-              <a class="underline text-sm text-gray-600 mr-5 hover:text-gray-900" href="#">
+            <div class="w-full text-left" @click="openSwitchServ">
+              <span class="underline text-sm text-gray-600 mr-5 hover:text-gray-900 cursor-pointer">
                 {{ t("login.switch_serv") }}
-              </a>
+              </span>
             </div>
             <div class="w-full text-right">
               <a class="underline text-sm text-gray-600 mr-5 hover:text-gray-900" href="#/auth/register">
@@ -81,6 +81,60 @@
         </form>
       </div>
     </div>
+    <div v-if="switchServOvl" class="overlay bg-base-200 bg-opacity-40">
+      <div class="max-w-md rounded-xl shadow-md bg-base-200 relative">
+        <div class="flex flex-col justify-between p-6 space-y-6">
+          <div class="space-y-2">
+            <h2 class="text-3xl font-semibold tracking-wide">{{ translate('login.switch_serv') }}</h2>
+            <Select
+                :list="global_const.servers"
+                item-text="name"
+                item-value="name"
+                :value="serverInfo.name"
+                @valueSelect="serverTypeChanged"
+            ></Select>
+            <template v-if="serverInfo.name === '自定义'">
+              <p>
+                {{ translate("server.desc_diy") }}
+              </p>
+              <div class="flex items-center">
+                <span>{{ translate('server.server', '') }}</span>
+                <SettingTextInput
+                    :settings="serverInfo"
+                    field="server"
+                    padding=""
+                />
+              </div>
+              <div class="flex items-center">
+                <span>{{ translate('server.secure', '') }}</span>
+                <SettingToggle
+                    :settings="serverInfo"
+                    field="secure"
+
+                />
+              </div>
+            </template>
+            <template v-else>
+              <p>{{ translate('server.server_name', serverInfo.name) }}</p>
+              <p>{{ translate('server.server', serverInfo.server) }}</p>
+              <p>{{ translate('server.secure', serverInfo.secure ? '√' : '×') }}</p>
+            </template>
+          </div>
+          <button
+              type="button"
+              class="fe-btn"
+              @click="confirmSwitchServ"
+          >
+            {{ translate('server.confirm') }}
+          </button>
+        </div>
+        <button class="btn btn-circle absolute right-1 top-1 btn-md btn-ghost" @click="switchServOvl=false">
+          <svg class="w-6 h-6" viewBox="0 0 24 24">
+            <path fill="currentColor" :d="global_const.mdiPath['close']"/>
+          </svg>
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -94,13 +148,23 @@ import {useTranslate} from "../../hooks/translate";
 import {useToast} from "../../hooks/toast";
 import websock from "../../hooks/websock";
 import {accountStore} from "../../store/account";
+import Select from "../../components/element/Select.vue";
+import global_const from "../../utils/global_const";
+import {getCurrentInstance, Ref} from "vue";
+import {appStore} from "../../store/app";
+import {serverStore} from "../../store/server";
+import {storeToRefs} from "pinia/dist/pinia";
+import SettingTextInput from "../../components/parts/settings/SettingTextInput.vue";
+import SettingToggle from "../../components/parts/settings/SettingToggle.vue";
 
 const {translate} = useTranslate();
 const router = useRouter();
 const auth = authStore();
+const serverStore1 = serverStore();
 const {t} = useI18n();
 const {showMessage} = useToast()
 const {passwordInputText, usernameInputText} = useLoginPlaceholder();
+const $axios = getCurrentInstance()?.appContext.config.globalProperties.$axios.defaults;
 
 const loading = ref(false);
 
@@ -110,6 +174,35 @@ const pswdLabel = ref(false);
 
 const account = ref("");
 const password = ref("");
+
+const switchServOvl = ref(false);
+const serverInfo: Ref<Record<any, any>> = ref({
+  name: serverStore1.serverName,
+  server: serverStore1.server,
+  secure: serverStore1.secure,
+});
+
+watch(() => serverInfo.value.name, (v: any) => {
+  if (v !== '自定义') {
+    const server = global_const.servers.find((s: any) => s.name === v);
+    serverInfo.value.server = server?.server || '';
+    serverInfo.value.secure = server?.secure || false;
+  }
+})
+
+function serverTypeChanged(v: any) {
+  console.log("serverTypeChanged", v);
+  serverInfo.value.name = v;
+}
+
+function confirmSwitchServ() {
+  console.log("confirmSwitchServ", serverInfo.value);
+  serverStore1.setServer(serverInfo.value);
+  showMessage(translate("server.switch_suc"), 2000, 'success')
+
+  $axios.baseURL = `http${serverStore1.getSecure ? 's' : ''}://${serverStore1.getServer}/`
+  switchServOvl.value = false;
+}
 
 const onSubmit = async (values: any) => {
   console.log(values);
@@ -145,6 +238,15 @@ const onSubmit = async (values: any) => {
     console.log(err.data.msg)
     showMessage(err.data.msg, 4000, "danger")
   });
+}
+
+function openSwitchServ() {
+  serverInfo.value = {
+    name: serverStore1.serverName,
+    server: serverStore1.server,
+    secure: serverStore1.secure,
+  };
+  switchServOvl.value = true;
 }
 </script>
 

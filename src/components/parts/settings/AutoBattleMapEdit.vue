@@ -19,6 +19,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  inventory: {
+    type: Object,
+    default: {},
+  },
   close: {
     type: Function,
     default: () => {
@@ -71,7 +75,7 @@ onMounted(() => {
       <div class="flex items-center">
         <div class="text-primary text-lg font-bold">进攻设置</div>
         <div class="spacer"/>
-        <div class="font-bold">AutoBattleMapEditor V0.1</div>
+        <div class="font-bold">AutoBattleMapEditor V0.2</div>
       </div>
       <div class="ab-sets">
         <SettingSelect
@@ -105,6 +109,7 @@ onMounted(() => {
         <div v-else-if="['FIRST','RANDOM','MAPARG'].some(i => i === selectAttackSettings['Type'])"
              class="ab-inner">
           <StageSelector
+              :inventory="inventory"
               :has-index="selectAttackSettings['Type'] === 'FIRST'"
               :has-times="selectAttackSettings['Type'] === 'MAPARG'"
               :settings="selectAttackSettings" field-map="Map" field-map-t="MapT"

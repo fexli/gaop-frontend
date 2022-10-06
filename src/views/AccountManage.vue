@@ -11,6 +11,7 @@ import {useToast} from "../hooks/toast";
 import {router} from "../router/router";
 import AccountMonitor from "../components/parts/accountManage/AccountMonitor.vue";
 import {Ref} from "vue";
+import TransitionOverlay from "../components/element/TransitionOverlay.vue";
 
 const {translate} = useTranslate();
 const auth = authStore();
@@ -24,7 +25,7 @@ const loadingReload = ref(false); // reload按钮的loading
 const loadingStopAll = ref(false); // stopall按钮的loading
 const loadingCreateNewAccount = ref(false); // 创建新账号按钮的loading
 
-const createAccountOverlay = ref(false);
+const createAccountOverlay: Ref<Boolean> = ref(false);
 const deleteAccountOverlay = ref(false);
 
 const createUserNickname = ref("");
@@ -518,8 +519,11 @@ function closeCreateAccount(withReset: boolean = true) {
       </div>
     </div>
   </div>
-  <div class="overlay bg-base-200 bg-opacity-50" v-show="createAccountOverlay">
-    <div class="card w-96 max-w-md glass">
+  <TransitionOverlay
+      :show="createAccountOverlay"
+      class="overlay bg-base-200 bg-opacity-50"
+  >
+    <div class="card w-96 max-w-md glass" v-if="createAccountOverlay">
       <figure class="select-none"><img :src="`static/im/create_user.jpg`" alt="welcome"></figure>
       <div class="absolute right-0 top-0 p-2" @click="closeCreateAccount">
         <svg class="w-8 h-8" viewBox="0 0 24 24">
@@ -588,6 +592,5 @@ function closeCreateAccount(withReset: boolean = true) {
         </div>
       </div>
     </div>
-  </div>
+  </TransitionOverlay>
 </template>
-

@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import {getGameSettings, getGameUserBuilding, resetGameSettings, setGameSettings} from "../../../plugins/axios";
+import {
+  getGameSettings,
+  getGameUserBuilding,
+  getGameUserInventory,
+  resetGameSettings,
+  setGameSettings
+} from "../../../plugins/axios";
 import {accountStore} from "../../../store/account";
 import {storeToRefs} from "pinia";
 import {Ref} from "vue";
@@ -14,11 +20,18 @@ import Select from "../settings/SettingSelect.vue";
 import SettingBtn from "../settings/SettingBtn.vue";
 import AutoBattleMapEdit from "../settings/AutoBattleMapEdit.vue";
 import {parseSingleBattleParamToStr} from "../../../utils/autoBattleMapProc";
+import TransitionOverlay from "../../element/TransitionOverlay.vue";
 
 const account = accountStore();
-const {gameAccountLi} = storeToRefs(account)
+const {gameAccountLi, accountInfo} = storeToRefs(account)
 const {translate} = useTranslate()
 const {showMessage} = useToast();
+
+
+const gameUserID = computed(() => {
+  return global_const.getPlatform(props.gamePlatform as number) + props.gameUserName
+})
+
 const props = defineProps({
   gameUserName: String,
   gamePlatform: Number,
@@ -30,6 +43,7 @@ const accEnable: Ref = ref(false) // 基建控制中心等级大于3级 允许�
 const maxLaborValue: Ref = ref(200) // 最大基建无人机默认值
 const maxApValue: Ref = ref(140) // 最大理智默认值
 const buildingAccelerateData: Ref = ref([]) // 基建加速slot
+const inventoryData: Ref<Record<string, number>> = ref({}) // 背包数据
 const stageItems: Ref = ref([]); // 全部关卡列表
 const valuedSettings: Ref = ref({}) // 服务器返回数据+前端修改，与backed用于判断是否有修改
 const backedSettings: Ref = ref({}) // 服务器返回的设置数据的备份
@@ -104,6 +118,21 @@ function closeAutoBattleOverlay() {
   autoBattleOverlay.value = false
 }
 
+
+async function getUserInventory(force: boolean = false): Promise<Record<string, number>> {
+  if (accountInfo.value[gameUserID.value] && accountInfo.value[gameUserID.value].inventory && !force) {
+    return accountInfo.value[gameUserID.value].inventory
+  }
+  return await getGameUserInventory(props.gameUserName as string, props.gamePlatform as number).then((suc: any) => {
+    console.log("getUserInventory", suc)
+    account.setAccountInfoById(gameUserID.value, suc.data)
+    return suc.data.inventory
+  }).catch((err: any) => {
+    console.log("getUserInventoryErr", err)
+    return {}
+  })
+}
+
 function getSetting() {
   getGameSettings(props.gameUserName as string, props.gamePlatform as number).then((res: any) => {
     console.log("getGameSettings", res)
@@ -119,6 +148,10 @@ function getSetting() {
       getFinished.value = true
       return
     }
+    getUserInventory().then((data) => {
+      console.log("get Inv",data)
+      inventoryData.value = data
+    })
     getGameUserBuilding(props.gameUserName as string, props.gamePlatform as number).then((suc2: any) => {
       console.log('build', suc2)
       if (!suc2.data.building) {
@@ -719,9 +752,17 @@ onUnmounted(() => {
         </div>
       </div>
     </div>
-    <div class="overlay bg-base-200 bg-opacity-40" v-if="autoBattleOverlay">
-      <AutoBattleMapEdit :close="closeAutoBattleOverlay" :settings="valuedSettings" field="autoBattleMap"/>
-    </div>
+    <TransitionOverlay
+        :show="autoBattleOverlay"
+        class="overlay bg-base-200 bg-opacity-40"
+    >
+      <AutoBattleMapEdit
+          :inventory="inventoryData"
+          :close="closeAutoBattleOverlay"
+          :settings="valuedSettings"
+          field="autoBattleMap"
+      />
+    </TransitionOverlay>
   </div>
 </template>
 

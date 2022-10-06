@@ -118,7 +118,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <div class="flex justify-center content-center mb-3 flex-wrap">
+    <div class="mb-3 grid ark-grid">
       <!--基础物品+养成材料-->
       <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="4002" :count="computeGetUserStatus['androidDiamond']" content="安卓" :clicker="clicker"/>
       <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="4002" :count="computeGetUserStatus['iosDiamond']" content="IOS" :clicker="clicker"/>
@@ -139,3 +139,8 @@ onMounted(() => {
   </div>
 </template>
 
+<style>
+.ark-grid {
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr))
+}
+</style>

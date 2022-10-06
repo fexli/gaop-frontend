@@ -38,6 +38,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  inventory: {
+    type: Object,
+    default: {},
+  },
 })
 
 watch(() => props.info.times, (value) => {
@@ -67,15 +71,16 @@ watch(() => props.info.times, (value) => {
     </div>
     <div class="h-full w-fit absolute right-0 flex items-center">
       <div
-          class="w-fit h-fit flex si-box transition-all duration-200 hover:mr-3"
+          class="w-fit h-fit flex si-box transition-all duration-200 hover:mr-2"
           :class="info.dropInfo.length > 4 ? 'mr-7' : 'mr-5'"
       >
         <template v-for="i of info.dropInfo">
           <ItemFrame
               class="w-16 h-16 si-ctx"
+              count-x="0" count-is-left count-y="0"
               font-overlay
               :class="info.dropInfo.length > 4 ? '-mx-7' : '-mx-5'"
-              :item-id="i.id" :count="-1"
+              :item-id="i.id" :count="inventory[i.id] || -1"
           />
         </template>
       </div>
@@ -113,7 +118,7 @@ watch(() => props.info.times, (value) => {
   @apply transition-all duration-200
 
 .si-box:hover .si-ctx
-  @apply -mx-3
+  @apply -mx-2
 
 .si-text
   @apply text-center

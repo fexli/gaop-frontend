@@ -28,33 +28,33 @@
           </span>
         </button>
       </span>
-
-      <div v-show="isOpen" class="absolute mt-1 w-full rounded-md bg-gray-700 shadow-lg z-10">
-        <ul
-            tabindex="-1"
-            role="listbox"
-            aria-labelledby="listbox-label"
-            aria-activedescendant="listbox-item-3"
-            class="max-h-56 rounded-md py-1 text-base leading-6 shadow-xs overflow-auto focus:outline-none sm:text-sm sm:leading-5"
-        >
-          <li
-              tabindex="0"
-              @click="select(d[itemValue])"
-              id="listbox-item-0"
-              role="option"
-              v-for="d in list"
-              v-bind:key="d"
-              class="cursor-default select-none relative py-1 pl-2 pr-9 cursor-pointer hover:bg-indigo-400 hover:text-info focus:outline-none"
+      <Transition name="drop-down">
+        <div v-show="isOpen" class="absolute mt-1 w-full rounded-md bg-gray-700 shadow-lg z-10 overflow-hidden">
+          <ul
+              tabindex="-1"
+              role="listbox"
+              aria-labelledby="listbox-label"
+              aria-activedescendant="listbox-item-3"
+              class="max-h-56 rounded-md py-1 text-base leading-6 shadow-xs overflow-auto focus:outline-none sm:text-sm sm:leading-5"
           >
-            <div class="flex items-center space-x-3">
+            <li
+                tabindex="0"
+                @click="select(d[itemValue])"
+                id="listbox-item-0"
+                role="option"
+                v-for="d in list"
+                v-bind:key="d"
+                class="cursor-default select-none relative py-1 pl-2 pr-9 cursor-pointer hover:bg-indigo-400 hover:text-info focus:outline-none"
+            >
+              <div class="flex items-center space-x-3">
               <span
                   class="block truncate"
                   :class="isSelected(d[itemValue]) ? 'font-semibold' : 'font-normal'"
               >
                 {{ d[itemText] }}
               </span>
-            </div>
-            <span v-show="isSelected(d[itemValue])" class="absolute inset-y-0 right-0 flex items-center pr-4">
+              </div>
+              <span v-show="isSelected(d[itemValue])" class="absolute inset-y-0 right-0 flex items-center pr-4">
               <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path
                     fill-rule="evenodd"
@@ -63,9 +63,10 @@
                 />
               </svg>
             </span>
-          </li>
-        </ul>
-      </div>
+            </li>
+          </ul>
+        </div>
+      </Transition>
     </div>
   </div>
 </template>

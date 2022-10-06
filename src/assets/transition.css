@@ -1,0 +1,34 @@
+.appear-expand {
+}
+
+.appear-expand-enter-active {
+    transition: all 0.3s cubic-bezier(.12, .24, .4, 1.31);
+}
+
+.appear-expand-leave-active {
+    transition: all 0.3s cubic-bezier(.4, -0.31, .88, .76);
+}
+
+.appear-expand-enter-from,
+.appear-expand-leave-to {
+    transform: scale(0);
+    opacity: 0;
+}
+
+.drop-down {
+}
+
+.drop-down-enter-active,
+.drop-down-leave-active {
+    transition: all 0.3s ease-in-out;
+}
+
+.drop-down-enter-from,
+.drop-down-leave-to {
+    max-height: 0;
+}
+
+.drop-down-enter-to,
+.drop-down-leave-from {
+    max-height: 14rem;
+}
