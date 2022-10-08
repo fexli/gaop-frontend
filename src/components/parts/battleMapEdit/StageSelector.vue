@@ -317,10 +317,10 @@ onMounted(() => {
 <style lang="sass">
 .ss-map-select
   @apply border border-base-content w-1/2 px-1 py-0.5 rounded-md
-  max-height: 28.25rem
-  height: 28.25rem
+  max-height: 28.4rem
+  height: 28.4rem
 
 .ss-map-inner
   @apply overflow-auto overflow-x-hidden
-  height: calc(100% - 1.5rem)
+  height: calc(100% - 1.75rem)
 </style>

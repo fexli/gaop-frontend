@@ -20,7 +20,7 @@
 
 .drop-down-enter-active,
 .drop-down-leave-active {
-    transition: all 0.3s ease-in-out;
+    transition: max-height 0.2s cubic-bezier(.8,0,.33,.76);
 }
 
 .drop-down-enter-from,

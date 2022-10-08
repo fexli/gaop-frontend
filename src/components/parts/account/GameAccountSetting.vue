@@ -673,11 +673,11 @@ onUnmounted(() => {
           </Toggle>
           <Toggle
               :disabled="!valuedSettings['recruitAutoFull'] || valuedSettings['recruitIgnoreRobot'] == null"
-              :settings="valuedSettings" field="recruitIgnoreRobot" title="招募机器人词条">
+              :settings="valuedSettings" field="recruitIgnoreRobot" title="公招忽略机器人">
             <template #extra>
               <Explain>
                 <template #explain>
-                  公招是否招募机器人
+                  公招时是否忽略“支援机械”标签（小车）
                 </template>
               </Explain>
             </template>
