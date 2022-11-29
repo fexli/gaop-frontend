@@ -100,7 +100,7 @@ class WebSock {
         return () => {
             that.isActive.value = false;
             that.hasAuthed = false;
-            that.wsReconTime = 0;
+            // that.wsReconTime = 0;
             console.log("ws close");
         }
     }
@@ -116,13 +116,13 @@ class WebSock {
             }
             if (that.wsReconTime === 0) {
                 that._showMessage("ws.error_reconn", 4000, "warning");
-                that.initWebSocket()
                 that.wsReconTime += 5
-            } else if (this.wsReconTime >= 20) {
-                that._showMessage("ws.error", 200000, "danger");
+                that.initWebSocket()
+            } else if (that.wsReconTime >= 20) {
+                that._showMessage("ws.error", -1, "danger");
             } else {
                 console.log(that._showMessage)
-                that._showMessage("ws.error_reconn_t", 4000, "warning", this.wsReconTime);
+                that._showMessage("ws.error_reconn_t", 4000, "warning", that.wsReconTime);
                 setTimeout(() => {
                     that._showMessage("ws.error_reconn_r", 3000, "info");
                     that.initWebSocket()
