@@ -246,12 +246,20 @@ function mergeBuildingAcc(data: Record<any, any>) {
   }
   console.log('accEnable', accEnable.value)
   if (!accEnable.value) return
-  // TODO:自动加速，以及指定类型的加速
-  // BuildingAccelerateTypeManuExp  = "manu_exp"
-  // BuildingAccelerateTypeManuLmb  = "manu_lmb"
-  // BuildingAccelerateTypeManuDiam = "manu_diam"
-  // BuildingAccelerateTypeTradLmb  = "trad_lmb"
-  // BuildingAccelerateTypeTradDiam = "trad_diam"
+  buildingAccelerateData.value.push({
+    slot: 'auto_diam',
+    text: `自动:搓玉`,
+    type: 'AUTO',
+    value: 'aaa',
+    data: ''
+  })
+  buildingAccelerateData.value.push({
+    slot: 'auto_lmb',
+    text: `自动:造钱`,
+    type: 'AUTO',
+    value: 'aaa',
+    data: ''
+  })
   buildingAccelerateData.value.push({
     slot: 'manu_exp',
     text: `自动:制造站-经验`,
@@ -506,7 +514,7 @@ onUnmounted(() => {
           <SettingBtn
               :settings="valuedSettings" field="autoBattleMap"
               :disabled="!valuedSettings['enableAutoBattle'] || valuedSettings['autoBattleMap'] == null"
-              title="进攻关卡设置" :title-btn="parseSingleBattleParamToStr(parseBattleMap)" :clicker="showAutoBattle"
+              title="进攻关卡设置" :title-btn="parseBattleMap" :clicker="showAutoBattle"
           >
             <template #extra>
               <Explain>

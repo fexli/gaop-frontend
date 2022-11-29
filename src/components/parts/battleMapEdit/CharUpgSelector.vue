@@ -155,7 +155,7 @@ function initSelected() {
         charMngMap[curChar.CharId].skill = true
         charMngMap[curChar.CharId].hasSkill = true
         for (let j = 0; j < curChar.SkillTarget.length; j++) {
-          charMngMap[curChar.CharId]['skill_' + (curChar.SkillTarget[j].SkillId - 1)] = curChar.SkillTarget[j].Target
+          charMngMap[curChar.CharId]['skill_' + (curChar.SkillTarget[j].SkillId)] = curChar.SkillTarget[j].Target
         }
         break
     }

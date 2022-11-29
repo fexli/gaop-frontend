@@ -1,12 +1,21 @@
 <script setup lang="ts">
+import draggable from "vuedraggable";
+
 import global_const from "../../../utils/global_const";
 import {Ref} from "vue";
 import SettingSelect from "./SettingSelect.vue";
 import Explain from "../../element/Explain.vue";
 import StageSelector from "../battleMapEdit/StageSelector.vue";
-import {BattleParam, bTypeDesc, parseSingleBattleParam} from "../../../utils/autoBattleMapProc";
+import {
+  BattleParam,
+  bTypeDesc,
+  parseSingleBattleParam,
+  parseSingleBattleParamToStr
+} from "../../../utils/autoBattleMapProc";
 import {useToast} from "../../../hooks/toast";
 import CharUpgSelector from "../battleMapEdit/CharUpgSelector.vue";
+import {AutoBattleMapAtkSet, AutoBattleMapSumms} from "../../../utils/autoBattleMapSumms";
+import SettingTextInput from "./SettingTextInput.vue";
 
 const {showMessage} = useToast()
 
@@ -39,34 +48,112 @@ const bTypeIcons = {
   MANAGED: 'account-arrow-up-outline',
 } as Record<string, string>
 
-const selectAttackSettings: Ref<BattleParam> = ref(new BattleParam())
-const settingParsed = computed(() => {
-  return parseSingleBattleParam(props.settings[props.field])
-}) // 当前选中的攻击设置
+const autoBattleMapSetting: Ref<AutoBattleMapSumms> = ref(new AutoBattleMapSumms({})) // 解析后的设置
+const currentIndex: Ref<number> = ref(-1) // 当前的index
+const selectAttackSettings: Ref<BattleParam> = ref(new BattleParam()) // 当前选择的解析的进攻设置
+const needRefreshed: Ref<boolean> = ref(false) // 是否需要刷新
 
-watch(() => settingParsed.value, (val) => {
-  selectAttackSettings.value = val
+const drag = ref(false)
+
+const inDrag = ref(false)
+
+function atksRemapStart(el: any) {
+
+}
+function atksRemapEnd(el: any) {
+  console.log("drag end, change index", el.newIndex, el.oldIndex)
+  inDrag.value = true
+  // TODO:change index
+  let minOf = Math.min(el.newIndex, el.oldIndex)
+  let maxOf = Math.max(el.newIndex, el.oldIndex)
+  let isSub = el.newIndex < el.oldIndex
+  if (currentIndex.value < minOf || currentIndex.value > maxOf) {
+    return
+  }
+  if (isSub) {
+    currentIndex.value = currentIndex.value === maxOf ? minOf : currentIndex.value + 1
+  } else {
+    currentIndex.value = currentIndex.value === minOf ? maxOf : currentIndex.value - 1
+  }
+}
+
+function trySaveCurrentBattleMapSet(index: number) {
+  if (index !== -1) {
+    if ((autoBattleMapSetting.value?.atks?.length || 0) <= index) {
+      return
+    }
+    // 保存index设置
+    autoBattleMapSetting.value.atks[index].mapSetting = selectAttackSettings.value.Marshal()
+  }
+}
+
+watch(() => currentIndex.value, (index: number, old: number) => { // 监听index变化（点击切换）
+  console.log("currentIndex", old, index)
+  if (inDrag.value) {
+    console.log("in drag, ignore")
+    inDrag.value = false
+    return
+  }
+  trySaveCurrentBattleMapSet(old)
+  if (index !== -1) {
+    // 加载index设置
+    selectAttackSettings.value = parseSingleBattleParam(autoBattleMapSetting.value.atks[index].mapSetting)
+    needRefreshed.value = true
+    nextTick(() => {
+      needRefreshed.value = false
+    })
+  }
 })
 
+
 function resetBattleSetting() {
-  selectAttackSettings.value = parseSingleBattleParam(props.settings[props.field])
+  // TODO: 提示确认，然后重置成setting的设置
+  tryLoadBattleSetting()
+  // selectAttackSettings.value = parseSingleBattleParam(props.settings[props.field])
 }
 
 const data = ref({
   needApply: false,
 })
 
+function tryLoadBattleSetting() {
+  autoBattleMapSetting.value = new AutoBattleMapSumms(JSON.parse(props.settings[props.field]))
+  console.log("tryLoad", autoBattleMapSetting.value)
+  if (autoBattleMapSetting.value.atks.length > 0) {
+    currentIndex.value = 0
+  }
+}
+
+const settingParsed = computed(() => {
+  return props.settings[props.field]
+}) // 当前选中的攻击设置
+
+watch(() => settingParsed.value, (val) => {
+  tryLoadBattleSetting()
+})
+
+function addNewAtks() {
+  let data = new AutoBattleMapAtkSet({
+    mapSetting: "TYPE=AUTO",
+    conditions: {type: 1, value: 1},
+  })
+  autoBattleMapSetting.value.atks.push(data)
+}
+
 function applyBattleSetting() {
+  trySaveCurrentBattleMapSet(currentIndex.value)
   console.log(selectAttackSettings)
   // NOTE: 在apply前通知各模块进行数据汇报
   data.value.needApply = true
-  props.settings[props.field] = selectAttackSettings.value.Marshal()
+  let infoStr = JSON.stringify(autoBattleMapSetting.value)
+  props.settings[props.field] = infoStr
+  console.log("applyBattleSetting To", infoStr)
   showMessage("进攻关卡设置已更新！请注意保存设置")
   props.close()
 }
 
 onMounted(() => {
-  resetBattleSetting()
+  tryLoadBattleSetting()
 })
 </script>
 <template>
@@ -77,7 +164,7 @@ onMounted(() => {
         <div class="spacer"/>
         <div class="font-bold">AutoBattleMapEditor V0.2</div>
       </div>
-      <div class="ab-sets">
+      <div class="ab-sets" v-if="!needRefreshed">
         <SettingSelect
             class="px-2"
             :settings="selectAttackSettings"
@@ -120,6 +207,19 @@ onMounted(() => {
               :settings="selectAttackSettings" field="Managed"
           />
         </div>
+        <div
+            v-if="currentIndex < 0"
+            class="bg-base-200 rounded-md bg-opacity-90 absolute left-0 top-0 w-full h-full flex items-center justify-center text-primary select-none"
+        >
+          <svg class="w-16 h-16 animate-bounce mt-4" viewBox="0 0 24 24">
+            <path fill="currentColor" :d="global_const.mdiPath['alert-octagon-outline']"/>
+          </svg>
+          <div>
+            <div>请先在右侧选择一个</div>
+            <div>需要进行设置的攻略分组</div>
+            <div>或点击创建分组进行设置</div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="basis-1/4 border-base-content border rounded-r-lg px-1 flex flex-col">
@@ -132,17 +232,70 @@ onMounted(() => {
           </svg>
         </button>
       </div>
-      <div class="w-full h-full mb-1 border border-base-content rounded-md relative">
-        <div class="absolute p-1 text-xs">{{ selectAttackSettings }}</div>
-        <div class="absolute p-1 bottom-0 break-all text-xs">{{ settings[field] }}</div>
-        <div class="bg-base-200 bg-opacity-40 relative w-full h-full flex items-center justify-center text-primary text-opacity-60 select-none">
-          <svg class="w-16 h-16 animate-spin-slow-2x" viewBox="0 0 24 24">
-            <path fill="currentColor" :d="global_const.mdiPath['cog-outline']"/>
-          </svg>
-          <div>
-            <div>开发中</div>
-            <div>敬请期待</div>
-          </div>
+      <div class="h-full mb-1 border border-base-content rounded-md relative flex flex-col">
+<!--        <div class="p-1 text-xs text-info">[D]当前选择：{{-->
+<!--            parseSingleBattleParamToStr(selectAttackSettings.Marshal())-->
+<!--          }}-->
+<!--        </div>-->
+
+        <div class="flex px-1">
+          <div class="px-1 -mb-1 text-sm">进攻组合参数</div>
+          <div class="spacer"/>
+          <div class="fe-btn fe-btn_absr" @click="addNewAtks">新增</div>
+        </div>
+        <div style="width: calc(100% - 0.5rem)"
+             class="relative m-1 rounded-md border border-base-content h-44 overflow-x-hidden">
+          <draggable
+              class="w-full absolute"
+              :component-data="{
+                      type:'transition-group',
+                    }"
+              :list="autoBattleMapSetting?.atks || []"
+              :group="{name:'maps',put:false}"
+              @start="drag = true"
+              @end="drag = false"
+              :onEnd="atksRemapEnd"
+              :onStart="atksRemapStart"
+              item-key="name"
+          >
+            <template #item="{ element,index }">
+              <div
+                  @click="currentIndex = index"
+                  class="border border-base-content rounded-md text-sm"
+              >
+                <div class="break-words">
+                  {{ element }} - {{ index }}
+                </div>
+              </div>
+            </template>
+          </draggable>
+        </div>
+
+        <div class="p-1 bottom-0 break-all text-xs">{{ autoBattleMapSetting }}</div>
+        <!--        <SettingTextInput :settings="autoBattleMapSetting" field="fbid" title="默认关卡" width="w-20"/>-->
+        <!--        <div class="w-full h-44">-->
+        <!--          <draggable-->
+        <!--              class="ss-map-inner"-->
+        <!--              :component-data="{-->
+        <!--            type:'transition-group',-->
+        <!--          }"-->
+        <!--              :list="list2"-->
+        <!--              :group="{name:'people',put:true}"-->
+        <!--              @start="drag = true"-->
+        <!--              @end="drag = false"-->
+        <!--              item-key="name"-->
+        <!--          >-->
+        <!--            <template #item="{ element }">-->
+        <!--              <div>{{ element }}</div>-->
+        <!--            </template>-->
+        <!--          </draggable>-->
+        <!--        </div>-->
+
+        <div class="spacer"/>
+        <div class="flex px-1">
+          <div class="text-xs text-gray-500">参数版本:{{ autoBattleMapSetting?.ver }}</div>
+          <div class="spacer"/>
+          <div class="text-xs text-gray-500">配置时间:{{ autoBattleMapSetting?.ts }}</div>
         </div>
       </div>
       <button @click="resetBattleSetting" type="button" class="fe-btn ab-btn-rst rounded-md w-full text-primary mb-1">
@@ -164,7 +317,7 @@ onMounted(() => {
   max-height: 80%
 
 .ab-sets
-  @apply w-full border border-base-content rounded-md
+  @apply w-full border border-base-content rounded-md relative
   height: calc(100% - 2rem)
 
 .ab-inner
