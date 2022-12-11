@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {Ref} from "vue";
+import {onMounted, Ref} from "vue";
 import {set} from "nprogress";
 
 const props = defineProps({
@@ -34,6 +34,12 @@ watch(() => props.show, (val: boolean) => {
   } else {
     isClosing.value = true
     setTimeout(tryCloseBeforeOpen, props.duration)
+  }
+})
+
+onMounted(() => {
+  if (props.show) {
+    isOpen.value = true
   }
 })
 </script>
