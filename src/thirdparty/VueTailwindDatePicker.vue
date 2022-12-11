@@ -5,7 +5,7 @@ import VtdWeek from './vtdcomp/Week.vue'
 import VtdYear from './vtdcomp/Year.vue'
 import VtdCalendar from './vtdcomp/Calendar.vue'
 import VtdShortcut from './vtdcomp/Shortcut.vue'
-import { Popover, PopoverButton, PopoverPanel, PopoverOverlay } from '@headlessui/vue'
+import {Popover, PopoverButton, PopoverPanel, PopoverOverlay} from '@headlessui/vue'
 import dayjs from 'dayjs'
 import localeData from 'dayjs/plugin/localeData'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
@@ -13,7 +13,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 import isToday from 'dayjs/plugin/isToday'
 import isBetween from 'dayjs/plugin/isBetween'
 import duration from 'dayjs/plugin/duration'
-import { ref, reactive, computed, provide, nextTick, isProxy, watchEffect, watch, unref } from 'vue'
+import {ref, reactive, computed, provide, nextTick, isProxy, watchEffect, watch, unref} from 'vue'
 import useDate from './composables/date'
 import useDom from './composables/dom'
 
@@ -27,7 +27,7 @@ const {
   useToValueFromString
 } = useDate()
 
-const { useVisibleViewport } = useDom()
+const {useVisibleViewport} = useDom()
 
 dayjs.extend(localeData)
 dayjs.extend(localizedFormat)
@@ -140,49 +140,49 @@ const datepicker = ref({
 const weeks = computed(() => datepicker.value.weeks)
 const months = computed(() => datepicker.value.months)
 const calendar = computed(() => {
-  const { previous, next, year } = unref(datepicker)
+  const {previous, next, year} = unref(datepicker)
   return {
     previous: {
       date: () => {
         return usePreviousDate(previous)
-          .concat(useCurrentDate(previous))
-          .concat(useNextDate(previous))
-          .map((v) => {
-            v.today = v.isToday()
-            v.active = previous.month() === v.month()
-            v.off = previous.month() !== v.month()
-            v.sunday = v.day() === 0
-            v.disabled = useDisableDate(v, props) && !inRangeDate(v)
-            v.inRange = () => {
-              if (props.asSingle && !props.useRange) {
-                return previous.month() !== v.month()
+            .concat(useCurrentDate(previous))
+            .concat(useNextDate(previous))
+            .map((v) => {
+              v.today = v.isToday()
+              v.active = previous.month() === v.month()
+              v.off = previous.month() !== v.month()
+              v.sunday = v.day() === 0
+              v.disabled = useDisableDate(v, props) && !inRangeDate(v)
+              v.inRange = () => {
+                if (props.asSingle && !props.useRange) {
+                  return previous.month() !== v.month()
+                }
               }
-            }
-            v.hovered = () => {
-              if (!asRange()) return false
-              if (hoverValue.value.length > 1) {
-                return (
-                  (v.isBetween(hoverValue.value[0], hoverValue.value[1], 'date', '()') ||
-                    v.isBetween(hoverValue.value[1], hoverValue.value[0], 'date', '(]')) &&
-                  previous.month() === v.month()
-                )
+              v.hovered = () => {
+                if (!asRange()) return false
+                if (hoverValue.value.length > 1) {
+                  return (
+                      (v.isBetween(hoverValue.value[0], hoverValue.value[1], 'date', '()') ||
+                          v.isBetween(hoverValue.value[1], hoverValue.value[0], 'date', '(]')) &&
+                      previous.month() === v.month()
+                  )
+                }
+                return false
               }
-              return false
-            }
-            v.duration = () => {
-              return false
-            }
-            return v
-          })
+              v.duration = () => {
+                return false
+              }
+              return v
+            })
       },
       month: previous && previous.format(props.formatter.month),
       year: previous && previous.year(),
       years: () => {
         return Array.from(
-          {
-            length: 12
-          },
-          (v, k) => year.previous + k
+            {
+              length: 12
+            },
+            (v, k) => year.previous + k
         )
       },
       onPrevious: () => {
@@ -212,8 +212,8 @@ const calendar = computed(() => {
         panel.previous.calendar = !panel.previous.month
         nextTick(() => {
           if (
-            datepicker.value.next.isSame(datepicker.value.previous, 'month') ||
-            datepicker.value.next.isBefore(datepicker.value.previous)
+              datepicker.value.next.isSame(datepicker.value.previous, 'month') ||
+              datepicker.value.next.isBefore(datepicker.value.previous)
           ) {
             datepicker.value.next = datepicker.value.previous.add(1, 'month')
           }
@@ -232,8 +232,8 @@ const calendar = computed(() => {
           panel.previous.calendar = !panel.previous.year
           nextTick(() => {
             if (
-              datepicker.value.next.isSame(datepicker.value.previous, 'month') ||
-              datepicker.value.next.isBefore(datepicker.value.previous)
+                datepicker.value.next.isSame(datepicker.value.previous, 'month') ||
+                datepicker.value.next.isBefore(datepicker.value.previous)
             ) {
               datepicker.value.next = datepicker.value.previous.add(1, 'month')
             }
@@ -246,43 +246,43 @@ const calendar = computed(() => {
     next: {
       date: () => {
         return usePreviousDate(next)
-          .concat(useCurrentDate(next))
-          .concat(useNextDate(next))
-          .map((v) => {
-            v.today = v.isToday()
-            v.active = next.month() === v.month()
-            v.off = next.month() !== v.month()
-            v.sunday = v.day() === 0
-            v.disabled = useDisableDate(v, props) && !inRangeDate(v)
-            v.inRange = () => {
-              if (props.asSingle && !props.useRange) {
-                return next.month() !== v.month()
+            .concat(useCurrentDate(next))
+            .concat(useNextDate(next))
+            .map((v) => {
+              v.today = v.isToday()
+              v.active = next.month() === v.month()
+              v.off = next.month() !== v.month()
+              v.sunday = v.day() === 0
+              v.disabled = useDisableDate(v, props) && !inRangeDate(v)
+              v.inRange = () => {
+                if (props.asSingle && !props.useRange) {
+                  return next.month() !== v.month()
+                }
               }
-            }
-            v.hovered = () => {
-              if (hoverValue.value.length > 1) {
-                return (
-                  (v.isBetween(hoverValue.value[0], hoverValue.value[1], 'date', '()') ||
-                    v.isBetween(hoverValue.value[1], hoverValue.value[0], 'date', '(]')) &&
-                  next.month() === v.month()
-                )
+              v.hovered = () => {
+                if (hoverValue.value.length > 1) {
+                  return (
+                      (v.isBetween(hoverValue.value[0], hoverValue.value[1], 'date', '()') ||
+                          v.isBetween(hoverValue.value[1], hoverValue.value[0], 'date', '(]')) &&
+                      next.month() === v.month()
+                  )
+                }
+                return false
               }
-              return false
-            }
-            v.duration = () => {
-              return false
-            }
-            return v
-          })
+              v.duration = () => {
+                return false
+              }
+              return v
+            })
       },
       month: next && next.format(props.formatter.month),
       year: next && next.year(),
       years: () => {
         return Array.from(
-          {
-            length: 12
-          },
-          (v, k) => year.next + k
+            {
+              length: 12
+            },
+            (v, k) => year.next + k
         )
       },
       onPrevious: () => {
@@ -312,8 +312,8 @@ const calendar = computed(() => {
         panel.next.calendar = !panel.next.month
         nextTick(() => {
           if (
-            datepicker.value.previous.isSame(datepicker.value.next, 'month') ||
-            datepicker.value.previous.isAfter(datepicker.value.next)
+              datepicker.value.previous.isSame(datepicker.value.next, 'month') ||
+              datepicker.value.previous.isAfter(datepicker.value.next)
           ) {
             datepicker.value.previous = datepicker.value.next.subtract(1, 'month')
           }
@@ -333,8 +333,8 @@ const calendar = computed(() => {
           panel.next.calendar = !panel.next.year
           nextTick(() => {
             if (
-              datepicker.value.previous.isSame(datepicker.value.next, 'month') ||
-              datepicker.value.previous.isAfter(datepicker.value.next)
+                datepicker.value.previous.isSame(datepicker.value.next, 'month') ||
+                datepicker.value.previous.isAfter(datepicker.value.next)
             ) {
               datepicker.value.previous = datepicker.value.next.subtract(1, 'month')
             }
@@ -439,14 +439,14 @@ const keyUp = () => {
         emit('update:modelValue', obj)
       } else {
         emit(
-          'update:modelValue',
-          useToValueFromArray(
-            {
-              previous: sd,
-              next: ed
-            },
-            props
-          )
+            'update:modelValue',
+            useToValueFromArray(
+                {
+                  previous: sd,
+                  next: ed
+                },
+                props
+            )
         )
       }
     }
@@ -475,19 +475,19 @@ const setDate = (date, asNext, close) => {
       if (props.autoApply) {
         if (date.isBefore(previous.value)) {
           pickerValue.value = useToValueFromArray(
-            {
-              previous: date,
-              next: previous.value
-            },
-            props
+              {
+                previous: date,
+                next: previous.value
+              },
+              props
           )
         } else {
           pickerValue.value = useToValueFromArray(
-            {
-              previous: previous.value,
-              next: date
-            },
-            props
+              {
+                previous: previous.value,
+                next: date
+              },
+              props
           )
         }
         const [s, e] = pickerValue.value.split(props.separator)
@@ -505,14 +505,14 @@ const setDate = (date, asNext, close) => {
           emit('update:modelValue', obj)
         } else {
           emit(
-            'update:modelValue',
-            useToValueFromArray(
-              {
-                previous: dayjs(s, props.formatter.date, true),
-                next: dayjs(e, props.formatter.date, true)
-              },
-              props
-            )
+              'update:modelValue',
+              useToValueFromArray(
+                  {
+                    previous: dayjs(s, props.formatter.date, true),
+                    next: dayjs(e, props.formatter.date, true)
+                  },
+                  props
+              )
           )
         }
         if (close) {
@@ -588,19 +588,19 @@ const applyDate = (close) => {
     const [s, e] = applyValue.value
     if (e.isBefore(s)) {
       date = useToValueFromArray(
-        {
-          previous: e,
-          next: s
-        },
-        props
+          {
+            previous: e,
+            next: s
+          },
+          props
       )
     } else {
       date = useToValueFromArray(
-        {
-          previous: s,
-          next: e
-        },
-        props
+          {
+            previous: s,
+            next: e
+          },
+          props
       )
     }
   } else {
@@ -623,14 +623,14 @@ const applyDate = (close) => {
       emit('update:modelValue', obj)
     } else {
       emit(
-        'update:modelValue',
-        useToValueFromArray(
-          {
-            previous: dayjs(s, props.formatter.date, true),
-            next: dayjs(e, props.formatter.date, true)
-          },
-          props
-        )
+          'update:modelValue',
+          useToValueFromArray(
+              {
+                previous: dayjs(s, props.formatter.date, true),
+                next: dayjs(e, props.formatter.date, true)
+              },
+              props
+          )
       )
     }
     pickerValue.value = date
@@ -712,7 +712,7 @@ const isBetweenRange = (date) => {
 }
 
 const datepickerClasses = (date) => {
-  const { today, active, off, disabled } = date
+  const {today, active, off, disabled} = date
   let classes, s, e
   if (asRange()) {
     if (useArray()) {
@@ -799,12 +799,12 @@ const datepickerClasses = (date) => {
   }
   if (active) {
     classes = today
-      ? `text-vtd-primary-500 font-semibold dark:text-vtd-primary-400 rounded-full`
-      : disabled
-      ? `text-vtd-secondary-600 font-normal disabled:text-vtd-secondary-500 disabled:cursor-not-allowed rounded-full`
-      : date.isBetween(s, e, 'date', '()')
-      ? `text-vtd-secondary-700 font-medium dark:text-vtd-secondary-100 rounded-full`
-      : `text-vtd-secondary-600 font-medium dark:text-vtd-secondary-200 rounded-full`
+        ? `text-vtd-primary-500 font-semibold dark:text-vtd-primary-400 rounded-full`
+        : disabled
+            ? `text-vtd-secondary-600 font-normal disabled:text-vtd-secondary-500 disabled:cursor-not-allowed rounded-full`
+            : date.isBetween(s, e, 'date', '()')
+                ? `text-vtd-secondary-700 font-medium dark:text-vtd-secondary-100 rounded-full`
+                : `text-vtd-secondary-600 font-medium dark:text-vtd-secondary-200 rounded-full`
   }
   if (off) {
     classes = `text-vtd-secondary-400 font-light disabled:cursor-not-allowed`
@@ -812,16 +812,16 @@ const datepickerClasses = (date) => {
   if (s && e && !off) {
     if (date.isSame(s, 'date')) {
       classes = e.isAfter(s, 'date')
-        ? 'bg-vtd-primary-500 text-white font-bold rounded-l-full disabled:cursor-not-allowed'
-        : 'bg-vtd-primary-500 text-white font-bold rounded-r-full disabled:cursor-not-allowed'
+          ? 'bg-vtd-primary-500 text-white font-bold rounded-l-full disabled:cursor-not-allowed'
+          : 'bg-vtd-primary-500 text-white font-bold rounded-r-full disabled:cursor-not-allowed'
       if (s.isSame(e, 'date')) {
         classes = `bg-vtd-primary-500 text-white font-bold rounded-full disabled:cursor-not-allowed`
       }
     }
     if (date.isSame(e, 'date')) {
       classes = e.isAfter(s, 'date')
-        ? 'bg-vtd-primary-500 text-white font-bold rounded-r-full disabled:cursor-not-allowed'
-        : 'bg-vtd-primary-500 text-white font-bold rounded-l-full disabled:cursor-not-allowed'
+          ? 'bg-vtd-primary-500 text-white font-bold rounded-r-full disabled:cursor-not-allowed'
+          : 'bg-vtd-primary-500 text-white font-bold rounded-l-full disabled:cursor-not-allowed'
       if (s.isSame(e, 'date')) {
         classes = `bg-vtd-primary-500 text-white font-bold rounded-full disabled:cursor-not-allowed`
       }
@@ -917,15 +917,15 @@ const forceEmit = (s, e) => {
   datepicker.value.previous = dayjs(s, props.formatter.date, true)
   datepicker.value.next = dayjs(e, props.formatter.date, true)
   if (
-    dayjs.duration(datepicker.value.next.diff(datepicker.value.previous)).$d.months === 2 ||
-    (dayjs.duration(datepicker.value.next.diff(datepicker.value.previous)).$d.months === 1 &&
-      dayjs.duration(datepicker.value.next.diff(datepicker.value.previous)).$d.days === 7)
+      dayjs.duration(datepicker.value.next.diff(datepicker.value.previous)).$d.months === 2 ||
+      (dayjs.duration(datepicker.value.next.diff(datepicker.value.previous)).$d.months === 1 &&
+          dayjs.duration(datepicker.value.next.diff(datepicker.value.previous)).$d.days === 7)
   ) {
     datepicker.value.next = datepicker.value.next.subtract(1, 'month')
   }
   if (
-    datepicker.value.next.isSame(datepicker.value.previous, 'month') ||
-    datepicker.value.next.isBefore(datepicker.value.previous)
+      datepicker.value.next.isSame(datepicker.value.previous, 'month') ||
+      datepicker.value.next.isBefore(datepicker.value.previous)
   ) {
     datepicker.value.next = datepicker.value.previous.add(1, 'month')
   }
@@ -944,14 +944,14 @@ const emitShortcut = (s, e) => {
         emit('update:modelValue', obj)
       } else {
         emit(
-          'update:modelValue',
-          useToValueFromArray(
-            {
-              previous: dayjs(s, props.formatter.date, true),
-              next: dayjs(e, props.formatter.date, true)
-            },
-            props
-          )
+            'update:modelValue',
+            useToValueFromArray(
+                {
+                  previous: dayjs(s, props.formatter.date, true),
+                  next: dayjs(e, props.formatter.date, true)
+                },
+                props
+            )
         )
       }
       pickerValue.value = `${s}${props.separator}${e}`
@@ -997,8 +997,8 @@ const setToYesterday = (close) => {
 
 const setToLastDay = (day, close) => {
   const s = dayjs()
-    .subtract(day - 1, 'day')
-    .format(props.formatter.date)
+      .subtract(day - 1, 'day')
+      .format(props.formatter.date)
   const e = dayjs().format(props.formatter.date)
 
   emitShortcut(s, e)
@@ -1023,7 +1023,7 @@ const setToLastMonth = (close) => {
 
 const setToCustomShortcut = (item, close) => {
   let s, e
-  const [d, dd] = item.atClick()
+  const [d, dd] = item.atClick(props.modelValue)
   s = dayjs(d).format(props.formatter.date)
   e = dayjs(dd).format(props.formatter.date)
 
@@ -1032,18 +1032,18 @@ const setToCustomShortcut = (item, close) => {
 }
 
 watch(
-  () => applyValue.value,
-  (newValue) => {
-    if (newValue.length > 0) {
-      panel.previous.calendar = true
-      panel.previous.month = false
-      panel.previous.year = false
+    () => applyValue.value,
+    (newValue) => {
+      if (newValue.length > 0) {
+        panel.previous.calendar = true
+        panel.previous.month = false
+        panel.previous.year = false
 
-      panel.next.calendar = true
-      panel.next.month = false
-      panel.next.year = false
+        panel.next.calendar = true
+        panel.next.month = false
+        panel.next.year = false
+      }
     }
-  }
 )
 
 watchEffect(() => {
@@ -1080,14 +1080,14 @@ watchEffect(() => {
                 console.log(Object.keys(props.modelValue))
               } catch (e) {
                 console.warn(
-                  '[Vue Tailwind Datepicker]: It looks like you want to use Object as the argument %cv-model',
-                  'font-style: italic; color: #42b883;',
-                  ', but you pass it undefined or null.'
+                    '[Vue Tailwind Datepicker]: It looks like you want to use Object as the argument %cv-model',
+                    'font-style: italic; color: #42b883;',
+                    ', but you pass it undefined or null.'
                 )
                 console.warn(
-                  `[Vue Tailwind Datepicker]: We has replace with %c{ startDate: '', endDate: '' }`,
-                  'font-style: italic; color: #42b883;',
-                  ', but you can replace manually.'
+                    `[Vue Tailwind Datepicker]: We has replace with %c{ startDate: '', endDate: '' }`,
+                    'font-style: italic; color: #42b883;',
+                    ', but you can replace manually.'
                 )
                 emit('update:modelValue', {
                   startDate: '',
@@ -1110,11 +1110,11 @@ watchEffect(() => {
 
           if (s && e) {
             pickerValue.value = useToValueFromArray(
-              {
-                previous: s,
-                next: e
-              },
-              props
+                {
+                  previous: s,
+                  next: e
+                },
+                props
             )
             if (e.isBefore(s, 'month')) {
               datepicker.value.previous = e
@@ -1178,11 +1178,11 @@ watchEffect(() => {
         datepicker.value.weeks = isFirstMonday() ? shuffleWeekdays(dayjs.weekdaysShort()) : dayjs.weekdaysShort()
         datepicker.value.months = props.formatter.month === 'MMM' ? dayjs.monthsShort() : dayjs.months()
       })
-      .catch((e) => {
-        console.warn(
-          e.message
-        )
-      })
+          .catch((e) => {
+            console.warn(
+                e.message
+            )
+          })
     }
   })
 })
@@ -1222,52 +1222,52 @@ provide('setToCustomShortcut', setToCustomShortcut)
 
 <template>
   <Popover v-slot="{ open }" as="div" id="vtd" class="relative w-full">
-    <PopoverOverlay v-if="props.overlay" class="fixed inset-0 bg-black opacity-30" />
+    <PopoverOverlay v-if="props.overlay" class="fixed inset-0 bg-black opacity-30"/>
 
     <PopoverButton as="label" class="relative block">
       <slot :value="pickerValue" :placeholder="givenPlaceholder" :clear="clearPicker">
         <input
-          ref="VtdInputRef"
-          type="text"
-          class="relative block w-full"
-          :class="
+            ref="VtdInputRef"
+            type="text"
+            class="relative block w-full"
+            :class="
             inputClasses ||
             'pl-3 pr-12 py-2.5 rounded-lg overflow-hidden border-solid text-sm text-vtd-secondary-700 placeholder-vtd-secondary-400 transition-colors bg-white border border-vtd-secondary-300 focus:border-vtd-primary-300 focus:ring focus:ring-vtd-primary-500 focus:ring-opacity-10 focus:outline-none dark:bg-vtd-secondary-800 dark:border-vtd-secondary-700 dark:text-vtd-secondary-100 dark:placeholder-vtd-secondary-500 dark:focus:border-vtd-primary-500 dark:focus:ring-opacity-20'
           "
-          autocomplete="off"
-          data-lpignore="true"
-          data-form-type="other"
-          v-bind="$attrs"
-          v-model="pickerValue"
-          :placeholder="givenPlaceholder"
-          @keyup="keyUp"
+            autocomplete="off"
+            data-lpignore="true"
+            data-form-type="other"
+            v-bind="$attrs"
+            v-model="pickerValue"
+            :placeholder="givenPlaceholder"
+            @keyup="keyUp"
         />
         <div class="absolute inset-y-0 right-0 inline-flex items-center rounded-md overflow-hidden">
           <button
-            type="button"
-            class="px-2 py-1 mr-1 focus:outline-none text-vtd-secondary-400 dark:text-opacity-70 rounded-md"
-            @click="pickerValue ? clearPicker() : $refs.VtdInputRef.focus()"
+              type="button"
+              class="px-2 py-1 mr-1 focus:outline-none text-vtd-secondary-400 dark:text-opacity-70 rounded-md"
+              @click="pickerValue ? clearPicker() : $refs.VtdInputRef.focus()"
           >
             <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                v-if="pickerValue"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="1.5"
-                d="M6 18L18 6M6 6l12 12"
+                  v-if="pickerValue"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M6 18L18 6M6 6l12 12"
               ></path>
               <path
-                v-else
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="1.5"
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  v-else
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
               ></path>
             </svg>
           </button>
@@ -1276,90 +1276,90 @@ provide('setToCustomShortcut', setToCustomShortcut)
     </PopoverButton>
 
     <transition
-      enter-from-class="opacity-0 translate-y-3"
-      enter-to-class="opacity-100 translate-y-0"
-      enter-active-class="transform transition ease-out duration-200"
-      leave-active-class="transform transition ease-in duration-150"
-      leave-from-class="opacity-100 translate-y-0"
-      leave-to-class="opacity-0 translate-y-3"
+        enter-from-class="opacity-0 translate-y-3"
+        enter-to-class="opacity-100 translate-y-0"
+        enter-active-class="transform transition ease-out duration-200"
+        leave-active-class="transform transition ease-in duration-150"
+        leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 translate-y-3"
     >
       <PopoverPanel as="div" class="relative z-50" v-slot="{ close }">
         <div class="absolute z-50 top-full sm:mt-2.5" :class="getAbsoluteParentClass(open)">
           <div
-            ref="VtdRef"
-            class="fixed inset-0 z-50 overflow-y-auto sm:overflow-visible sm:static sm:z-auto bg-white dark:bg-vtd-secondary-800 sm:rounded-lg shadow-sm"
+              ref="VtdRef"
+              class="fixed inset-0 z-50 overflow-y-auto sm:overflow-visible sm:static sm:z-auto bg-white dark:bg-vtd-secondary-800 sm:rounded-lg shadow-sm"
           >
             <div
-              class="vtd-datepicker static sm:relative w-full bg-white sm:rounded-lg sm:shadow-sm border-0 sm:border border-black/[.1] px-3 py-3 sm:px-4 sm:py-4 dark:bg-vtd-secondary-800 dark:border-vtd-secondary-700/[1]"
-              :class="getAbsoluteClass(open)"
+                class="vtd-datepicker static sm:relative w-full bg-white sm:rounded-lg sm:shadow-sm border-0 sm:border border-black/[.1] px-3 py-3 sm:px-4 sm:py-4 dark:bg-vtd-secondary-800 dark:border-vtd-secondary-700/[1]"
+                :class="getAbsoluteClass(open)"
             >
               <div class="flex flex-wrap lg:flex-nowrap">
                 <vtd-shortcut
-                  v-if="props.shortcuts"
-                  :shortcuts="props.shortcuts"
-                  :as-range="asRange()"
-                  :as-single="props.asSingle"
-                  :i18n="props.options.shortcuts"
-                  :close="close"
+                    v-if="props.shortcuts"
+                    :shortcuts="props.shortcuts"
+                    :as-range="asRange()"
+                    :as-single="props.asSingle"
+                    :i18n="props.options.shortcuts"
+                    :close="close"
                 />
                 <div class="relative flex flex-wrap sm:flex-nowrap p-1">
                   <div
-                    v-if="asRange() && !props.asSingle"
-                    class="hidden h-full absolute inset-0 sm:flex justify-center items-center"
+                      v-if="asRange() && !props.asSingle"
+                      class="hidden h-full absolute inset-0 sm:flex justify-center items-center"
                   >
                     <div class="h-full border-r border-black/[.1] dark:border-vtd-secondary-700/[1]"></div>
                   </div>
                   <div
-                    class="relative w-full sm:w-80"
-                    :class="{
+                      class="relative w-full sm:w-80"
+                      :class="{
                       'mb-3 sm:mb-0 sm:mr-2': asRange() && !props.asSingle
                     }"
                   >
-                    <vtd-header :panel="panel.previous" :calendar="calendar.previous" />
+                    <vtd-header :panel="panel.previous" :calendar="calendar.previous"/>
                     <div class="px-0.5 sm:px-2">
                       <vtd-month
-                        v-show="panel.previous.month"
-                        :months="months"
-                        @update:month="calendar.previous.setMount"
+                          v-show="panel.previous.month"
+                          :months="months"
+                          @update:month="calendar.previous.setMount"
                       />
                       <vtd-year
-                        v-show="panel.previous.year"
-                        :years="calendar.previous.years()"
-                        @update:year="calendar.previous.setYear"
+                          v-show="panel.previous.year"
+                          :years="calendar.previous.years()"
+                          @update:year="calendar.previous.setYear"
                       />
                       <div v-show="panel.previous.calendar">
-                        <vtd-week :weeks="weeks" />
+                        <vtd-week :weeks="weeks"/>
                         <vtd-calendar
-                          :calendar="calendar.previous"
-                          :weeks="weeks"
-                          :as-range="asRange()"
-                          @update:date="(date, asNext) => setDate(date, asNext, close)"
+                            :calendar="calendar.previous"
+                            :weeks="weeks"
+                            :as-range="asRange()"
+                            @update:date="(date, asNext) => setDate(date, asNext, close)"
                         />
                       </div>
                     </div>
                   </div>
 
                   <div
-                    v-if="asRange() && !props.asSingle"
-                    class="relative w-full sm:w-80 overflow-hidden mt-3 sm:mt-0 sm:ml-2"
+                      v-if="asRange() && !props.asSingle"
+                      class="relative w-full sm:w-80 overflow-hidden mt-3 sm:mt-0 sm:ml-2"
                   >
-                    <vtd-header as-prev-or-next :panel="panel.next" :calendar="calendar.next" />
+                    <vtd-header as-prev-or-next :panel="panel.next" :calendar="calendar.next"/>
                     <div class="px-0.5 sm:px-2">
-                      <vtd-month v-show="panel.next.month" :months="months" @update:month="calendar.next.setMount" />
+                      <vtd-month v-show="panel.next.month" :months="months" @update:month="calendar.next.setMount"/>
                       <vtd-year
-                        as-prev-or-next
-                        v-show="panel.next.year"
-                        :years="calendar.next.years()"
-                        @update:year="calendar.next.setYear"
+                          as-prev-or-next
+                          v-show="panel.next.year"
+                          :years="calendar.next.years()"
+                          @update:year="calendar.next.setYear"
                       />
                       <div v-show="panel.next.calendar">
-                        <vtd-week :weeks="weeks" />
+                        <vtd-week :weeks="weeks"/>
                         <vtd-calendar
-                          as-prev-or-next
-                          :calendar="calendar.next"
-                          :weeks="weeks"
-                          :as-range="asRange()"
-                          @update:date="(date, asNext) => setDate(date, asNext, close)"
+                            as-prev-or-next
+                            :calendar="calendar.next"
+                            :weeks="weeks"
+                            :as-range="asRange()"
+                            @update:date="(date, asNext) => setDate(date, asNext, close)"
                         />
                       </div>
                     </div>
@@ -1370,17 +1370,17 @@ provide('setToCustomShortcut', setToCustomShortcut)
                 <div class="mt-2 mx-2 py-1.5 border-t border-black/[.1] dark:border-vtd-secondary-700/[1]">
                   <div class="mt-1.5 sm:flex sm:flex-row-reverse">
                     <button
-                      type="button"
-                      class="away-apply-picker w-full transition ease-out duration-300 inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-vtd-primary-600 text-base font-medium text-white hover:bg-vtd-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vtd-primary-500 sm:ml-3 sm:w-auto sm:text-sm dark:ring-offset-vtd-secondary-800 disabled:cursor-not-allowed"
-                      :disabled="props.asSingle ? applyValue.length < 1 : applyValue.length < 2"
-                      @click="applyDate(close)"
-                      v-text="props.options.footer.apply"
+                        type="button"
+                        class="away-apply-picker w-full transition ease-out duration-300 inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-vtd-primary-600 text-base font-medium text-white hover:bg-vtd-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vtd-primary-500 sm:ml-3 sm:w-auto sm:text-sm dark:ring-offset-vtd-secondary-800 disabled:cursor-not-allowed"
+                        :disabled="props.asSingle ? applyValue.length < 1 : applyValue.length < 2"
+                        @click="applyDate(close)"
+                        v-text="props.options.footer.apply"
                     ></button>
                     <button
-                      type="button"
-                      @click="close()"
-                      class="mt-3 away-cancel-picker w-full transition ease-out duration-300 inline-flex justify-center rounded-md border border-vtd-secondary-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-vtd-secondary-700 hover:bg-vtd-secondary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vtd-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm dark:ring-offset-vtd-secondary-800"
-                      v-text="props.options.footer.cancel"
+                        type="button"
+                        @click="close()"
+                        class="mt-3 away-cancel-picker w-full transition ease-out duration-300 inline-flex justify-center rounded-md border border-vtd-secondary-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-vtd-secondary-700 hover:bg-vtd-secondary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vtd-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm dark:ring-offset-vtd-secondary-800"
+                        v-text="props.options.footer.cancel"
                     ></button>
                   </div>
                 </div>
@@ -1389,10 +1389,10 @@ provide('setToCustomShortcut', setToCustomShortcut)
                 <div class="mt-2 mx-2 py-1.5 border-t border-black/[.1] dark:border-vtd-secondary-700/[1]">
                   <div class="mt-1.5 sm:flex sm:flex-row-reverse">
                     <button
-                      type="button"
-                      @click="close()"
-                      class="away-cancel-picker w-full transition ease-out duration-300 inline-flex justify-center rounded-md border border-vtd-secondary-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-vtd-secondary-700 hover:bg-vtd-secondary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vtd-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm dark:ring-offset-vtd-secondary-800"
-                      v-text="props.options.footer.cancel"
+                        type="button"
+                        @click="close()"
+                        class="away-cancel-picker w-full transition ease-out duration-300 inline-flex justify-center rounded-md border border-vtd-secondary-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-vtd-secondary-700 hover:bg-vtd-secondary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vtd-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm dark:ring-offset-vtd-secondary-800"
+                        v-text="props.options.footer.cancel"
                     ></button>
                   </div>
                 </div>
@@ -1409,20 +1409,23 @@ provide('setToCustomShortcut', setToCustomShortcut)
 .vtd-datepicker-overlay.open::before {
   @apply block opacity-50;
 }
+
 .vtd-datepicker::before {
   --vtd-datepicker: 0px;
   content: '';
   @apply absolute top-0 w-4 h-4 bg-white shadow border border-black/[.1] dark:bg-vtd-secondary-800 dark:border-vtd-secondary-700;
   transform: translate(50%, -50%) rotate(-45deg);
   clip-path: polygon(
-    calc(var(--vtd-datepicker) * -1) calc(var(--vtd-datepicker) * -1),
-    calc(100% + var(--vtd-datepicker)) calc(var(--vtd-datepicker) * -1),
-    calc(100% + var(--vtd-datepicker)) calc(100% + var(--vtd-datepicker))
+      calc(var(--vtd-datepicker) * -1) calc(var(--vtd-datepicker) * -1),
+      calc(100% + var(--vtd-datepicker)) calc(var(--vtd-datepicker) * -1),
+      calc(100% + var(--vtd-datepicker)) calc(100% + var(--vtd-datepicker))
   );
 }
+
 .vtd-datepicker.place-left::before {
   @apply left-1;
 }
+
 .vtd-datepicker.place-right::before {
   @apply right-5;
 }

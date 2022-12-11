@@ -12,6 +12,7 @@ import "./assets/global.sass";
 import "./assets/animate.css";
 import "./assets/transition.css";
 import "./assets/aside.css";
+import 'vue-color-kit/dist/vue-color-kit.css'
 import './utils/geetest'
 import {i18n} from "./local";
 import global_const from "./utils/global_const";
