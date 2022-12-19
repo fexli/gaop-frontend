@@ -284,6 +284,7 @@ export const en = {
         cards: 'Cards',
         arkdb: 'ArkDB',
         gacha: 'Gacha',
+        test_spine: 'Spine',
         account: {
             dashboard: 'Dashboard',
         },

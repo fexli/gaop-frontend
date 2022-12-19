@@ -10,9 +10,9 @@ export const zhHans = {
         error_reconn_t: 'WS连接已断开，{0}秒后尝试重连',
     },
     game: {
-        troop:{
-          filter_star: '筛选星级',
-          filter_prof: '筛选职业',
+        troop: {
+            filter_star: '筛选星级',
+            filter_prof: '筛选职业',
         },
         restart: {
             success: '账号 {0} 重启完成~',
@@ -86,7 +86,7 @@ export const zhHans = {
                 get: '获取',
                 dump: '保存',
             },
-            action:{
+            action: {
                 ref_gd: '成功刷新游戏元数据',
                 getall_success: '成功获取全部游戏元数据',
                 getall_success_gsp: '成功获取全部GSP数据',
@@ -151,7 +151,7 @@ export const zhHans = {
             recruit_finish: '您有{0}个公招已完成，记得及时去聘用~',
             mission_d: '您本日任务还未全部完成，还不可以休息哦~',
             mission_w: '您本周任务还未全部完成，请及时查看并完成',
-            climb_tower:'您本次保全派驻周期还未完成，请及时完成！',
+            climb_tower: '您本次保全派驻周期还未完成，请及时完成！',
         }
     },
     account: {
@@ -176,7 +176,7 @@ export const zhHans = {
         create_welcome: '欢迎来到创建账号向导，您可以在这里创建一个新的游戏账号，并将其托管到GAOP。',
         create_account_empty: '添加账号表单部分为空：{0}',
         delete_btn: '删除账号',
-        delete_deny:'取消',
+        delete_deny: '取消',
         delete_confirm: '警告：删除操作将不可恢复，所有账号记录及账号信息将被清除！',
         delete_title: '确认删除账号{0}',
         stop_all_account: '停止所有账号',
@@ -283,6 +283,7 @@ export const zhHans = {
         cards: '卡片',
         arkdb: '方舟数据库',
         gacha: '宰人航天',
+        test_spine: 'Spine测试',
         account: {
             dashboard: '账号控制面板',
         },
@@ -308,7 +309,7 @@ export const zhHans = {
         settings: '设置',
         account_mng: '账号管理',
     },
-    captcha:{
+    captcha: {
         title: '需要验证码',
         desc: '当前账号需要验证码登录，请等待并完成下面的验证码操作，请注意：本验证码仅能使用一次，若未完成验证前刷新页面则需要重新进行登录验证流程',
         status: "验证码状态：{0}",

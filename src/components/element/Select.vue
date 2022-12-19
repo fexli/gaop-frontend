@@ -1,20 +1,21 @@
 <template>
-  <div class="mr-1 my-1 text-primary">
+  <div class="mr-1 my-1 text-primary" :class="width">
     <label id="listbox-label" class="block text-sm leading-5 font-medium bg-base-300">
       <slot name="SelectLabel"></slot>
     </label>
 
-    <div class="relative w-fit min-w-[17rem]" v-click-away="onClickAway">
-      <span class="inline-block w-full rounded-md shadow-sm">
+    <div class="relative w-fit min-w-[17rem]" v-click-away="onClickAway" :class="width">
+      <span class="inline-block w-full rounded-md shadow-sm" :class="width">
         <button
             type="button"
             @click="openDropdown"
             aria-haspopup="listbox"
             aria-expanded="true"
             aria-labelledby="listbox-label"
-            class="cursor-pointer relative w-full rounded-md border bg-base-300 pl-1 pr-6 py-0.5 text-left border-primary
+            class="cursor-pointer relative rounded-md border bg-base-300 pl-1 pr-6 py-0.5 text-left border-primary
           focus:outline-none hover:border-info
           transition ease-in-out duration-150 sm:leading-5"
+            :class="width?width:'w-full'"
         >
           <div class="flex items-center space-x-3">
             <span class="block font-bold pl-0.5" style="font-size: 0.875rem">
@@ -88,6 +89,10 @@ const props = defineProps({
     default: "value",
   },
   value: String,
+  width: {
+    type: String,
+    default: ''
+  },
 })
 const emit = defineEmits(['valueSelect'])
 const isOpen = ref(false)

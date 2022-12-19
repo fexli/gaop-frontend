@@ -68,6 +68,7 @@ const load_list: Record<string, any>[] = [
         rT.push(entr.rarity + 1, entr.name)
       }
       global_const.gameData.charRateTag = rT
+      global_const.onGameData("charRateTag")
       return data
     }
   },
@@ -95,12 +96,12 @@ const load_list: Record<string, any>[] = [
     field: 'uniequipTable',
     loc: 'excel/uniequip_table.json',
   },
-  // {
-  //   name: 'skin_table',
-  //   title: '皮肤数据',
-  //   field: 'skinTable',
-  //   loc: 'excel/skin_table.json',
-  // },
+  {
+    name: 'skin_table',
+    title: '皮肤数据',
+    field: 'skinTable',
+    loc: 'excel/skin_table.json',
+  },
   {
     name: 'gacha_data',
     title: '卡池数据',
@@ -112,10 +113,12 @@ const load_list: Record<string, any>[] = [
       for (let tags of data.gachaTags) {
         global_const.gameData.recruitTags[tags.tagId.toString()] = tags
       }
+      global_const.onGameData("recruitTags")
       global_const.gameData.recruitPool = {}
       for (let Tt of data.recruitPool['recruitTimeTable']) {
         global_const.gameData.recruitPool[Tt['timeLength'].toString()] = Tt
       }
+      global_const.onGameData("recruitPool")
       return data
     }
   },
@@ -182,11 +185,13 @@ function loadNextAsset() {
         if (task.parser !== undefined) {
           try {
             global_const.gameData[task.field] = task.parser(xhr.response)
+            global_const.onGameData(task.field)
           } catch (e) {
             console.error(`catch exception at ${task.name} ${e}`)
           }
         } else {
           global_const.gameData[task.field] = JSON.parse(xhr.response)
+          global_const.onGameData(task.field)
         }
         task.isFinished = true
         val.value += 1

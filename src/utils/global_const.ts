@@ -123,6 +123,21 @@ const loadingGIF = [
 // const gameConstData = require('../data/gamedata_const.json')
 // const skillData = require('../data/skill_table.json')
 
+export const getXHR = (url: string) => {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest()
+        xhr.open('GET', url, true)
+        xhr.responseType = 'json'
+        xhr.onload = () => {
+            resolve(xhr.response)
+        }
+        xhr.onerror = () => {
+            reject(xhr)
+        }
+        xhr.send()
+    })
+}
+
 const platformSelector = [
     {
         text: 'IOS',
@@ -209,9 +224,31 @@ const mdiPath: Record<string, string> = {
     "gift-off-outline": "M21 6H17.83C17.94 5.69 18 5.35 18 5C18 3.34 16.66 2 15 2C14 2 13.12 2.5 12.57 3.24V3.23L12 4L11.43 3.23V3.24C10.88 2.5 10 2 9 2C7.97 2 7.06 2.5 6.5 3.32L8.03 4.83C8.12 4.36 8.5 4 9 4C9.55 4 10 4.45 10 5C10 5.5 9.64 5.88 9.17 5.97L13 9.8V8H21V10H13.2L15.2 12H20V16.8L22 18.8V12C22.55 12 23 11.55 23 11V8C23 6.9 22.11 6 21 6M15 6C14.45 6 14 5.55 14 5S14.45 4 15 4 16 4.45 16 5 15.55 6 15 6M1.11 3L4.11 6H3C1.9 6 1 6.9 1 8V11C1 11.55 1.45 12 2 12V20C2 21.11 2.9 22 4 22H20C20.03 22 20.07 22 20.1 22L21.56 23.45L22.83 22.18L2.39 1.73L1.11 3M13 14.89L18.11 20H13V14.89M11 12.89V20H4V12H10.11L11 12.89M8.11 10H3V8H6.11L8.11 10Z",
     "video-off-outline": "M3.41,1.86L2,3.27L4.73,6H4A1,1 0 0,0 3,7V17A1,1 0 0,0 4,18H16C16.21,18 16.39,17.92 16.55,17.82L19.73,21L21.14,19.59L12.28,10.73L3.41,1.86M5,16V8H6.73L14.73,16H5M15,8V10.61L21,16.61V6.5L17,10.5V7A1,1 0 0,0 16,6H10.39L12.39,8H15Z",
     "close": "M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z",
+    "alert-octagon-outline": "M8.27,3L3,8.27V15.73L8.27,21H15.73C17.5,19.24 21,15.73 21,15.73V8.27L15.73,3M9.1,5H14.9L19,9.1V14.9L14.9,19H9.1L5,14.9V9.1M11,15H13V17H11V15M11,7H13V13H11V7",
+    "clipboard-text-clock-outline": "M21 11.11V5C21 3.9 20.11 3 19 3H14.82C14.4 1.84 13.3 1 12 1S9.6 1.84 9.18 3H5C3.9 3 3 3.9 3 5V19C3 20.11 3.9 21 5 21H11.11C12.37 22.24 14.09 23 16 23C19.87 23 23 19.87 23 16C23 14.09 22.24 12.37 21 11.11M12 3C12.55 3 13 3.45 13 4S12.55 5 12 5 11 4.55 11 4 11.45 3 12 3M5 19V5H7V7H17V5H19V9.68C18.09 9.25 17.08 9 16 9H7V11H11.1C10.5 11.57 10.04 12.25 9.68 13H7V15H9.08C9.03 15.33 9 15.66 9 16C9 17.08 9.25 18.09 9.68 19H5M16 21C13.24 21 11 18.76 11 16S13.24 11 16 11 21 13.24 21 16 18.76 21 16 21M16.5 16.25L19.36 17.94L18.61 19.16L15 17V12H16.5V16.25Z",
     "": "",
 }
 const gameData: Record<string, any> = {}
+const gameDataLoaders: { name: string, fn: Function }[] = []
+const onGameData = (name: string) => {
+    gameDataLoaders.filter(loader => loader.name === name).forEach(loader => loader.fn(gameData[name]))
+    for (let i = 0; i < gameDataLoaders.length; i++) {
+        if (gameDataLoaders[i].name === name) {
+            gameDataLoaders.splice(i, 1)
+            i--
+        }
+    }
+}
+const onGameDataLoaded = (name: string, fn: Function) => {
+    if (gameData[name]) {
+        fn(gameData[name])
+    } else {
+        gameDataLoaders.push({
+            name: name,
+            fn: fn
+        })
+    }
+}
 
 const profNick = {
     CASTER: "术士",
@@ -253,6 +290,8 @@ export default {
     getPlatform: getPlatformAka,
     getUserLogName,
     gameData,
+    onGameDataLoaded,
+    onGameData,
     mdiPath,
     assetServer,
     profNick
