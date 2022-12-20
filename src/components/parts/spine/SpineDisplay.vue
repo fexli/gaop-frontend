@@ -1,7 +1,12 @@
 <template>
   <div class="card bg-base-300 overflow-visible">
     <div class="card-body flex flex-row">
-      <canvas ref="canvas" width="750" height="750" class="h-80 w-80 ring-1 ring-primary rounded-xl"/>
+      <canvas
+          @mousedown="canvasMouseDown"
+          @mouseup="canvasMouseUp"
+          @mousemove="canvasMouseMove"
+          :onmousewheel="canvasScroll"
+          ref="canvas" width="750" height="750" class="h-80 w-80 ring-1 ring-primary rounded-xl"/>
       <div class="flex flex-col ml-2">
         <Select
             class="my-0 mr-0 mb-3"
@@ -114,7 +119,7 @@
         <input
             type="range" :min="0.1" :max="7"
             v-model="currentSettings.scale"
-            class="range range-sm range-primary" step="0.1"
+            class="range range-sm range-primary" :step="0.1"
         />
         <div class="w-full flex justify-between text-xs px-2 mb-2">
           <span>播放速度: {{ currentSettings.scale }}x</span>
@@ -123,14 +128,13 @@
         <div class="flex">
           <button @click="record" class="btn btn-xs btn-primary mr-3">导出WEBM</button>
           <button @click="record" class="btn btn-xs btn-primary mr-3">查看动画数据</button>
-          <button @click="record" class="btn btn-xs btn-primary">重置模型</button>
+          <button @click="resetModel" class="btn btn-xs btn-primary">重置模型</button>
         </div>
       </div>
     </div>
     <!--    <div>{{ animationsDetail }}</div>-->
     <!--    <div>{{ animations }}</div>-->
   </div>
-
 </template>
 <script setup lang="ts">
 import {computed, onMounted, ref} from 'vue'
@@ -285,6 +289,52 @@ async function loadSpineCustom() {
 
 }
 
+const canvasTrans = ref({
+  dragging: false,
+  prevX: 0,
+  prevY: 0,
+  x: 0,
+  y: 0,
+  scale: 1,
+})
+
+const canvasMouseDown = (e: MouseEvent) => {
+  canvasTrans.value.dragging = true
+  canvasTrans.value.prevX = e.clientX
+  canvasTrans.value.prevY = e.clientY
+}
+const canvasMouseUp = (e: MouseEvent) => {
+  canvasTrans.value.dragging = false
+}
+const canvasMouseMove = (e: MouseEvent) => {
+  if (canvasTrans.value.dragging) {
+    canvasTrans.value.x = e.clientX - canvasTrans.value.prevX
+    canvasTrans.value.y = e.clientY - canvasTrans.value.prevY
+    canvasTrans.value.prevX = e.clientX
+    canvasTrans.value.prevY = e.clientY
+    currentSettings.value.x -= (canvasTrans.value.x * (75 / 32) * (1 / currentSettings.value.pscale))
+    currentSettings.value.y += (canvasTrans.value.y * (75 / 32) * (1 / currentSettings.value.pscale))
+    spineRef.spine?.move(currentSettings.value.x, currentSettings.value.y)
+
+  }
+}
+
+const canvasScroll = function (e: any) {
+  console.log("canvasScroll", e)
+  e.preventDefault()
+  if (e.deltaY < 0) {
+    currentSettings.value.pscale += 0.1
+  } else {
+    currentSettings.value.pscale -= 0.1
+  }
+  spineRef.spine?.scale(currentSettings.value.pscale)
+}
+const resetModel = () => {
+  currentSettings.value.x = -400
+  currentSettings.value.y = -150
+  currentSettings.value.pscale = 1
+  spineRef.spine?.transform(currentSettings.value.x, currentSettings.value.y, 1)
+}
 
 const isLoading = ref(true)
 const currentSettings = ref({
@@ -297,6 +347,10 @@ const currentSettings = ref({
   loop: false,
   color: '#00000000',
   scale: 1,
+
+  x: 0,
+  y: 0,
+  pscale: 1,
 })
 
 const settingMode = [
@@ -322,6 +376,9 @@ async function load() {
         scale: 1,
       },
   )
+  currentSettings.value.x = -400
+  currentSettings.value.y = -150
+  currentSettings.value.pscale = 1
   const names = (animations.value = skeleton.data.animations.map(
       (v: any) => v.name,
   ))
@@ -345,6 +402,18 @@ watch(() => currentSettings.value.skin, (val) => {
 
 
 onMounted(() => {
+  //@ts-ignore
+  HTMLCanvasElement.prototype.getContext = function (origFn) {
+    return function (type, attributes) {
+      if (type === 'webgl' || type === 'webgl2') {
+        attributes = Object.assign({}, attributes, {
+          preserveDrawingBuffer: true,
+        });
+      }
+      //@ts-ignore
+      return origFn.call(this, type, attributes);
+    };
+  }(HTMLCanvasElement.prototype.getContext);
   console.warn('canvas', canvas.value)
   if (!canvas.value) {
     return
@@ -452,12 +521,12 @@ async function record() {
   if (currentSettings.value.mode === '0') {
     await spineRef.spine.record(
         currentSettings.value.ani,
-        `${currentSettings.value.char}-${currentSettings.value.skin}-${currentSettings.value.model}.webm`,
+        `${currentSettings.value.char}-${currentSettings.value.skin}-${currentSettings.value.model}.gif`,
     )
   } else if (currentSettings.value.mode === '1') {
     await spineRef.spine.record(
         currentSettings.value.ani,
-        `${customSkel.value.name.replace('.skel','')}-${currentSettings.value.ani}.webm`,
+        `${customSkel.value.name.replace('.skel', '')}-${currentSettings.value.ani}.gif`,
     )
   }
   recording.value = false

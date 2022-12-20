@@ -1,5 +1,6 @@
 //@ts-ignore
 import {spine} from "./spine-webgl"
+import {GifRecorder} from "./GifRecorder";
 
 function downloadBlob(blob: Blob, filename: string) {
     const url = URL.createObjectURL(blob)
@@ -288,7 +289,6 @@ export class Spine {
     }
 
     move(x: number, y: number): void {
-        console.log(x, y)
         if (!this.activeSkeleton) {
             return
         }
@@ -334,12 +334,28 @@ export class Spine {
         if (!this.activeSkeleton) {
             throw new Error('activeSkeleton is empty')
         }
-        const stream = this.canvas.captureStream(60)
+        // const stream = this.canvas.captureStream(60)
         const chunks: BlobPart[] = []
-        const mr = new MediaRecorder(stream,)
-        mr.ondataavailable = (e: BlobEvent) => {
+        // const mr = new MediaRecorder(stream,)
+        const mr = new GifRecorder(this.canvas, {})
+
+        mr.addEventListener("dataavailable", (e:any) => {
+            console.log('dataavailable', e)
             chunks.push(e.data)
-        }
+            const blob = new Blob(chunks, {
+                type: 'image/gif',
+            })
+            downloadBlob(blob, name || 'output')
+            state.clearListeners()
+            // res()
+        })
+        mr.addEventListener("stop", (e:any) => {
+            console.log('MR stop', e)
+        })
+
+        // mr.ondataavailable = (e: BlobEvent) => {
+        //     chunks.push(e.data)
+        // }
         let started = false
         const state = this.skeletons[this.activeSkeleton].state
 
@@ -347,7 +363,7 @@ export class Spine {
             start: (_: any) => {
                 console.log('start')
                 started = true
-                mr.start()
+                mr.start(0)
             },
             end: noop,
             interrupt: noop,
@@ -363,16 +379,11 @@ export class Spine {
         })
         state.setAnimation(0, ani, false)
 
-        return new Promise<void>((res, rej) => {
-            mr.onstop = () => {
-                const blob = new Blob(chunks, {
-                    type: 'image/gif',
-                })
-                downloadBlob(blob, name || 'output')
-                state.clearListeners()
-                res()
-            }
-        })
+        // return new Promise<void>((res, rej) => {
+        //     mr.onstop = () => {
+        //
+        //     }
+        // })
     }
 }
 
