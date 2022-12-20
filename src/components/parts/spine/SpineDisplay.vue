@@ -103,7 +103,7 @@
         </div>
         <div class="w-full h-[0.075rem] bg-primary mb-3"></div>
         <div class="flex">
-          <div title="Change Color" class="dropdown dropdown-right dropdown-top w-28">
+          <div title="Change Color" class="dropdown dropdown-right dropdown-top w-20">
             <label tabindex="0" :style="`background-color: ${currentSettings.color}`"
                    class="gap-1 normal-case mr-2 rounded-md p-0.5 px-1" style="font-size: 15px">
               {{ currentSettings.color || "点我设置" }}
@@ -120,10 +120,18 @@
           <SettingToggle
               :disabled="recording"
               :settings="currentSettings"
-              title="循环动作"
-              enable-text="是"
-              disable-text="否"
+              enable-text="循环"
+              disable-text="单次"
               field="loop"
+              padding="p-0 pl-3 pb-3"
+              text-class="text-primary"
+          />
+          <SettingToggle
+              :disabled="recording"
+              :settings="currentSettings"
+              enable-text="调试"
+              disable-text="常规"
+              field="debug"
               padding="p-0 pl-3 pb-3"
               text-class="text-primary"
           />
@@ -138,9 +146,30 @@
           <span>播放速度: {{ currentSettings.scale }}x</span>
           <span>|</span>
         </div>
-        <div class="flex">
-          <button :disabled="recording" @click="record" class="btn btn-xs btn-primary mr-3">导出WEBM</button>
-          <button :disabled="recording" @click="record" class="btn btn-xs btn-primary mr-3">查看动画数据</button>
+        <div class="flex items-center">
+          <button :disabled="recording" @click="record" class="btn btn-xs btn-primary mr-3">导出GIF</button>
+          <div class="dropdown dropdown-hover dropdown-left dropdown-top">
+            <button :disabled="recording" class="btn btn-xs btn-primary mr-3">查看动画数据</button>
+            <div
+                class="dropdown-content bg-base-200 text-base-content ring-1 ring-primary rounded-t-box rounded-b-box -mb-5 overflow-visible shadow-lg">
+              <table class="m-2 table table-zebra table-compact">
+                <thead>
+                <tr>
+                  <th class="lh-.2">名称</th>
+                  <th class="lh-.2">时长</th>
+                  <th class="lh-.2">帧数(30fps)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="ani in animationsDetail" :key="ani.name">
+                  <td class="lh-.2">{{ ani.name }}</td>
+                  <td class="lh-.2">{{ ani.duration.toFixed(3) }}s</td>
+                  <td class="lh-.2">{{ Math.round(ani.duration * 30) }}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
           <button :disabled="recording" @click="resetModel" class="btn btn-xs btn-primary">重置模型</button>
         </div>
       </div>
@@ -149,7 +178,14 @@
         v-if="recording"
         class="flex flex-col items-center justify-center left-0 top-0 z-40 absolute w-full h-full bg-base-300 bg-opacity-40 rounded-xl"
     >
-      <div class="loading-spinner mb-8"></div>
+      <div v-if="recordLoadAnim" class="loading-spinner mb-8">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
       <div class="ml-5 text-title text-3xl font-mono font-bold">{{ recordInfo }}</div>
     </div>
     <!--    <div>{{ animationsDetail }}</div>-->
@@ -210,7 +246,7 @@ const findSkinName = (key: string) => {
   }
   if (realName === "") {
     if (key == currentSettings.value.char) {
-      return "默认"
+      return refName + "默认"
     }
     realName = key
   }
@@ -311,9 +347,9 @@ async function loadSpineCustom() {
       customSkel.value.name,
       customAtlas.value.name,
       {
-        x: -380,
-        y: -150,
-        scale: 1,
+        x: canvasTrans.value.x,
+        y: canvasTrans.value.y,
+        scale: canvasTrans.value.scale,
       },
   )
   const names = (animations.value = skeleton.data.animations.map(
@@ -373,15 +409,17 @@ const canvasTrans = ref({
   dragging: false,
   prevX: 0,
   prevY: 0,
-  x: -380,
+  x: -300,
   y: -150,
   scale: 1,
 })
 
 const isLoading = ref(true)
+const recordLoadAnim = ref(false)
 const recordInfo = ref("")
 const currentSettings = ref({
   mode: '0', // 0=model 1=custom
+  debug: false,
   charSearch: '',
   char: '',
   skin: '',
@@ -546,6 +584,12 @@ watch(() => currentSettings.value.loop, (val) => {
   state.setAnimation(0, state.tracks[0]?.animation?.name || '', val)
 })
 
+watch(() => currentSettings.value.debug, (val) => {
+  if (spineRef.spine) {
+    spineRef.spine.debug = val
+  }
+})
+
 function onChangeColor(e: any) {
   currentSettings.value.color = e.hex
   if (!spineRef.spine) {
@@ -572,9 +616,6 @@ function reset() {
   spineRef.spine?.transform(-500, -200, 1)
 }
 
-const supportWebm =
-    window.MediaRecorder &&
-    MediaRecorder.isTypeSupported('video/webm')
 const recording = ref(false)
 
 async function record() {
@@ -586,15 +627,22 @@ async function record() {
     await spineRef.spine.record(
         currentSettings.value.ani,
         `${currentSettings.value.char}-${currentSettings.value.skin}-${currentSettings.value.model}.gif`,
-        recordInfo
+        recordInfo, recordLoadAnim
     )
   } else if (currentSettings.value.mode === '1') {
     await spineRef.spine.record(
         currentSettings.value.ani,
         `${customSkel.value.name.replace('.skel', '')}-${currentSettings.value.ani}.gif`,
-        recordInfo
+        recordInfo, recordLoadAnim
     )
   }
-  recording.value = false
+  setTimeout(() => {
+    recording.value = false
+    recordLoadAnim.value = false
+  }, 1000)
 }
 </script>
+<style lang="sass">
+.lh-\.2
+  line-height: .2rem
+</style>

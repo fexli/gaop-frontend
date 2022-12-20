@@ -197,8 +197,8 @@ export class Spine {
         this.mvp.ortho2d(
             position.x,
             position.y,
-            this.canvas.width * position.scale,
-            this.canvas.height * position.scale,
+            this.canvas.width / position.scale,
+            this.canvas.height / position.scale,
         )
         this.skeletons[name] = {
             skeleton,
@@ -331,7 +331,7 @@ export class Spine {
         )
     }
 
-    async record(ani: string, name: string, process: Ref<string>): Promise<void> {
+    async record(ani: string, name: string, process: Ref<string>, loadanim: Ref<boolean>): Promise<void> {
         if (!this.activeSkeleton) {
             process.value = "activeSkeleton is empty"
             throw new Error('activeSkeleton is empty')
@@ -366,6 +366,9 @@ export class Spine {
                 }
                 console.log('end')
                 mr.stop()
+                setTimeout(() => {
+                    loadanim.value = true
+                }, 20)
             },
             event: noop,
         })

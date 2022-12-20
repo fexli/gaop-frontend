@@ -1,34 +1,56 @@
 .loading-spinner {
-    --height-of-loading-spinner: 4px;
-    --loading-spinner-color: #0071e2;
-    width: 60%;
-    height: var(--height-of-loading-spinner);
-    border-radius: 30px;
-    background-color: rgba(0,0,0,0.2);
-    position: relative;
+    width: 44px;
+    height: 44px;
+    animation: loading-spinner-y0fdc1 2s infinite ease;
+    transform-style: preserve-3d;
 }
 
-.loading-spinner::before {
-    content: "";
-    position: absolute;
-    background: var(--loading-spinner-color);
-    top: 0;
-    left: 0;
-    width: 0%;
+.loading-spinner > div {
+    background-color: rgba(0,77,255,0.2);
     height: 100%;
-    border-radius: 30px;
-    animation: moving 1s ease-in-out infinite;
-;
+    position: absolute;
+    width: 100%;
+    border: 2px solid #004dff;
 }
 
-@keyframes moving {
+.loading-spinner div:nth-of-type(1) {
+    transform: translateZ(-22px) rotateY(180deg);
+}
+
+.loading-spinner div:nth-of-type(2) {
+    transform: rotateY(-270deg) translateX(50%);
+    transform-origin: top right;
+}
+
+.loading-spinner div:nth-of-type(3) {
+    transform: rotateY(270deg) translateX(-50%);
+    transform-origin: center left;
+}
+
+.loading-spinner div:nth-of-type(4) {
+    transform: rotateX(90deg) translateY(-50%);
+    transform-origin: top center;
+}
+
+.loading-spinner div:nth-of-type(5) {
+    transform: rotateX(-90deg) translateY(50%);
+    transform-origin: bottom center;
+}
+
+.loading-spinner div:nth-of-type(6) {
+    transform: translateZ(22px);
+}
+
+@keyframes loading-spinner-y0fdc1 {
+    0% {
+        transform: rotate(45deg) rotateX(-25deg) rotateY(25deg);
+    }
+
     50% {
-        width: 100%;
+        transform: rotate(45deg) rotateX(-385deg) rotateY(25deg);
     }
 
     100% {
-        width: 0;
-        right: 0;
-        left: unset;
+        transform: rotate(45deg) rotateX(-385deg) rotateY(385deg);
     }
 }
