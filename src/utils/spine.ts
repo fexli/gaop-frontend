@@ -1,6 +1,7 @@
 //@ts-ignore
 import {spine} from "./spine-webgl"
 import {GifRecorder} from "./GifRecorder";
+import {Ref} from "vue";
 
 function downloadBlob(blob: Blob, filename: string) {
     const url = URL.createObjectURL(blob)
@@ -330,8 +331,9 @@ export class Spine {
         )
     }
 
-    async record(ani: string, name: string): Promise<void> {
+    async record(ani: string, name: string, process: Ref<string>): Promise<void> {
         if (!this.activeSkeleton) {
+            process.value = "activeSkeleton is empty"
             throw new Error('activeSkeleton is empty')
         }
         // const stream = this.canvas.captureStream(60)
@@ -339,31 +341,21 @@ export class Spine {
         // const mr = new MediaRecorder(stream,)
         const mr = new GifRecorder(this.canvas, {})
 
-        mr.addEventListener("dataavailable", (e:any) => {
-            console.log('dataavailable', e)
-            chunks.push(e.data)
-            const blob = new Blob(chunks, {
-                type: 'image/gif',
-            })
-            downloadBlob(blob, name || 'output')
-            state.clearListeners()
-            // res()
-        })
-        mr.addEventListener("stop", (e:any) => {
-            console.log('MR stop', e)
-        })
-
         // mr.ondataavailable = (e: BlobEvent) => {
         //     chunks.push(e.data)
         // }
         let started = false
         const state = this.skeletons[this.activeSkeleton].state
 
+        mr.addEventListener("process", (e: any) => {
+            process.value = e.detail
+        })
         state.addListener({
             start: (_: any) => {
                 console.log('start')
                 started = true
                 mr.start(0)
+                process.value = "录制中"
             },
             end: noop,
             interrupt: noop,
@@ -379,11 +371,19 @@ export class Spine {
         })
         state.setAnimation(0, ani, false)
 
-        // return new Promise<void>((res, rej) => {
-        //     mr.onstop = () => {
-        //
-        //     }
-        // })
+        return new Promise<void>((res, rej) => {
+            mr.addEventListener("dataavailable", (e: any) => {
+                console.log('dataavailable', e)
+                chunks.push(e.data)
+                const blob = new Blob(chunks, {
+                    type: 'image/gif',
+                })
+                downloadBlob(blob, name || 'output.gif')
+                state.clearListeners()
+                process.value = "导出完成"
+                res()
+            })
+        })
     }
 }
 

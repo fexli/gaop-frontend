@@ -259,6 +259,7 @@ const profNick = {
     MEDIC: "医疗",
     SPECIAL: "特种",
     WARRIOR: "近卫",
+    TOKEN: "召唤物",
     "": "未筛选",
 } as Record<string, string>
 

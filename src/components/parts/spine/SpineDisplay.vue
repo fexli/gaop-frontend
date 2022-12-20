@@ -9,6 +9,7 @@
           ref="canvas" width="750" height="750" class="h-80 w-80 ring-1 ring-primary rounded-xl"/>
       <div class="flex flex-col ml-2">
         <Select
+            :disabled="recording"
             class="my-0 mr-0 mb-3"
             :value="currentSettings.mode"
             :list="settingMode"
@@ -19,6 +20,7 @@
           <template v-if="!customSpineSetting.is_loaded">
             <div class="form-control w-full">
               <input type="file" @change="changeCustomSkel" multiple
+                     :disabled="recording"
                      class="file-input file-input-xs file-input-primary file-input-bordered w-full"/>
               <label class="label -my-1">
                 <span class="label-text-alt">Skel文件</span>
@@ -41,6 +43,7 @@
             <div class="mb-3">模型已装载{{ customSkel.name }}</div>
             <Select
                 class="my-0 mr-0 mb-3"
+                :disabled="recording"
                 :value="currentSettings.ani"
                 :list="animationsDetail"
                 item-text="name"
@@ -48,13 +51,17 @@
                 @valueSelect="onSelectAni"
             />
             <div class="flex mb-3">
-              <button @click="unloadSpineCustom" class="btn btn-xs btn-primary mr-3">卸载</button>
+              <button
+                  @click="unloadSpineCustom" :disabled="recording"
+                  class="btn btn-xs btn-primary mr-3">卸载
+              </button>
             </div>
           </template>
         </div>
         <div v-else>
           <div class="flex w-full">
             <SettingTextInput
+                :disabled="recording"
                 :settings="currentSettings"
                 placeholder="检索名称"
                 field="charSearch"
@@ -62,6 +69,7 @@
                 padding="p-0 -mt-[0.1rem]"
             />
             <Select
+                :disabled="recording"
                 width="w-[11.5rem]"
                 class="my-0 mr-0 mb-3"
                 :value="currentSettings.char"
@@ -70,18 +78,21 @@
             />
           </div>
           <Select
+              :disabled="recording"
               class="my-0 mr-0 mb-3"
               :value="currentSettings.skin"
               :list="charSkins"
               @valueSelect="onSelectSkin"
           />
           <Select
+              :disabled="recording"
               class="my-0 mr-0 mb-3"
               :value="currentSettings.model"
               :list="charModels"
               @valueSelect="onSelectModel"
           />
           <Select
+              :disabled="recording"
               class="my-0 mr-0 mb-3"
               :value="currentSettings.ani"
               :list="animationsDetail"
@@ -107,6 +118,7 @@
             </div>
           </div>
           <SettingToggle
+              :disabled="recording"
               :settings="currentSettings"
               title="循环动作"
               enable-text="是"
@@ -117,6 +129,7 @@
           />
         </div>
         <input
+            :disabled="recording"
             type="range" :min="0.1" :max="7"
             v-model="currentSettings.scale"
             class="range range-sm range-primary" :step="0.1"
@@ -126,11 +139,18 @@
           <span>|</span>
         </div>
         <div class="flex">
-          <button @click="record" class="btn btn-xs btn-primary mr-3">导出WEBM</button>
-          <button @click="record" class="btn btn-xs btn-primary mr-3">查看动画数据</button>
-          <button @click="resetModel" class="btn btn-xs btn-primary">重置模型</button>
+          <button :disabled="recording" @click="record" class="btn btn-xs btn-primary mr-3">导出WEBM</button>
+          <button :disabled="recording" @click="record" class="btn btn-xs btn-primary mr-3">查看动画数据</button>
+          <button :disabled="recording" @click="resetModel" class="btn btn-xs btn-primary">重置模型</button>
         </div>
       </div>
+    </div>
+    <div
+        v-if="recording"
+        class="flex flex-col items-center justify-center left-0 top-0 z-40 absolute w-full h-full bg-base-300 bg-opacity-40 rounded-xl"
+    >
+      <div class="loading-spinner mb-8"></div>
+      <div class="ml-5 text-title text-3xl font-mono font-bold">{{ recordInfo }}</div>
     </div>
     <!--    <div>{{ animationsDetail }}</div>-->
     <!--    <div>{{ animations }}</div>-->
@@ -174,6 +194,7 @@ const charSkins = computed(() => {
     } : {key, value: key}
   })
 })
+
 const findSkinName = (key: string) => {
   let refName = ""
   let realName = ""
@@ -184,7 +205,7 @@ const findSkinName = (key: string) => {
   key = key.replace("#", '_').replace('@', '_')
   for (let skin in global_const.gameData.skinTable.charSkins) {
     if (skin.replace("#", '_').replace('@', '_') === key) {
-      realName = global_const.gameData.skinTable.charSkins[skin].displaySkin.skinName
+      realName = global_const.gameData.skinTable.charSkins[skin]?.displaySkin.skinName || findTokenName(key) || skin.substring(skin.lastIndexOf('_') + 1)
     }
   }
   if (realName === "") {
@@ -195,9 +216,30 @@ const findSkinName = (key: string) => {
   }
   return refName + realName
 }
+
+const findTokenName = (key: string) => {
+  if (!key.startsWith('token')) {
+    return ""
+  }
+  for (let skin in global_const.gameData.skinTable.charSkins) {
+    for (let token of (global_const.gameData.skinTable.charSkins[skin].tokenSkinMap || [])) {
+      if (token.tokenSkinId.replace("#", '_').replace('@', '_') === key) {
+        return global_const.gameData.skinTable.charSkins[skin]?.displaySkin.skinName
+      }
+    }
+  }
+}
+const modelNamed: Record<string, any> = {
+  Spine: "模型",
+  Front: "正面",
+  Back: "背面",
+}
 const charModels = computed(() => {
   return Object.keys((spineSumms.value[currentSettings.value.char] || {})[currentSettings.value.skin] || {}).map((key) => {
-    return {key, value: key}
+    return {
+      key: modelNamed[key] || key,
+      value: key
+    }
   })
 })
 const customSpineSetting = ref({
@@ -269,7 +311,7 @@ async function loadSpineCustom() {
       customSkel.value.name,
       customAtlas.value.name,
       {
-        x: -400,
+        x: -380,
         y: -150,
         scale: 1,
       },
@@ -289,15 +331,6 @@ async function loadSpineCustom() {
 
 }
 
-const canvasTrans = ref({
-  dragging: false,
-  prevX: 0,
-  prevY: 0,
-  x: 0,
-  y: 0,
-  scale: 1,
-})
-
 const canvasMouseDown = (e: MouseEvent) => {
   canvasTrans.value.dragging = true
   canvasTrans.value.prevX = e.clientX
@@ -308,13 +341,13 @@ const canvasMouseUp = (e: MouseEvent) => {
 }
 const canvasMouseMove = (e: MouseEvent) => {
   if (canvasTrans.value.dragging) {
-    canvasTrans.value.x = e.clientX - canvasTrans.value.prevX
-    canvasTrans.value.y = e.clientY - canvasTrans.value.prevY
+    let revoke_x = e.clientX - canvasTrans.value.prevX
+    let revoke_y = e.clientY - canvasTrans.value.prevY
     canvasTrans.value.prevX = e.clientX
     canvasTrans.value.prevY = e.clientY
-    currentSettings.value.x -= (canvasTrans.value.x * (75 / 32) * (1 / currentSettings.value.pscale))
-    currentSettings.value.y += (canvasTrans.value.y * (75 / 32) * (1 / currentSettings.value.pscale))
-    spineRef.spine?.move(currentSettings.value.x, currentSettings.value.y)
+    canvasTrans.value.x -= (revoke_x * (75 / 32) * (1 / canvasTrans.value.scale))
+    canvasTrans.value.y += (revoke_y * (75 / 32) * (1 / canvasTrans.value.scale))
+    spineRef.spine?.move(canvasTrans.value.x, canvasTrans.value.y)
 
   }
 }
@@ -323,20 +356,30 @@ const canvasScroll = function (e: any) {
   console.log("canvasScroll", e)
   e.preventDefault()
   if (e.deltaY < 0) {
-    currentSettings.value.pscale += 0.1
+    canvasTrans.value.scale += 0.1
   } else {
-    currentSettings.value.pscale -= 0.1
+    canvasTrans.value.scale -= 0.1
   }
-  spineRef.spine?.scale(currentSettings.value.pscale)
+  spineRef.spine?.scale(canvasTrans.value.scale)
 }
 const resetModel = () => {
-  currentSettings.value.x = -400
-  currentSettings.value.y = -150
-  currentSettings.value.pscale = 1
-  spineRef.spine?.transform(currentSettings.value.x, currentSettings.value.y, 1)
+  canvasTrans.value.x = -380
+  canvasTrans.value.y = -150
+  canvasTrans.value.scale = 1
+  spineRef.spine?.transform(-380, -150, 1)
 }
 
+const canvasTrans = ref({
+  dragging: false,
+  prevX: 0,
+  prevY: 0,
+  x: -380,
+  y: -150,
+  scale: 1,
+})
+
 const isLoading = ref(true)
+const recordInfo = ref("")
 const currentSettings = ref({
   mode: '0', // 0=model 1=custom
   charSearch: '',
@@ -347,10 +390,6 @@ const currentSettings = ref({
   loop: false,
   color: '#00000000',
   scale: 1,
-
-  x: 0,
-  y: 0,
-  pscale: 1,
 })
 
 const settingMode = [
@@ -364,21 +403,22 @@ const animationsDetail = ref<{ name: string; duration: number }[]>([])
 async function load() {
   isLoading.value = true
   const path = global_const.assetServer + 'spine/' + currentSettings.value.char + '/' + currentSettings.value.skin + '/' + currentSettings.value.model
-  let skelData = spineSumms.value[currentSettings.value.char][currentSettings.value.skin][currentSettings.value.model]
+  let skelData = ((spineSumms.value[currentSettings.value.char] || {})[currentSettings.value.skin] || {})[currentSettings.value.model]
+  if (!skelData) {
+    console.log("load", "skelData not found")
+    return
+  }
   console.log("load path", path)
   const {skeleton, state: animationState} = await spineRef.spine!.load(
       `${currentSettings.value.char}-${currentSettings.value.skin}-${currentSettings.value.model}`,
       `${path}/${skelData.skel}`,
       `${path}/${skelData.atlas[0]}`,
       {
-        x: -400,
-        y: -150,
-        scale: 1,
+        x: canvasTrans.value.x,
+        y: canvasTrans.value.y,
+        scale: canvasTrans.value.scale,
       },
   )
-  currentSettings.value.x = -400
-  currentSettings.value.y = -150
-  currentSettings.value.pscale = 1
   const names = (animations.value = skeleton.data.animations.map(
       (v: any) => v.name,
   ))
@@ -394,8 +434,10 @@ async function load() {
 }
 
 watch(() => currentSettings.value.char, (val) => {
-  currentSettings.value.skin = val
+  if (!val.startsWith("token"))
+    currentSettings.value.skin = val
 })
+
 watch(() => currentSettings.value.skin, (val) => {
   currentSettings.value.model = Object.keys((spineSumms.value[currentSettings.value.char] || {})[val] || {})[0]
 })
@@ -423,12 +465,30 @@ onMounted(() => {
     console.log("XHR", res)
     spineSumms.value = res
     global_const.onGameDataLoaded("characterData", () => {
-      charIds.value = Object.keys(res).map((v) => {
-        return {
-          key: global_const.gameData.characterData[v]?.name || v,
-          value: v,
+      charIds.value = (Object.keys(res).map((v) => {
+        let chr = global_const.gameData.characterData[v]
+        if (chr == null) {
+          return {
+            key: v,
+            value: v,
+          }
+        } else {
+          return {
+            key: `${chr.rarity + 1}星|${global_const.profNick[chr.profession] || '未知'}|${chr.name}`,
+            sortId: -chr.rarity,
+            value: v,
+          }
         }
-      }) || []
+
+      }) || []).sort((a, b) => {
+        if (a.sortId == null) {
+          return 1
+        }
+        if (b.sortId == null) {
+          return -1
+        }
+        return a.sortId - b.sortId
+      })
       currentSettings.value.char = charIds.value[0].value
       currentSettings.value.skin = currentSettings.value.char
       currentSettings.value.model = Object.keys(res[currentSettings.value.char][currentSettings.value.char])[0]
@@ -437,6 +497,10 @@ onMounted(() => {
     global_const.onGameDataLoaded("skinTable", () => {
       onSkinLoad.value = true
     })
+  })
+  watch(() => charSkins.value, (val) => {
+    if (currentSettings.value.char.startsWith("token"))
+      onSelectSkin(val[0].value)
   })
 })
 
@@ -522,11 +586,13 @@ async function record() {
     await spineRef.spine.record(
         currentSettings.value.ani,
         `${currentSettings.value.char}-${currentSettings.value.skin}-${currentSettings.value.model}.gif`,
+        recordInfo
     )
   } else if (currentSettings.value.mode === '1') {
     await spineRef.spine.record(
         currentSettings.value.ani,
         `${customSkel.value.name.replace('.skel', '')}-${currentSettings.value.ani}.gif`,
+        recordInfo
     )
   }
   recording.value = false

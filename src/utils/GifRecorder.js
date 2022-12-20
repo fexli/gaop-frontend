@@ -85,16 +85,14 @@ export class GifRecorder extends EventTarget {
       workerScript: getGifWorker(),
       transparent: 0x00000000,
     })
-    // console.log("start", this._stream.width, this._stream.height)
-
     this._encoder.on('finished', (e) => {
-      console.log("finished", e)
       this.dispatchEvent(new BlobEvent("dataavailable", {
         data: e
       }))
       this._encoder.freeWorkers.forEach(w => w.terminate())
     })
     this._encoder.on('progress', (e) => {
+      this.dispatchEvent(new CustomEvent("process", {detail: "导出中(" + Math.round(e * 100) + "%)"}))
       this.dispatchEvent(e)
     })
 
@@ -110,13 +108,11 @@ export class GifRecorder extends EventTarget {
 
     const _that = this
     this._ar = requestAnimationFrame((ts) => this.capture(ts, _that))
-    console.log("AR", this._canvas)
     this.dispatchEvent(new CustomEvent("start"))
   }
 
   _renderResult() {
     if (this.rendering !== 0) {
-      // console.log("stop wait", this.rendering)
       setTimeout(() => this._renderResult.bind(this).call(), 20)
       return
     }
@@ -129,7 +125,7 @@ export class GifRecorder extends EventTarget {
         }
       )
     }
-    console.log("imgl", this.imgList)
+    this.dispatchEvent(new CustomEvent("process", {detail: "渲染中"}))
     this._encoder.render()
     this.dispatchEvent(new CustomEvent("stop"))
   }
@@ -137,28 +133,19 @@ export class GifRecorder extends EventTarget {
   stop() {
     let that = this
 
-    // console.log("stop", this.rendering)
     if (this._state === "inactive") return
     this._state = "inactive"
-    // process all inner frames
     this.imgList = Array(this.innerList.length).fill(null)
+    this.dispatchEvent(new CustomEvent("process", {detail: "转换中"}))
     for (let i = 0; i < this.innerList.length; i++) {
       let imgu = document.createElement("img")
       let curI = i
       imgu.height = that._canvas.height
       imgu.width = that._canvas.width
       imgu.onload = () => {
-        document.body.appendChild(imgu)
         that._context.clearRect(0, 0, that._canvas.width, that._canvas.height)
         that._context.drawImage(imgu, 0, 0, that._canvas.width, that._canvas.height)
         let imgd = that._context.getImageData(0, 0, that._canvas.width, that._canvas.height)
-        console.log("imgd", imgd)
-        // that._encoder.addFrame(
-        //   imgd,
-        //   {
-        //     delay: that.innerList[i].delay
-        //   }
-        // )
         that.imgList[curI] = {data: imgd, delay: that.innerList[curI].delay, cni: curI}
         that.rendering--
       }
@@ -170,42 +157,14 @@ export class GifRecorder extends EventTarget {
 
   capture(ts, self) {
     self._accumulator += ts - self._lastTimestamp
-    var delay = 1 / self._videoFramesPerSecond * 1000
-    // console.log("capture", ts, this._lastTimestamp, this._accumulator, delay)
+    const delay = 1 / self._videoFramesPerSecond * 1000;
     while (self._accumulator >= delay) {
-
       self._context = self._canvas.getContext("2d")
-      // console.log("capture addFrame", self._context)
-
-
-      // let imgu = document.createElement("img")
-      // imgu.height = self._canvas.height
-      // imgu.width = self._canvas.width
-      // imgu.onload = () => {
-      //   if (self._state !== "recording") return
-      //   // console.log("capture addFrame", self._state, self.rendering)
-      //   self._context.clearRect(0, 0, self._canvas.width, self._canvas.height)
-      //   self._context.drawImage(imgu, 0, 0, self._canvas.width, self._canvas.height)
-      //   let imgd = self._context.getImageData(0, 0, self._canvas.width, self._canvas.height)
-      //   // console.log("imgd", imgd)
-      //   self._encoder.addFrame(
-      //     imgd,
-      //     {
-      //       delay: delay
-      //     }
-      //   )
-      //   self.rendering--
-      // }
-      // console.log("capture loadsrc", self._state, self.rendering)
       if (self._state === "recording") {
         self.innerList.push({data: self._stream.toDataURL(), delay: delay})
         console.log("capture addFrame", self._state, delay)
       }
-
-      // imgu.src = self._stream.toDataURL()
-
       self._accumulator -= delay
-      // self.rendering++
     }
     self._lastTimestamp = ts
     if (self._state === "recording") {
