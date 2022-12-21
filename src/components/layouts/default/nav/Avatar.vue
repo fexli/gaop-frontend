@@ -32,7 +32,7 @@ const logout = () => {
 </script>
 <template>
   <div class="dropdown dropdown-end dropdown-hover">
-    <label tabindex="0" class="mt-3 btn btn-ghost btn-circle avatar">
+    <label tabindex="0" class="btn btn-ghost btn-circle avatar">
       <div class="avatar">
         <div class="w-9 rounded-full">
           <img :src="webUserInfo['avatar']" alt="avatar"/>

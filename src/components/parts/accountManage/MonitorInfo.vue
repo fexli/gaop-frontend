@@ -151,6 +151,11 @@ const defaultClassIsErr = function (checker: string): string {
         <div class="rounded-md bg-base-100 px-1" :class="defaultClassIsErr(recruitColor)">
           公招余 <span :class="recruitColor">{{ data.maxAp ? data.recruit : '-' }}</span>
         </div>
+        <template v-for="(i,k) of data.shopInfos" v-bind:key="k">
+          <div class="rounded-md bg-base-100 px-1">
+            {{ i.shopName }} <span class="text-success">{{ i.coin >= 0 ? i.coin : '-' }}</span>
+          </div>
+        </template>
       </div>
       <template v-else>
         <div class="flex justify-between">

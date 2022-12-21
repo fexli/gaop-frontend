@@ -6,12 +6,20 @@ import StatusInfo from "../components/parts/accountManage/StatusInfo.vue";
 import {accountStore} from "../store/account";
 import global_const from "../utils/global_const";
 import LogTextCtx from "../components/parts/accountManage/LogTextCtx.vue";
-import {gameCreateAccount, gameDeleteAccount, gameStartAccount, gameStopAccount} from "../plugins/axios";
+import {
+  accountSetRemark,
+  gameCreateAccount,
+  gameDeleteAccount,
+  gameStartAccount,
+  gameStopAccount
+} from "../plugins/axios";
 import {useToast} from "../hooks/toast";
 import {router} from "../router/router";
 import AccountMonitor from "../components/parts/accountManage/AccountMonitor.vue";
 import {Ref} from "vue";
 import TransitionOverlay from "../components/element/TransitionOverlay.vue";
+import {ColorPicker} from "vue-color-kit";
+import VueTailwindDatePicker from "../thirdparty/VueTailwindDatePicker.vue";
 
 const {translate} = useTranslate();
 const auth = authStore();
@@ -26,7 +34,7 @@ const loadingStopAll = ref(false); // stopall按钮的loading
 const loadingCreateNewAccount = ref(false); // 创建新账号按钮的loading
 
 const createAccountOverlay: Ref<Boolean> = ref(false);
-const deleteAccountOverlay = ref(false);
+const deleteAccountOverlay: Ref<Boolean> = ref(false);
 
 const createUserNickname = ref("");
 const createUserAccount = ref("");
@@ -41,6 +49,43 @@ const deleteUserAccount = ref("");
 let deleteUserInfo = {
   platform: 0,
 };
+
+class RemarkUserInfoT {
+  account: string = "";
+  nickname: string = "";
+  platform: number = 0;
+}
+
+class RemarkInfoT {
+  startTs: string = "";
+  endTs: string = "";
+  remark: string = "";
+  userColor: string = "";
+}
+
+class RemarkInfoS {
+  class: string = "";
+  style: string = "";
+}
+
+const remarkOverlay: Ref<Boolean> = ref(false);
+const remarkInfo: Ref<RemarkInfoT> = ref({
+  startTs: "",
+  endTs: "",
+  remark: "",
+  userColor: "",
+});
+const remarkUserInfo: Ref<RemarkUserInfoT> = ref({
+  account: "",
+  nickname: "",
+  platform: 0,
+});
+
+
+const formatter = ref({
+  date: 'YYYY-MM-DD',
+  month: 'MM'
+})
 
 const currentAccounts = computed(() => {
   return gameAccountLi.value.length + "个"
@@ -95,9 +140,84 @@ const gameAccountHeaders = [
     text: computed(() => translate('account.operation')),
     value: 'actions',
     sortable: false,
-    width: '7.5rem',
+    width: '8.75rem',
   }
 ]
+const customShortcuts = () => {
+  return [
+    {
+      label: '+7天',
+      atClick: (current: any) => {
+        let dateCur: string
+        if (typeof current === 'string') {
+          dateCur = current
+        }else{
+          dateCur = current[0]
+        }
+        if (dateCur == "Invalid Date" || !dateCur) {
+          return [new Date()]
+        }
+        let date = new Date(dateCur)
+        date.setDate(date.getDate() + 7);
+        return [
+          date
+        ];
+      }
+    },
+    {
+      label: '+1个月',
+      atClick: (current: any) => {
+        let dateCur: string
+        if (typeof current === 'string') {
+          dateCur = current
+        }else{
+          dateCur = current[0]
+        }
+        if (dateCur == "Invalid Date" || !dateCur) {
+          return [new Date()]
+        }
+        let date = new Date(dateCur)
+        date.setMonth(date.getMonth() + 1);
+        return [
+          date
+        ];
+      }
+    },
+    {
+      label: '+3个月',
+      atClick: (current: any) => {
+        let dateCur: string
+        if (typeof current === 'string') {
+          dateCur = current
+        }else{
+          dateCur = current[0]
+        }
+        if (dateCur == "Invalid Date" || !dateCur) {
+          return [new Date()]
+        }
+        let date = new Date(dateCur)
+        date.setMonth(date.getMonth() + 3);
+        return [
+          date
+        ];
+      }
+    }
+  ];
+}
+
+const computedGameAccountLi = computed(() => {
+  let data: any[] = []
+  console.log("recompute gameAccountLi")
+  for (let i = 0; i < gameAccountLi.value.length; i++) {
+    let q = gameAccountLi.value[i]
+    if (typeof q.remarks === 'string') {
+      q.remarks = q.remarks ? JSON.parse(q.remarks) as RemarkInfoT : {} as RemarkInfoT
+      q.remarksA = styledRemarks(q.remarks)
+    }
+    data.push(q)
+  }
+  return data
+})
 
 function syncGameAccounts(silent = false) {
   cardLoading.value = true
@@ -216,6 +336,48 @@ function changeAccountSetting(accInfo: any) {
   console.log("changeAccountSetting", accInfo) // TODO
 }
 
+function changeRemarkColor(c: any) {
+  console.log("changeRemarkColor", c)
+  remarkInfo.value.userColor = c.hex
+}
+
+function parseRemark(remark: RemarkInfoT) {
+  if (!remark) {
+    remarkInfo.value.remark = ''
+    remarkInfo.value.userColor = ''
+    remarkInfo.value.startTs = ''
+    remarkInfo.value.endTs = ''
+    return
+  }
+  remarkInfo.value = remark
+}
+
+function showTimeBar(accInfo: any) {
+  console.log("showTimeBar", accInfo)
+  remarkUserInfo.value.account = accInfo.account
+  remarkUserInfo.value.platform = accInfo.platform
+  remarkUserInfo.value.nickname = accInfo.name
+  parseRemark(accInfo.remarks)
+  remarkOverlay.value = true
+}
+
+function saveRemark() {
+  console.log("saveRemark", remarkUserInfo.value, JSON.stringify(remarkInfo.value));
+  accountSetRemark(
+      remarkUserInfo.value.account,
+      remarkUserInfo.value.platform,
+      JSON.stringify(remarkInfo.value)
+  ).then((success: any) => {
+    console.log(success)
+    remarkOverlay.value = false
+    showMessage(success.msg, 2000, 'success', remarkUserInfo.value.account)
+    syncGameAccounts()
+  }).catch(err => {
+    console.log(err)
+    showMessage(err.data.msg, 2000, 'danger', remarkUserInfo.value.account)
+  })
+}
+
 function changeMinotorType() {
   console.log("changeMinotorType")
   isMonitorType.value = !isMonitorType.value
@@ -327,6 +489,57 @@ function closeCreateAccount(withReset: boolean = true) {
   }
   loadingCreateNewAccount.value = false
 }
+
+function styledRemarks(remark: RemarkInfoT): RemarkInfoS {
+  let style = new RemarkInfoS()
+
+  if (remark.endTs) {
+    let lts = Math.ceil((new Date(remark.endTs).getTime() - new Date().getTime()) / (1000 * 24 * 60 * 60))
+    if (lts < 5) {
+      style.class += "bg-opacity-20 hover:bg-opacity-90 "
+      if (lts > 2) {
+        style.class += "bg-yellow-500 "
+      } else if (lts > 0) {
+        style.class += "bg-warning "
+      } else {
+        style.class += "bg-error "
+      }
+    }
+  }
+  if (remark.userColor) {
+    style.style = "background-color: " + remark.userColor + ";"
+  }
+  return style
+}
+
+function displayRemarks(remark: Record<string, any>): string {
+  if (!remark) {
+    return ''
+  }
+  let info: RemarkInfoT = remark as RemarkInfoT
+  let str = ''
+  if (info.startTs) {
+    str += "标定起始时间:" + info.startTs + "\n"
+  }
+  if (info.endTs) {
+    str += "标定结束时间:" + info.endTs + "\n"
+    let lts = Math.ceil((new Date(info.endTs).getTime() - new Date().getTime()) / (1000 * 24 * 60 * 60))
+    if (lts > 0) {
+      str += "标定剩余时间:" + lts + "天\n"
+    } else {
+      str += "标定已过期:" + lts + "天\n"
+    }
+  } else {
+    str += "无限期标定\n"
+  }
+  // if (info.startTs && info.endTs) {
+  //   str += "标定时间差:" + (new Date(info.endTs).getTime() - new Date(info.startTs).getTime()) + "ms\n"
+  // }
+  if (info.remark) {
+    str += "备注: " + info.remark + "\n"
+  }
+  return str
+}
 </script>
 <template>
   <div v-if="!isMonitorType" class="hidden xs:flex shadow-lg h-10 rounded-xl bg-base-200 bg-opacity-80">
@@ -418,9 +631,12 @@ function closeCreateAccount(withReset: boolean = true) {
             </tr>
             </thead>
             <tbody>
-            <template v-for="(i,k) of account.getGameAccounList" v-bind:key="k">
-              <tr class="hover:bg-base-300 transition-all">
-                <td>{{ i.name }}</td>
+            <template v-for="(i,k) of computedGameAccountLi" v-bind:key="k">
+              <tr
+                  :class="i.remarksA.class"
+                  class="transition-all hover:bg-base-300"
+              >
+                <td :style="i.remarksA.style">{{ i.name }}</td>
                 <td>{{ i.account }}</td>
                 <td class="text-center">{{ global_const.platformSelector[i.platform]?.text || '未知' }}</td>
                 <td class="no-hidden text-center"
@@ -446,16 +662,27 @@ function closeCreateAccount(withReset: boolean = true) {
                   </h4>
                 </td>
                 <td class="no-hidden">
-                  <button v-show="i.status <= 0" class="btn btn-ghost btn-circle btn-xs mr-1" @click="startAccount(i)">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24">
-                      <path fill="currentColor" d="M5,5V19H8V5M10,5V19L21,12"/>
-                    </svg>
-                  </button>
-                  <button v-show="i.status > 0" class="btn btn-ghost btn-circle btn-xs mr-1" @click="stopAccount(i)">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24">
-                      <path fill="currentColor" d="M18,18H6V6H18V18Z"/>
-                    </svg>
-                  </button>
+                  <div title="DATE CHG" class="dropdown dropdown-hover dropdown-left"
+                       :class="k >= (account.getGameAccounList.length)/2 ? 'dropdown-top' :''">
+                    <button v-show="i.status <= 0" class="btn btn-ghost btn-circle btn-xs mr-1"
+                            @click="startAccount(i)">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M5,5V19H8V5M10,5V19L21,12"/>
+                      </svg>
+                    </button>
+                    <button v-show="i.status > 0" class="btn btn-ghost btn-circle btn-xs mr-1" @click="stopAccount(i)">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M18,18H6V6H18V18Z"/>
+                      </svg>
+                    </button>
+                    <div
+                        v-if="i['remarks'] !== ''"
+                        class="dropdown-content bg-base-300 ring-1 ring-secondary text-base-content rounded-md px-2 py-1 top-px overflow-y-auto shadow-lg">
+                      <div>
+                        <pre>{{ displayRemarks(i['remarks']) }}</pre>
+                      </div>
+                    </div>
+                  </div>
                   <button v-show="i.status > 0" class="btn btn-ghost btn-circle btn-xs mr-1" @click="restartAccount(i)">
                     <svg class="w-4 h-4" viewBox="0 0 24 24">
                       <path fill="currentColor"
@@ -475,12 +702,27 @@ function closeCreateAccount(withReset: boolean = true) {
                             d="M2,3H22C23.05,3 24,3.95 24,5V19C24,20.05 23.05,21 22,21H2C0.95,21 0,20.05 0,19V5C0,3.95 0.95,3 2,3M14,6V7H22V6H14M14,8V9H21.5L22,9V8H14M14,10V11H21V10H14M8,13.91C6,13.91 2,15 2,17V18H14V17C14,15 10,13.91 8,13.91M8,6A3,3 0 0,0 5,9A3,3 0 0,0 8,12A3,3 0 0,0 11,9A3,3 0 0,0 8,6Z"/>
                     </svg>
                   </button>
-                  <button class="btn btn-ghost btn-circle btn-xs" @click="changeAccountSetting(i)">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24">
-                      <path fill="currentColor"
-                            d="M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M10,22C9.75,22 9.54,21.82 9.5,21.58L9.13,18.93C8.5,18.68 7.96,18.34 7.44,17.94L4.95,18.95C4.73,19.03 4.46,18.95 4.34,18.73L2.34,15.27C2.21,15.05 2.27,14.78 2.46,14.63L4.57,12.97L4.5,12L4.57,11L2.46,9.37C2.27,9.22 2.21,8.95 2.34,8.73L4.34,5.27C4.46,5.05 4.73,4.96 4.95,5.05L7.44,6.05C7.96,5.66 8.5,5.32 9.13,5.07L9.5,2.42C9.54,2.18 9.75,2 10,2H14C14.25,2 14.46,2.18 14.5,2.42L14.87,5.07C15.5,5.32 16.04,5.66 16.56,6.05L19.05,5.05C19.27,4.96 19.54,5.05 19.66,5.27L21.66,8.73C21.79,8.95 21.73,9.22 21.54,9.37L19.43,11L19.5,12L19.43,13L21.54,14.63C21.73,14.78 21.79,15.05 21.66,15.27L19.66,18.73C19.54,18.95 19.27,19.04 19.05,18.95L16.56,17.95C16.04,18.34 15.5,18.68 14.87,18.93L14.5,21.58C14.46,21.82 14.25,22 14,22H10M11.25,4L10.88,6.61C9.68,6.86 8.62,7.5 7.85,8.39L5.44,7.35L4.69,8.65L6.8,10.2C6.4,11.37 6.4,12.64 6.8,13.8L4.68,15.36L5.43,16.66L7.86,15.62C8.63,16.5 9.68,17.14 10.87,17.38L11.24,20H12.76L13.13,17.39C14.32,17.14 15.37,16.5 16.14,15.62L18.57,16.66L19.32,15.36L17.2,13.81C17.6,12.64 17.6,11.37 17.2,10.2L19.31,8.65L18.56,7.35L16.15,8.39C15.38,7.5 14.32,6.86 13.12,6.62L12.75,4H11.25Z"/>
-                    </svg>
-                  </button>
+                  <!--                  <button class="btn btn-ghost btn-circle btn-xs" @click="changeAccountSetting(i)">-->
+                  <!--                    <svg class="w-4 h-4" viewBox="0 0 24 24">-->
+                  <!--                      <path fill="currentColor"-->
+                  <!--                            d="M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M10,22C9.75,22 9.54,21.82 9.5,21.58L9.13,18.93C8.5,18.68 7.96,18.34 7.44,17.94L4.95,18.95C4.73,19.03 4.46,18.95 4.34,18.73L2.34,15.27C2.21,15.05 2.27,14.78 2.46,14.63L4.57,12.97L4.5,12L4.57,11L2.46,9.37C2.27,9.22 2.21,8.95 2.34,8.73L4.34,5.27C4.46,5.05 4.73,4.96 4.95,5.05L7.44,6.05C7.96,5.66 8.5,5.32 9.13,5.07L9.5,2.42C9.54,2.18 9.75,2 10,2H14C14.25,2 14.46,2.18 14.5,2.42L14.87,5.07C15.5,5.32 16.04,5.66 16.56,6.05L19.05,5.05C19.27,4.96 19.54,5.05 19.66,5.27L21.66,8.73C21.79,8.95 21.73,9.22 21.54,9.37L19.43,11L19.5,12L19.43,13L21.54,14.63C21.73,14.78 21.79,15.05 21.66,15.27L19.66,18.73C19.54,18.95 19.27,19.04 19.05,18.95L16.56,17.95C16.04,18.34 15.5,18.68 14.87,18.93L14.5,21.58C14.46,21.82 14.25,22 14,22H10M11.25,4L10.88,6.61C9.68,6.86 8.62,7.5 7.85,8.39L5.44,7.35L4.69,8.65L6.8,10.2C6.4,11.37 6.4,12.64 6.8,13.8L4.68,15.36L5.43,16.66L7.86,15.62C8.63,16.5 9.68,17.14 10.87,17.38L11.24,20H12.76L13.13,17.39C14.32,17.14 15.37,16.5 16.14,15.62L18.57,16.66L19.32,15.36L17.2,13.81C17.6,12.64 17.6,11.37 17.2,10.2L19.31,8.65L18.56,7.35L16.15,8.39C15.38,7.5 14.32,6.86 13.12,6.62L12.75,4H11.25Z"/>-->
+                  <!--                    </svg>-->
+                  <!--                  </button>-->
+                  <div title="DATE CHG" class="dropdown dropdown-hover dropdown-left"
+                       :class="k >= (computedGameAccountLi.length)/2 ? 'dropdown-top' :''">
+                    <button class="btn btn-ghost btn-circle btn-xs" @click="showTimeBar(i)">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24">
+                        <path fill="currentColor" :d="global_const.mdiPath['clipboard-text-clock-outline']"/>
+                      </svg>
+                    </button>
+                    <div
+                        v-if="i['remarks'] !== ''"
+                        class="dropdown-content bg-base-300 ring-1 ring-secondary text-base-content rounded-md px-2 py-1 top-px overflow-y-auto shadow-lg">
+                      <div>
+                        <pre>{{ displayRemarks(i['remarks']) }}</pre>
+                      </div>
+                    </div>
+                  </div>
                 </td>
               </tr>
             </template>
@@ -498,8 +740,11 @@ function closeCreateAccount(withReset: boolean = true) {
       />
     </div>
   </div>
-  <div class="overlay bg-base-200 bg-opacity-50" v-show="deleteAccountOverlay">
-    <div class="card w-96 bg-neutral text-neutral-content">
+  <TransitionOverlay
+      :show="deleteAccountOverlay"
+      class="overlay bg-base-200 bg-opacity-50"
+  >
+    <div class="card w-96 bg-neutral text-neutral-content" v-if="deleteAccountOverlay">
       <div class="card-body items-center text-center">
         <div class="flex gap-1 items-center">
           <svg class="text-warning w-6 h-6" viewBox="0 0 24 24">
@@ -518,7 +763,85 @@ function closeCreateAccount(withReset: boolean = true) {
         </div>
       </div>
     </div>
-  </div>
+  </TransitionOverlay>
+  <TransitionOverlay
+      :show="remarkOverlay"
+      class="overlay bg-base-200 bg-opacity-50"
+  >
+    <div class="card overflow-visible w-96 bg-neutral text-neutral-content ring-1 ring-secondary" v-if="remarkOverlay">
+      <div class="card-body p-3">
+        <div class="flex gap-1 justify-center items-center">
+          <h2 class="card-title text-secondary">账号备注 #{{
+              remarkUserInfo.nickname
+            }}({{ remarkUserInfo.account }})</h2>
+        </div>
+        <div class="flex gap-2">
+          <div>标定时间①</div>
+          <div class="w-28">
+            <div class="fixed w-28 z-10">
+              <VueTailwindDatePicker
+                  v-model="remarkInfo.startTs"
+                  class="h-5"
+                  :shortcuts="false"
+                  :formatter="formatter"
+                  placeholder="未选择时间"
+                  i18n="zh-cn"
+                  separator="~"
+                  :use-range="false"
+                  as-single
+              />
+            </div>
+          </div>
+          <div>②</div>
+          <div class="w-28">
+            <div class="fixed w-28 z-10">
+              <VueTailwindDatePicker
+                  v-model="remarkInfo.endTs"
+                  class="h-5"
+                  :shortcuts="customShortcuts"
+                  :formatter="formatter"
+                  placeholder="未选择时间"
+                  i18n="zh-cn"
+                  separator="~"
+                  :use-range="false"
+                  as-single
+              />
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-2 h-20">
+          <div>备注信息</div>
+          <textarea type="text" class="input ring-1 ring-secondary w-[17rem] h-20"
+                    v-model="remarkInfo.remark"></textarea>
+        </div>
+        <div class="flex gap-2 h-7">
+          <div>自定颜色</div>
+          <div title="Change Color" class="dropdown dropdown-right dropdown-top w-24">
+            <label tabindex="0" :style="`background-color: ${remarkInfo.userColor}`"
+                   class="gap-1 normal-case mr-2 rounded-md p-0.5 px-1">
+              {{ remarkInfo.userColor || "点我设置" }}
+            </label>
+            <div
+                class="dropdown-content bg-base-200 text-base-content rounded-t-box rounded-b-box top-px mt-10 w-36 overflow-visible shadow-lg">
+              <ColorPicker
+                  :colors-default="['#2DAD1A', '#A6A6A6','#5D61FF', '#FF1900', '#F47365', '#FFB243', '#FFE623', '#6EFF2A', '#1BC7B1', '#00BEFF', '#2E81FF', '#FF89CF', '#FC3CAD', '#BF3DCE', '#8E00A7', 'rgba(0,0,0,0)']"
+                  @changeColor="changeRemarkColor"
+                  class="fixed -mt-40" :sucker-hide="true" theme="light"
+                  :color="remarkInfo.userColor"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="card-actions w-full justify-end">
+          <button class="btn btn-sm btn-primary" @click="saveRemark">保存
+          </button>
+          <button class="btn btn-sm btn-ghost" @click="remarkOverlay = false">取消
+          </button>
+        </div>
+      </div>
+    </div>
+  </TransitionOverlay>
+
   <TransitionOverlay
       :show="createAccountOverlay"
       class="overlay bg-base-200 bg-opacity-50"

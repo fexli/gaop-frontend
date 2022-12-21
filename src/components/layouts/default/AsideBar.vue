@@ -33,7 +33,7 @@ const AsideCtx = toRef(menuService.menus.value[1], "children")
 
 <template>
   <div
-      class="sidebar lg:close aside-cursor"
+      class="sidebar top-[3rem] lg:left-4 left-0 lg:top-[4.2rem] lg:left-4 lg:close aside-cursor"
       @mouseleave="menuService.closeDrawer"
       @mouseenter="menuService.openDrawer"
       :class="{'overflow-hidden':!overflowHidden}"

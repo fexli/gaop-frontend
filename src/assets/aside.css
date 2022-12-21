@@ -8,7 +8,7 @@
 }
 
 .sidebar {
-    @apply rounded-b-xl lg:rounded-xl top-[3rem] left-0 lg:top-[4.2rem] fixed lg:left-4 bg-base-200 bg-opacity-80 backdrop-blur shadow-lg z-50;
+    @apply rounded-b-xl lg:rounded-xl fixed bg-base-200 bg-opacity-80 backdrop-blur shadow-lg z-50;
     width: 230px;
     transition: all 0.3s ease-in-out;
 }

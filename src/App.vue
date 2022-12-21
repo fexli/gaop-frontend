@@ -8,7 +8,7 @@
   <div class="overlay bg-base-200 bg-opacity-50 " v-if="geetest.captchaOverlay.value">
     <div class="card max-w-sm shadow-lg rounded-xl"
          :style="`background-image: url('static/im/captcha.jpg');background-repeat: no-repeat;background-size: cover;background-position: center`">
-      <div class="bg-white bg-opacity-40 p-8 backdrop-blur-sm">
+      <div class="bg-white bg-opacity-40 p-8 backdrop-blur-sm rounded-xl">
         <h2 class="text-xl text-neutral font-bold">{{ translate('captcha.title') }}</h2>
         <p class="text-neutral pt-4 pb-1">{{ translate('captcha.desc') }}</p>
         <div id="geetest" style="height: 45px"></div>
