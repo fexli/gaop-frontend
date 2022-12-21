@@ -97,11 +97,11 @@ class WebSock {
 
     public onWsClose() {
         const that = this
-        return () => {
+        return (ev: CloseEvent) => {
             that.isActive.value = false;
             that.hasAuthed = false;
             // that.wsReconTime = 0;
-            console.log("ws close");
+            console.log("ws close", ev);
         }
     }
 

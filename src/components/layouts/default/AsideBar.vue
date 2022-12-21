@@ -4,9 +4,18 @@ import Logo from "./nav/Logo.vue";
 import {protectedRoute} from "../../../router/config";
 import AsideContent from "./aside/AsideContent.vue";
 import BottomEffect from "./aside/BottomEffect.vue";
+import {accountStore} from "../../../store/account";
 
 const route = useRoute()
 const activeIndex = ref<string>("");
+const hiddenFunc = [
+  computed(() => {
+    const account = accountStore();
+    console.log("HF", account)
+    return (account.webUserInfo?.al || 0) !== 3;
+  }),
+
+]
 
 watchEffect(() => {
   console.log('route.path', route.path)
@@ -45,7 +54,10 @@ const AsideCtx = toRef(menuService.menus.value[1], "children")
     </div>
     <ul class="nav-links">
       <template v-for="(i,k) of AsideCtx" v-bind:key="k">
-        <AsideContent :route="i"/>
+        <AsideContent
+            :route="i"
+            :hidden="i?.props?.hiddenFunc ? hiddenFunc[i?.props?.hiddenFunc-1].value : false"
+        />
       </template>
     </ul>
     <BottomEffect/>

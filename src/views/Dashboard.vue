@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-full fixed left-0 top-0 text-center flex flex-col justify-center select-none">
     <div class="w-full text-primary text-dash" :style="`opacity: ${Math.min(t1o/40,1)}`">{{ t1l[t1t] }}</div>
-    <div @click="$router.push('/account/manage')" class="w-full text-primary text-dash hover:text-info transition-all cursor-pointer"
+    <div @click="$router.push('/account')" class="w-full text-primary text-dash hover:text-info transition-all cursor-pointer"
          :style="`opacity: ${Math.min(t1o/40,1)}`">{{ t2l[t1t] }}
     </div>
   </div>
