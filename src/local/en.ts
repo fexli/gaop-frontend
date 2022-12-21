@@ -9,6 +9,12 @@ export const en = {
         error_reconn: 'the WS connection has been disconnect, trying to reconnect',
         error_reconn_t: 'the WS connection has been disconnect, reconnect after {0} second',
     },
+    admin: {
+        announce: {
+            success: 'System announce update successfully！',
+            error: 'System announce update failed: {0}',
+        }
+    },
     game: {
         troop: {
             filter_star: 'Rarity Filter',
@@ -272,7 +278,7 @@ export const en = {
     },
     menu: {
         undefined: '',
-        Login: '登录',
+        Login: 'Login',
         reader: 'Story Reviewer',
         home: 'Home',
         dashboard: 'Dashboard',
@@ -285,6 +291,7 @@ export const en = {
         arkdb: 'ArkDB',
         gacha: 'Gacha',
         test_spine: 'Spine',
+        admin: 'Admin',
         account: {
             dashboard: 'Dashboard',
         },

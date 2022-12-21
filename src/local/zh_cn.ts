@@ -9,6 +9,12 @@ export const zhHans = {
         error_reconn: 'WS连接已断开，正在尝试重新连接',
         error_reconn_t: 'WS连接已断开，{0}秒后尝试重连',
     },
+    admin: {
+        announce: {
+            success: '系统公告已更新！',
+            error: '系统公告更新失败！{0}',
+        }
+    },
     game: {
         troop: {
             filter_star: '筛选星级',
@@ -284,6 +290,7 @@ export const zhHans = {
         arkdb: '方舟数据库',
         gacha: '宰人航天',
         test_spine: 'Spine测试',
+        admin: '管理',
         account: {
             dashboard: '账号控制面板',
         },

@@ -5,6 +5,14 @@ import {Ref} from "vue";
 import {PushableDict} from "../../../utils/recruit_planner";
 import {start} from "nprogress";
 
+const props = defineProps({
+  finished: {
+    type: Function,
+    default: () => {
+    }
+  },
+})
+
 const overlay: Ref = ref(true);
 const text: Ref = ref('少女祈祷中');
 const percent: Ref = ref('');
@@ -24,6 +32,7 @@ watch(() => val.value, (v) => {
     dot.value = '';
     setTimeout(() => {
       loadingFinished.value = true
+      props.finished()
     }, 1000)
   }
 })

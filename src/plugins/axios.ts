@@ -157,6 +157,12 @@ export const apiAuthLogin = (username: string, password: string) => post('/auth/
     password
 })
 export const apiGetMe = () => post("/account/me");
+export const apiGetAnnounce = () => get("/conf/announce");
+export const apiPostAnnounce = (title: string, titlebar: string, content: string) => post("/conf/announce",{
+    title: title,
+    title_bar: titlebar,
+    content: content
+});
 export const syncUserAccounts = () => post('/account/syncUserAccounts');
 export const getLogHistory = () => post('/game/getLogHistory');
 export const gameStartAccount = (username: string, platform: number) => post('/game/startAccount', {
