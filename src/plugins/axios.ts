@@ -178,6 +178,11 @@ export const gameDeleteAccount = (username: string, platform: number) => post('/
     username,
     platform
 });
+export const accountSetRemark = (username: string, platform: number, remark: string) => post('/account/setAccountRemark', {
+    username,
+    platform,
+    remark
+});
 export const finishCaptcha = (captcha: any) => post('/account/finishCaptcha', captcha);
 export const getGameUserCard = (username: string, platform: number) => post('/game/userCard', {
     username,
