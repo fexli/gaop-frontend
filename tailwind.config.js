@@ -1,4 +1,5 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
+const colors = require('tailwindcss/colors');
 
 // this function handles the opacity of color
 function withOpacityValue(variable) {
@@ -21,6 +22,8 @@ module.exports = {
       colors: {
         card: withOpacityValue("--c"),
         title: withOpacityValue("--t"),
+        'vtd-primary': colors.sky,
+        'vtd-secondary': colors.gray,
       },
       animation: {
         "spin-slow": "spin 3.5s linear infinite",

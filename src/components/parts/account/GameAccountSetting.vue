@@ -514,7 +514,7 @@ onUnmounted(() => {
           <SettingBtn
               :settings="valuedSettings" field="autoBattleMap"
               :disabled="!valuedSettings['enableAutoBattle'] || valuedSettings['autoBattleMap'] == null"
-              title="进攻关卡设置" :title-btn="parseBattleMap" :clicker="showAutoBattle"
+              title="进攻关卡设置" title-btn=">>>>点我修改<<<<" :clicker="showAutoBattle"
           >
             <template #extra>
               <Explain>

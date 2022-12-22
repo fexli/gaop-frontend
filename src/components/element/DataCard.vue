@@ -19,7 +19,7 @@ defineProps({
 const {translate} = useTranslate()
 </script>
 <template>
-  <div class="card w-52 mr-1 bg-base-100 shadow-xl p-0">
+  <div class="card w-52 mr-1 bg-base-100 shadow-xl p-0 overflow-hidden">
     <div class="m-2 ml-5">
       <h2 style="font-size: 2.3rem;font-weight: bold">{{ value }}</h2>
       <p class="-mt-2">{{ translateDescription ? translate(description) : description }}</p>
