@@ -291,6 +291,7 @@ export const zhHans = {
         gacha: '宰人航天',
         test_spine: 'Spine测试',
         admin: '管理',
+        ark_db:'方舟数据库',
         account: {
             dashboard: '账号控制面板',
         },

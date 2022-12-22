@@ -292,6 +292,7 @@ export const en = {
         gacha: 'Gacha',
         test_spine: 'Spine',
         admin: 'Admin',
+        ark_db: 'ArkDataBase',
         account: {
             dashboard: 'Dashboard',
         },
