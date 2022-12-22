@@ -173,8 +173,10 @@ watch(() => filterProf.value, () => {
 })
 
 onMounted(() => {
-  isLoading.value = false
-  getTroops()
+  global_const.requireAssets(["character_data", "skill_data"], () => {
+    isLoading.value = false
+    getTroops()
+  })
 })
 </script>
 <template>

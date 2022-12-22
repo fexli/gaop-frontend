@@ -12,7 +12,7 @@ const props = defineProps({
     }
   },
 })
-
+const smallMode: Ref<boolean> = ref(false);
 const overlay: Ref = ref(true);
 const text: Ref = ref('少女祈祷中');
 const percent: Ref = ref('');
@@ -30,8 +30,13 @@ watch(() => val.value, (v) => {
     percent.value = ''
     overlay.value = false;
     dot.value = '';
+    if (callback != undefined) {
+      callback();
+      callback = undefined;
+    }
     setTimeout(() => {
       loadingFinished.value = true
+      smallMode.value = true
       props.finished()
     }, 1000)
   }
@@ -52,9 +57,18 @@ function dotRun() {
   setTimeout(dotRun, 500)
 }
 
-dotRun()
+class LoadingList {
+  name: string = "";
+  title: string = "";
+  field: string = "";
+  loc: string = "";
+  isStatic: boolean = false;
+  parser: ((data: any) => any) | undefined;
+  isFinished: boolean = false;
+  needLoading: boolean = false;
+}
 
-const load_list: Record<string, any>[] = [
+const load_list: LoadingList[] = [
   {
     name: 'item_data',
     title: '物品数据',
@@ -63,7 +77,7 @@ const load_list: Record<string, any>[] = [
     parser: (resp: any) => {
       return JSON.parse(resp)['items']
     }
-  },
+  } as LoadingList,
   {
     name: 'character_data',
     title: '干员数据',
@@ -80,37 +94,38 @@ const load_list: Record<string, any>[] = [
       global_const.onGameData("charRateTag")
       return data
     }
-  },
+  } as LoadingList,
   {
     name: 'game_const_data',
     title: '常量数据',
     field: 'gameConstData',
     loc: 'excel/gamedata_const.json',
-  },
+    needLoading: true,
+  } as LoadingList,
   {
     name: 'skill_data',
     title: '技能数据',
     field: 'skillData',
     loc: 'excel/skill_table.json',
-  },
+  } as LoadingList,
   {
     name: 'building_data',
     title: '基建数据',
     field: 'buildingData',
     loc: 'excel/building_data.json',
-  },
+  } as LoadingList,
   {
     name: 'uniequip_table',
     title: '模组数据',
     field: 'uniequipTable',
     loc: 'excel/uniequip_table.json',
-  },
+  } as LoadingList,
   {
     name: 'skin_table',
     title: '皮肤数据',
     field: 'skinTable',
     loc: 'excel/skin_table.json',
-  },
+  } as LoadingList,
   {
     name: 'gacha_data',
     title: '卡池数据',
@@ -130,25 +145,28 @@ const load_list: Record<string, any>[] = [
       global_const.onGameData("recruitPool")
       return data
     }
-  },
+  } as LoadingList,
   {
     name: 'recruit_data',
     title: '公招数据',
     field: 'recruitData',
     loc: '/static/recruit/RecruitData.json',
     isStatic: true,
-  },
+  } as LoadingList,
   {
     name: 'stage_table',
     title: '关卡数据',
     field: 'stageTable',
     loc: 'excel/stage_table.json',
-  }
+    needLoading: true,
+  } as LoadingList
 ]
 
 const config = {
   url: "http://mc.mesord.com:8999/gamedata/"
 }
+
+let callback: Function | undefined = undefined;
 
 function getLocalFile(url: string, asyncs = false, callback: Function | null = null, method = 'GET', mime = 'application/json') {
   let xhr = new XMLHttpRequest()
@@ -174,18 +192,61 @@ function getLocalFile(url: string, asyncs = false, callback: Function | null = n
 }
 
 function startLoadAssets() {
+  let max_vx = load_list.filter((v) => v.needLoading && !v.isFinished).length
+  if (max_vx === 0 && loadingFinished.value) {
+    if (callback != undefined) {
+      callback();
+      callback = undefined;
+    }
+    return
+  }
   // reset all param
   val.value = 0
   buf.value = 0
-  max.value = load_list.length
-  loadNextAsset()
+  loadingFinished.value = false
+  overlay.value = true
+  text.value = '少女祈祷中'
+  dotRun()
+  max.value = max_vx
+  if (loadNextAsset()) {
+    max.value = 1
+    val.value = 1
+  }
 }
 
+function requireAsset(name: string, cb: Function | undefined = undefined, requireLoad: boolean = true) {
+  let asset = load_list.find((v) => v.name === name || v.field === name || v.title === name)
+  if (asset) {
+    asset.needLoading = true
+  }
+  callback = cb
+  if (requireLoad)
+    startLoadAssets()
+}
+
+function requireAssets(names: string[], cb: Function | undefined = undefined, requireLoad: boolean = true) {
+  for (let name of names) {
+    requireAsset(name, undefined, false)
+  }
+  callback = cb
+  if (requireLoad)
+    startLoadAssets()
+}
+
+global_const.startLoadAssets = startLoadAssets
+global_const.requireAsset = requireAsset
+global_const.requireAssets = requireAssets
+
 function loadNextAsset() {
+  let allNone = true
   for (let task of load_list) {
+    if (!task.needLoading) {
+      continue
+    }
     if (task.isFinished) {
       continue
     }
+    allNone = false
     buf.value += 1
     if (!global_const.gameData[task.field]) {
       console.log('try fetch ' + task.name)
@@ -218,20 +279,25 @@ function loadNextAsset() {
       percent.value = ''
       loadNextAsset()
     }
-    return
+    return allNone
   }
+  return allNone;
 }
 
 startLoadAssets()
 </script>
 <template>
-  <div v-if="!loadingFinished" class="overlay bg-base-200 asset-loading" :style="`filter: opacity(${overlay ? '1':'0'})`">
+  <div
+      v-if="!loadingFinished"
+      :class="(smallMode ? 'fixed z-10 w-36 h-36 left-0 bottom-6 rounded-xl rounded-bl-none':'overlay') + ' bg-base-200 asset-loading'"
+      :style="`filter: opacity(${overlay ? '1':'0'})`"
+  >
     <div class="flex flex-col items-center">
       <div
-          :style="`height: 320px;width: 340px;background-repeat: no-repeat;background-size: contain;background-image: url('${loadingSrc}')`"
+          :style="(smallMode ? 'height: 112px;width: 119px' : 'height: 320px;width: 340px') + `;background-repeat: no-repeat;background-size: contain;background-image: url('${loadingSrc}')`"
       />
       <div class="text-primary text-xl">{{ text }}{{ percent }}{{ dot }}</div>
-      <ProgressBar :buf-value="buf" :value="val+tmlVal" :loading="val+tmlVal===0" :max="max"/>
+      <ProgressBar v-if="!smallMode" :buf-value="buf" :value="val+tmlVal" :loading="val+tmlVal===0" :max="max"/>
     </div>
   </div>
 </template>

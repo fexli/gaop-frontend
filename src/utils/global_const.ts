@@ -230,6 +230,12 @@ const mdiPath: Record<string, string> = {
 }
 const gameData: Record<string, any> = {}
 const gameDataLoaders: { name: string, fn: Function }[] = []
+const startLoadAssets: Function = () => {
+}
+const requireAsset = (name: string, callback: Function | undefined = undefined, reqLoad: boolean = true) => {
+}
+const requireAssets = (name: string[], callback: Function | undefined = undefined, reqLoad: boolean = true) => {
+}
 const onGameData = (name: string) => {
     gameDataLoaders.filter(loader => loader.name === name).forEach(loader => loader.fn(gameData[name]))
     for (let i = 0; i < gameDataLoaders.length; i++) {
@@ -293,6 +299,9 @@ export default {
     gameData,
     onGameDataLoaded,
     onGameData,
+    startLoadAssets,
+    requireAsset,
+    requireAssets,
     mdiPath,
     assetServer,
     profNick

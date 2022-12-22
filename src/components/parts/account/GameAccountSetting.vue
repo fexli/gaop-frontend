@@ -334,7 +334,9 @@ function showResetOverlay() {
 }
 
 onMounted(() => {
-  getSetting()
+  global_const.requireAssets(["building_data","character_data","stage_table","item_data"], () => {
+    getSetting()
+  })
 })
 onUnmounted(() => {
   console.log('GameAccountSetting Unmounted')

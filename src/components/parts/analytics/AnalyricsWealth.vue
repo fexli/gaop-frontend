@@ -143,19 +143,21 @@ function calcWealth(data: any) {
 }
 
 onMounted(() => {
-  let gameUserID = global_const.getUserLogName(props.gameUserName || "", props.gamePlatform as number)
-  if (!accountInfo.value[gameUserID] || !accountInfo.value[gameUserID].inventory) {
-    getGameUserInventory(props.gameUserName || "", props.gamePlatform as number).then((res: any) => {
-      account.setAccountInfo(props.gameUserName || "", props.gamePlatform as number, res.data)
-      calcWealth(res.data)
-    }).catch((err) => {
-      console.log(err)
-      success.value = false
-      finished.value = true
-    })
-  } else {
-    calcWealth(accountInfo.value[gameUserID].inventory)
-  }
+  global_const.requireAsset("item_data", () => {
+    let gameUserID = global_const.getUserLogName(props.gameUserName || "", props.gamePlatform as number)
+    if (!accountInfo.value[gameUserID] || !accountInfo.value[gameUserID].inventory) {
+      getGameUserInventory(props.gameUserName || "", props.gamePlatform as number).then((res: any) => {
+        account.setAccountInfo(props.gameUserName || "", props.gamePlatform as number, res.data)
+        calcWealth(res.data)
+      }).catch((err) => {
+        console.log(err)
+        success.value = false
+        finished.value = true
+      })
+    } else {
+      calcWealth(accountInfo.value[gameUserID].inventory)
+    }
+  })
 })
 </script>
 <template>

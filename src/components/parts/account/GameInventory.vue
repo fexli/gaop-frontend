@@ -95,7 +95,9 @@ function getUserInventory(force: boolean = false) {
 }
 
 onMounted(() => {
-  getUserInventory()
+  global_const.requireAsset("item_data", () => {
+    getUserInventory()
+  })
 })
 </script>
 <template>
@@ -120,19 +122,30 @@ onMounted(() => {
 
     <div class="mb-3 grid ark-grid">
       <!--基础物品+养成材料-->
-      <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="4002" :count="computeGetUserStatus['androidDiamond']" content="安卓" :clicker="clicker"/>
-      <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="4002" :count="computeGetUserStatus['iosDiamond']" content="IOS" :clicker="clicker"/>
-      <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="4003" :count="computeNumToStr(computeGetUserStatus['diamondShard'])" :clicker="clicker"/>
-      <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="4001" :count="computeNumToStr(computeGetUserStatus['gold'])" :clicker="clicker"/>
-      <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="4004" :count="computeNumToStr(computeGetUserStatus['hggShard'])" :clicker="clicker"/>
-      <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="4005" :count="computeNumToStr(computeGetUserStatus['lggShard'])" :clicker="clicker"/>
-      <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="7003" :count="computeGetUserStatus['gachaTicket']" :clicker="clicker"/>
-      <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="7004" :count="computeGetUserStatus['tenGachaTicket']" :clicker="clicker"/>
-      <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="7001" :count="computeGetUserStatus['recruitLicense']" :clicker="clicker"/>
-      <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="7002" :count="computeGetUserStatus['instantFinishTicket']" :clicker="clicker"/>
+      <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="4002"
+                 :count="computeGetUserStatus['androidDiamond']" content="安卓" :clicker="clicker"/>
+      <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="4002"
+                 :count="computeGetUserStatus['iosDiamond']" content="IOS" :clicker="clicker"/>
+      <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="4003"
+                 :count="computeNumToStr(computeGetUserStatus['diamondShard'])" :clicker="clicker"/>
+      <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="4001"
+                 :count="computeNumToStr(computeGetUserStatus['gold'])" :clicker="clicker"/>
+      <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="4004"
+                 :count="computeNumToStr(computeGetUserStatus['hggShard'])" :clicker="clicker"/>
+      <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="4005"
+                 :count="computeNumToStr(computeGetUserStatus['lggShard'])" :clicker="clicker"/>
+      <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="7003"
+                 :count="computeGetUserStatus['gachaTicket']" :clicker="clicker"/>
+      <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="7004"
+                 :count="computeGetUserStatus['tenGachaTicket']" :clicker="clicker"/>
+      <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="7001"
+                 :count="computeGetUserStatus['recruitLicense']" :clicker="clicker"/>
+      <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" item-id="7002"
+                 :count="computeGetUserStatus['instantFinishTicket']" :clicker="clicker"/>
       <!--插入消耗品-->
       <template v-for="item in computeGetUserInventory" :key="item.sortKey || item.key">
-        <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" :item-id="item.key" :ts="item.ts || -1" :count="item.value" :consume="item.consume"
+        <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" :item-id="item.key"
+                   :ts="item.ts || -1" :count="item.value" :consume="item.consume"
                    :clicker="clicker"/>
       </template>
     </div>

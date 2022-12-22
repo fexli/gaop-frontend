@@ -482,63 +482,65 @@ watch(() => currentSettings.value.skin, (val) => {
 
 
 onMounted(() => {
-  //@ts-ignore
-  HTMLCanvasElement.prototype.getContext = function (origFn) {
-    return function (type, attributes) {
-      if (type === 'webgl' || type === 'webgl2') {
-        attributes = Object.assign({}, attributes, {
-          preserveDrawingBuffer: true,
-        });
-      }
-      //@ts-ignore
-      return origFn.call(this, type, attributes);
-    };
-  }(HTMLCanvasElement.prototype.getContext);
-  console.warn('canvas', canvas.value)
-  if (!canvas.value) {
-    return
-  }
-  spineRef.spine = new Spine(canvas.value)
-  getXHR(global_const.assetServer + "spine/summary.json").then((res: any) => {
-    console.log("XHR", res)
-    spineSumms.value = res
-    global_const.onGameDataLoaded("characterData", () => {
-      charIds.value = (Object.keys(res).map((v) => {
-        let chr = global_const.gameData.characterData[v]
-        if (chr == null) {
-          return {
-            key: v,
-            value: v,
-          }
-        } else {
-          return {
-            key: `${chr.rarity + 1}星|${global_const.profNick[chr.profession] || '未知'}|${chr.name}`,
-            sortId: -chr.rarity,
-            value: v,
-          }
+  global_const.requireAssets(["skin_table", "character_data"], () => {
+    //@ts-ignore
+    HTMLCanvasElement.prototype.getContext = function (origFn) {
+      return function (type, attributes) {
+        if (type === 'webgl' || type === 'webgl2') {
+          attributes = Object.assign({}, attributes, {
+            preserveDrawingBuffer: true,
+          });
         }
+        //@ts-ignore
+        return origFn.call(this, type, attributes);
+      };
+    }(HTMLCanvasElement.prototype.getContext);
+    console.warn('canvas', canvas.value)
+    if (!canvas.value) {
+      return
+    }
+    spineRef.spine = new Spine(canvas.value)
+    getXHR(global_const.assetServer + "spine/summary.json").then((res: any) => {
+      console.log("XHR", res)
+      spineSumms.value = res
+      global_const.onGameDataLoaded("characterData", () => {
+        charIds.value = (Object.keys(res).map((v) => {
+          let chr = global_const.gameData.characterData[v]
+          if (chr == null) {
+            return {
+              key: v,
+              value: v,
+            }
+          } else {
+            return {
+              key: `${chr.rarity + 1}星|${global_const.profNick[chr.profession] || '未知'}|${chr.name}`,
+              sortId: -chr.rarity,
+              value: v,
+            }
+          }
 
-      }) || []).sort((a, b) => {
-        if (a.sortId == null) {
-          return 1
-        }
-        if (b.sortId == null) {
-          return -1
-        }
-        return a.sortId - b.sortId
+        }) || []).sort((a, b) => {
+          if (a.sortId == null) {
+            return 1
+          }
+          if (b.sortId == null) {
+            return -1
+          }
+          return a.sortId - b.sortId
+        })
+        currentSettings.value.char = charIds.value[0].value
+        currentSettings.value.skin = currentSettings.value.char
+        currentSettings.value.model = Object.keys(res[currentSettings.value.char][currentSettings.value.char])[0]
+        load()
       })
-      currentSettings.value.char = charIds.value[0].value
-      currentSettings.value.skin = currentSettings.value.char
-      currentSettings.value.model = Object.keys(res[currentSettings.value.char][currentSettings.value.char])[0]
-      load()
+      global_const.onGameDataLoaded("skinTable", () => {
+        onSkinLoad.value = true
+      })
     })
-    global_const.onGameDataLoaded("skinTable", () => {
-      onSkinLoad.value = true
+    watch(() => charSkins.value, (val) => {
+      if (currentSettings.value.char.startsWith("token"))
+        onSelectSkin(val[0].value)
     })
-  })
-  watch(() => charSkins.value, (val) => {
-    if (currentSettings.value.char.startsWith("token"))
-      onSelectSkin(val[0].value)
   })
 })
 
