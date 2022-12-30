@@ -26,6 +26,19 @@ const formatConsumeTime = (ts: number) => {
     }
     return rDay.toString() + '天后过期'
 }
+
+function formatFileSize(number: number): string {
+    if (number < 1024) {
+        return `${number} bytes`;
+    } else if (number >= 1024 && number < 1048576) {
+        return `${(number / 1024).toFixed(1)} KB`;
+    } else if (number >= 1048576) {
+        return `${(number / 1048576).toFixed(1)} MB`;
+    }
+    return number.toString();
+}
+
+
 // export function camel (str) {
 //   const camel = (str || '').replace(/-([^-])/g, g => g[1].toUpperCase());
 
@@ -91,5 +104,6 @@ export default {
     toggleFullScreen,
     formatDate,
     formatConsumeTime,
+    formatFileSize,
     kebab
 }

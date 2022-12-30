@@ -4,8 +4,8 @@ import {useTranslate} from "./translate";
 
 export function useToast() {
     const {translate} = useTranslate();
-    const showMessage = (key: string, timeout: number = 1000, type: ToastType = "info", ...args: any[]) => {
-        createToast(translate(key, args), {
+    const showMessage = (key: string, timeout: number = 1000, type: ToastType = "info", ...args: any[]): { close: () => void } => {
+        return createToast(translate(key, ...args), {
             showIcon: true,
             type: type,
             transition: "bounce",

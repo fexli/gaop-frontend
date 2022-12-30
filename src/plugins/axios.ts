@@ -158,7 +158,7 @@ export const apiAuthLogin = (username: string, password: string) => post('/auth/
 })
 export const apiGetMe = () => post("/account/me");
 export const apiGetAnnounce = () => get("/conf/announce");
-export const apiPostAnnounce = (title: string, titlebar: string, content: string) => post("/conf/announce",{
+export const apiPostAnnounce = (title: string, titlebar: string, content: string) => post("/conf/announce", {
     title: title,
     title_bar: titlebar,
     content: content
@@ -232,3 +232,15 @@ export const getGameInfoGSP = (username: string, platform: number) => post('/gam
     platform
 });
 export const getMonitorInfos = () => post('/account/monitorAccounts', {});
+export const getUserModuleList = () => get('/user-module/list', {});
+export const uploadUserModule = (script: string, name: string, desc: string) => post('/user-module/upload', {
+    script,
+    name,
+    desc
+});
+export const compileUserModule = (hash: string) => post('/user-module/compile', {
+    hash
+});
+export const deleteUserModule = (hash: string) => post('/user-module/delete', {
+    hash
+});

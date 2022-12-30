@@ -8,7 +8,7 @@ const props = defineProps({
     default: ""
   },
   content: {
-    type: String,
+    type: [String, Number],
     default: ""
   },
   description: {
