@@ -56,18 +56,18 @@ class WebSock {
     public onMessage() {
         const that = this;
         return (e: MessageEvent) => {
-            console.log("wsRer", e)
+            // console.log("wsRer", e)
             if (typeof e.data !== "string") {
                 console.log("wsRer DataNotString", e.data)
                 return;
             }
             const redata = JSON.parse(e.data)
-            console.log('wsRecv', redata)
+            // console.log('wsRecv', redata)
             if (redata.errCode === 0) {
                 switch (redata.type) {
                     case 0: {
                         // logger info
-                        console.log('logger', redata.data)
+                        // console.log('logger', redata.data)
                         // TODO:this.$logger(redata.data)
                         if (that._setFinalLogInfo) {
                             that._setFinalLogInfo(redata.data)
@@ -76,7 +76,7 @@ class WebSock {
                     }
                     case 1: {
                         // state info
-                        console.log('state', redata.data)
+                        // console.log('state', redata.data)
                         if (that._setStatusInfo) {
                             that._setStatusInfo(redata.data)
                         }
@@ -84,7 +84,7 @@ class WebSock {
                     }
                     case 2: {
                         // captcha info
-                        console.log('captcha', redata.data)
+                        // console.log('captcha', redata.data)
                         geetest.captchaBox.push(redata.data)
                         geetest.startCaptcha()
                     }
@@ -121,7 +121,6 @@ class WebSock {
             } else if (that.wsReconTime >= 20) {
                 that._showMessage("ws.error", -1, "danger");
             } else {
-                console.log(that._showMessage)
                 that._showMessage("ws.error_reconn_t", 4000, "warning", that.wsReconTime);
                 setTimeout(() => {
                     that._showMessage("ws.error_reconn_r", 3000, "info");

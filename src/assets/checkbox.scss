@@ -1,0 +1,105 @@
+
+.checkbox-group {
+  @apply flex flex-wrap justify-center mx-auto select-none;
+  width: 90%;
+  max-width: 600px;
+
+  & > * {
+    margin: .5rem 0.5rem;
+  }
+}
+
+.checkbox-group-legend {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #9c9c9c;
+  text-align: center;
+  line-height: 1.125;
+  margin-bottom: 1.25rem;
+}
+
+// Code to hide the input
+.checkbox-input {
+  @apply overflow-hidden absolute whitespace-nowrap w-px h-px;
+  clip: rect(0 0 0 0);
+  clip-path: inset(100%);
+
+  &:checked + .checkbox-tile {
+    @apply border-secondary text-secondary;
+    box-shadow: 0 5px 10px rgba(#000, 0.1);
+
+    &:before {
+      @apply bg-secondary border-secondary opacity-100;
+      transform: scale(1);
+    }
+
+    .checkbox-icon, .checkbox-label {
+      @apply text-secondary;
+    }
+  }
+
+  &:hover + .checkbox-tile {
+    @apply border-secondary;
+    //box-shadow: 0 5px 10px rgba(#000, 0.1), 0 0 0 4px #b5c9fc;
+
+    &:before {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+}
+
+.checkbox-tile {
+  @apply bg-base-200 w-full border-2 border-neutral-content;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 6.5rem;
+  min-height: 4.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 5px 10px rgba(#000, 0.1);
+  transition: 0.15s ease;
+  cursor: pointer;
+  position: relative;
+
+  &:before {
+    @apply bg-base-200 border-secondary border-2;
+    content: "";
+    position: absolute;
+    display: block;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    top: 0.25rem;
+    left: 0.25rem;
+    opacity: 0;
+    transform: scale(0);
+    transition: 0.25s ease;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='192' height='192' fill='%23FFFFFF' viewBox='0 0 256 256'%3E%3Crect width='256' height='256' fill='none'%3E%3C/rect%3E%3Cpolyline points='216 72.005 104 184 48 128.005' fill='none' stroke='%23FFFFFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='32'%3E%3C/polyline%3E%3C/svg%3E");
+    background-size: 12px;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+  }
+
+  &:hover {
+    @apply border-secondary;
+
+    &:before {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+}
+
+.checkbox-icon {
+  transition: .375s ease;
+  color: #494949;
+}
+
+.checkbox-label {
+  color: #707070;
+  transition: .375s ease;
+  text-align: center;
+}

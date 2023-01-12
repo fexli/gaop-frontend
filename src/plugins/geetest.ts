@@ -2,11 +2,22 @@ import {finishCaptcha} from "./axios";
 
 class GeeTest {
     public captchaOverlay = ref(false);
+    public captchaEnable = ref(true);
     public captchaType = ref("未开启");
     public captchaBox = [] as any[];
     public captchaData = {
         challenge: '',
         gt: '',
+    }
+
+    refreshCaptcha() {
+        const that = this
+        this.captchaEnable.value = false
+        nextTick(() => {
+            that.captchaEnable.value = true
+        }).finally(() => {
+            that.startCaptcha()
+        })
     }
 
     startCaptcha() {
@@ -21,6 +32,7 @@ class GeeTest {
         this.getGeetest()
         this.captchaType.value = '生成中'
     }
+
     getGeetest() {
         const that = this
         const challenge = this.captchaData.challenge
@@ -50,7 +62,8 @@ class GeeTest {
                         console.log(suc)
                         that.captchaOverlay.value = false
                         that.captchaType.value = '未开启'
-                        that.startCaptcha()
+                        that.refreshCaptcha()
+
                     }).catch((err) => {
                         console.log(err)
                     })

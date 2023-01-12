@@ -3,7 +3,7 @@
 import {useTranslate} from "../hooks/translate";
 import StatusInfo from "../components/parts/accountManage/StatusInfo.vue";
 import global_const from "../utils/global_const";
-import {deleteUserModule, getUserModuleList, uploadUserModule} from "../plugins/axios";
+import {addByShareModule, deleteUserModule, getUserModuleList, uploadUserModule} from "../plugins/axios";
 import {Ref} from "vue";
 
 import {useToast} from "../hooks/toast";
@@ -16,6 +16,7 @@ const {showMessage} = useToast();
 const {translate} = useTranslate();
 
 const userModuleLists: Ref<Array<any>> = ref([])
+const userModuleDetails: Ref<Array<any>> = ref([])
 const uploadNewModuleOverlay: Ref<boolean> = ref(false)
 const createScriptName: Ref<string> = ref('')
 const createScriptDesc: Ref<string> = ref('')
@@ -26,10 +27,34 @@ const loadingUploadNewScript: Ref<boolean> = ref(false)
 const deleteModuleInfo: Ref<Record<string, any>> = ref({})
 const deleteModuleOverlay: Ref<boolean> = ref(false)
 
+const shareModuleOverlay: Ref<boolean> = ref(false)
+const shareNewHash: Ref<string> = ref('')
+const loadingShareNew: Ref<boolean> = ref(false)
+const addNewSharedModule = () => {
+  loadingShareNew.value = true
+  let hashes = shareNewHash.value.split("\n")
+  console.log("addNewSharedModule", hashes)
+  for (let hash of hashes) {
+    addByShareModule(hash.toLowerCase()).then((res: any) => {
+      console.log("uploadUserModule", res)
+      showMessage(res.msg, 3000, 'info')
+      shareModuleOverlay.value = false
+      shareNewHash.value = ''
+      fetchUserModuleList()
+    }).catch((err: any) => {
+      console.log("uploadUserModuleErr", err)
+      showMessage(err.data.msg, 3000, 'danger')
+    }).finally(()=>{
+      loadingShareNew.value = false
+    })
+  }
+}
+
 const fetchUserModuleList = () => {
   getUserModuleList().then((res: any) => {
     console.log("fetchUserModuleList", res);
-    userModuleLists.value = res.data
+    userModuleLists.value = res.data.info
+    userModuleDetails.value = res.data.details
   }).catch((err) => {
     console.log("fetchUserModuleListErr", err);
   })
@@ -44,6 +69,15 @@ const onSelectNewFile = async (e: any) => {
     createScriptFile.value = null
     createScriptFileInfo.value = ""
   }
+}
+
+function findModuleDetails(hash: string) {
+  for (let module of userModuleDetails.value) {
+    if (module.scriptHash === hash) {
+      return module
+    }
+  }
+  return null
 }
 
 const uploadNewScript = () => {
@@ -70,7 +104,7 @@ const uploadNewScript = () => {
   })
 }
 
-function onDeleteModule(hash:any) {
+function onDeleteModule(hash: any) {
   console.log("onDeleteModule", hash);
   deleteModuleInfo.value = hash
   deleteModuleOverlay.value = true
@@ -80,12 +114,12 @@ function onConfirmDeleteModule() {
   console.log("onConfirmDeleteModule", deleteModuleInfo.value);
   deleteUserModule(deleteModuleInfo.value.scriptHash).then((res: any) => {
     console.log("onConfirmDeleteModule", res);
-    showMessage(res.msg, 2000, "success")
+    showMessage(res.msg, 10000, "success")
     fetchUserModuleList()
     deleteModuleOverlay.value = false
   }).catch((err) => {
     console.log("onConfirmDeleteModuleErr", err);
-    showMessage(err.data.msg, 2000, "danger")
+    showMessage(err.data.msg, 6000, "danger")
   })
   deleteModuleOverlay.value = false
 }
@@ -98,7 +132,8 @@ onMounted(() => {
 <template>
   <div class="flex flex-col lg:flex-row overflow-hidden">
     <div class="flex flex-wrap flex-row lg:flex-col">
-      <StatusInfo class="mr-1 lg:mr-0" title="module.module_cnt" :content="userModuleLists.length">
+      <StatusInfo class="mr-1 lg:mr-0" title="module.module_cnt"
+                  :content="userModuleLists.filter((v)=> v.source === 0).length">
         <template v-slot:icon>
           <svg class="w-6 h-6" stroke="currentColor" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
@@ -136,13 +171,12 @@ onMounted(() => {
           <!--            </svg>-->
           <!--            <div class="hidden sm:flex">{{ translate('account.reload_account') }}</div>-->
           <!--          </div>-->
-          <!--          <div class="table-head-btn" @click="addGameAccount">-->
-          <!--            <svg style="width:24px;height:24px" viewBox="0 0 24 24">-->
-          <!--              <path fill="currentColor"-->
-          <!--                    d="M15,14C12.33,14 7,15.33 7,18V20H23V18C23,15.33 17.67,14 15,14M6,10V7H4V10H1V12H4V15H6V12H9V10M15,12A4,4 0 0,0 19,8A4,4 0 0,0 15,4A4,4 0 0,0 11,8A4,4 0 0,0 15,12Z"/>-->
-          <!--            </svg>-->
-          <!--            <div class="hidden sm:flex">{{ translate('account.create_account') }}</div>-->
-          <!--          </div>-->
+          <div class="table-head-btn" @click="shareModuleOverlay = true">
+            <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+              <path fill="currentColor" :d="global_const.mdiPath['share-variant']"/>
+            </svg>
+            <div class="hidden sm:flex">{{ translate('module.addsre') }}</div>
+          </div>
           <div class="table-head-btn mr-1" @click="uploadNewModuleOverlay = true">
             <svg style="width:24px;height:24px" viewBox="0 0 24 24">
               <path fill="currentColor" :d="global_const.mdiPath['cloud-upload-outline']"/>
@@ -155,7 +189,8 @@ onMounted(() => {
         <template v-for="(i,k) of userModuleLists" v-bind:key="k">
           <ModuleInfo
               class="mb-1"
-              :info="i"
+              :module-details="findModuleDetails(i.scriptHash)"
+              :module-info="i"
               :index="k+1"
               :delete="onDeleteModule"
               :fetch="fetchUserModuleList"
@@ -208,7 +243,7 @@ onMounted(() => {
               class="file-input file-input-md file-input-primary file-input-bordered w-full bg-gray-100 text-neutral rounded-xl"
           />
           <label class="label -my-1">
-            <span class="label-text-alt text-neutral">{{translate('module.upload.ts')}}</span>
+            <span class="label-text-alt text-neutral">{{ translate('module.upload.ts') }}</span>
             <span class="label-text-alt text-neutral">{{
                 createScriptFile ? formatter.formatFileSize(createScriptFile.size) : translate('no_file_selected')
               }}</span>
@@ -243,6 +278,37 @@ onMounted(() => {
           <button class="btn btn-ghost" @click="deleteModuleOverlay = false">{{
               translate('account.delete_deny')
             }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </TransitionOverlay>
+  <TransitionOverlay
+      :show="shareModuleOverlay"
+      class="overlay bg-base-200 bg-opacity-50"
+  >
+    <div class="card w-96 max-w-md rounded-2xl" v-if="shareModuleOverlay">
+      <div class="absolute right-0 top-0 p-2" @click="shareModuleOverlay = false">
+        <svg class="w-8 h-8" viewBox="0 0 24 24">
+          <path fill="currentColor"
+                d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+        </svg>
+      </div>
+      <div class="card-body bg-base-200 rounded-2xl" style="padding: 1rem 2em 2rem 2rem!important;">
+        <h2 class="card-title text-primary">{{ translate('module.share_new') }}</h2>
+        <p class="text-primary">{{ translate('module.enable_info') }}</p>
+
+        <div class="relative h-32">
+          <textarea
+              class="textarea text-neutral textarea-primary bg-gray-100 min-h-[8rem] max-h-32 text-sm w-full px-2 py-1 rounded-xl"
+              :placeholder="translate('module.enable_desc')" v-model="shareNewHash"
+          ></textarea>
+        </div>
+
+        <div class="card-actions flex flex-row justify-center">
+          <button @click="addNewSharedModule" :class="loadingShareNew ? 'loading disabled pl-6':''"
+                  class="btn rounded-xl btn-md h-8 btn-primary">
+            {{ loadingShareNew ? '' : translate('module.upload_new') }}
           </button>
         </div>
       </div>

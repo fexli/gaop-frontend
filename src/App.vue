@@ -11,7 +11,7 @@
       <div class="bg-white bg-opacity-40 p-8 backdrop-blur-sm rounded-xl">
         <h2 class="text-xl text-neutral font-bold">{{ translate('captcha.title') }}</h2>
         <p class="text-neutral pt-4 pb-1">{{ translate('captcha.desc') }}</p>
-        <div id="geetest" style="height: 45px"></div>
+        <div id="geetest" style="height: 45px" v-if="geetest.captchaEnable.value"></div>
         <p class="text-neutral pt-1">{{ translate('captcha.status', geetest.captchaType.value) }}</p>
       </div>
     </div>

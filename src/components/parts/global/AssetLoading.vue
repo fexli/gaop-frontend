@@ -289,14 +289,14 @@ startLoadAssets()
 <template>
   <div
       v-if="!loadingFinished"
-      :class="(smallMode ? 'fixed z-10 w-36 h-36 left-0 bottom-6 rounded-xl rounded-bl-none':'overlay') + ' bg-base-200 asset-loading'"
+      :class="(smallMode ? 'fixed z-10 w-36 h-36 left-0 bottom-6 rounded-xl rounded-bl-none bg-primary/40':'overlay bg-base-200') + ' asset-loading'"
       :style="`filter: opacity(${overlay ? '1':'0'})`"
   >
     <div class="flex flex-col items-center">
       <div
           :style="(smallMode ? 'height: 112px;width: 119px' : 'height: 320px;width: 340px') + `;background-repeat: no-repeat;background-size: contain;background-image: url('${loadingSrc}')`"
       />
-      <div class="text-primary text-xl">{{ text }}{{ percent }}{{ dot }}</div>
+      <div :class="(smallMode ? '' : 'text-xl') + ' text-primary '">{{ text }}{{ percent }}{{ dot }}</div>
       <ProgressBar v-if="!smallMode" :buf-value="buf" :value="val+tmlVal" :loading="val+tmlVal===0" :max="max"/>
     </div>
   </div>

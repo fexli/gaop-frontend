@@ -37,6 +37,7 @@ export class GifRecorder extends EventTarget {
     this._accumulator = 0
     this._lastTimestamp = 0
 
+    this.transparent = options.transparent == null ? true : options.transparent
     this.rendering = 0
     this.innerList = []
     this.imgList = []
@@ -83,7 +84,7 @@ export class GifRecorder extends EventTarget {
       width: this._stream.width,
       height: this._stream.height,
       workerScript: getGifWorker(),
-      transparent: 0x00000000,
+      transparent: this.transparent ? 0x00000000 : undefined,
     })
     this._encoder.on('finished', (e) => {
       this.dispatchEvent(new BlobEvent("dataavailable", {

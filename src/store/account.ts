@@ -10,7 +10,6 @@ export const accountStore = defineStore("account", {
     state: () => ({
         accountsList: [] as string[],//[str.]
         accountInfo: {} as Record<string, any>, //[gameUD]
-        accountDetails: [],
         loggerStore: {} as Record<string, any>,
         loggerStoreUpdate: false,
         gameAccountLi: [] as any[],//游戏账号管理
@@ -27,9 +26,6 @@ export const accountStore = defineStore("account", {
         },
         getAccountInfo: (state) => {
             return state.accountInfo
-        },
-        getAccountDetail: (state) => {
-            return state.accountDetails
         },
         getLoggerStore: (state) => {
             return state.loggerStore

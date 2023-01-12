@@ -32,46 +32,6 @@ interface Position {
     scale: number
 }
 
-// export class LocalAssetsManager extends spine.AssetManager {
-//     rawDataS: { [key: string]: string } = {}
-//
-//     constructor(context: WebGLRenderingContext, pathPrefix?: string) {
-//         super(context, pathPrefix)
-//     }
-//
-//     setCustomText(path: string, text: any) {
-//         this.rawDataS[path] = text
-//     }
-//
-//     loadTexture(path: string, success?: (path: string, image: HTMLImageElement) => void, error?: (path: string, error: string) => void) {
-//         // var _this = this;
-//         // if (success === void 0) { success = undefined; }
-//         // if (error === void 0) { error = undefined; }
-//         // path = this.pathPrefix + path;
-//         // var storagePath = path;
-//         // this.toLoad++;
-//         // var img = new Image();
-//         // img.crossOrigin = "anonymous";
-//         // img.onload = function (ev) {
-//         //     var texture = _this.textureLoader(img);
-//         //     _this.assets[storagePath] = texture;
-//         //     _this.toLoad--;
-//         //     _this.loaded++;
-//         //     if (success)
-//         //         success(path, img);
-//         // };
-//         // img.onerror = function (ev) {
-//         //     _this.errors[path] = "Couldn't load image " + path;
-//         //     _this.toLoad--;
-//         //     _this.loaded++;
-//         //     if (error)
-//         //         error(path, "Couldn't load image " + path);
-//         // };
-//         // if (this.rawDataUris[path])
-//         //     path = this.rawDataUris[path];
-//         // img.src = path;
-//     }
-// }
 
 export class Spine {
     skeletons: Record<string, Skeleton> = {}
@@ -90,18 +50,7 @@ export class Spine {
     activeSkeleton: string | undefined
     debug = false
     position: Position
-    // static inner?: Spine;
 
-    // static get(canvas?: HTMLCanvasElement): Spine {
-    //   if (!Spine.inner) {
-    //     if (!canvas) {
-    //       throw new Error('spine is not init.');
-    //     }
-    //     const s = new Spine(canvas);
-    //     Spine.inner = s;
-    //   }
-    //   return Spine.inner;
-    // }
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas
         // const gl = canvas.getContext('webgl', { alpha: true }) as WebGLRenderingContext;
@@ -187,6 +136,7 @@ export class Spine {
         const skel = this.assetManager.get(skelPath)
         const skeletonBinary = new spine.SkeletonBinary(atlasLoader)
         const skeletonData = skeletonBinary.readSkeletonData(skel)
+        console.log("skeletonData", skeletonData)
         const skeleton = new spine.Skeleton(skeletonData)
         if (skinName) {
             skeleton.setSkinByName(skinName)
@@ -339,7 +289,9 @@ export class Spine {
         // const stream = this.canvas.captureStream(60)
         const chunks: BlobPart[] = []
         // const mr = new MediaRecorder(stream,)
-        const mr = new GifRecorder(this.canvas, {})
+        const mr = new GifRecorder(this.canvas, {
+            transparent: this.bg[0] === 0 && this.bg[1] === 0 && this.bg[2] === 0 && this.bg[3] === 0,
+        })
 
         // mr.ondataavailable = (e: BlobEvent) => {
         //     chunks.push(e.data)

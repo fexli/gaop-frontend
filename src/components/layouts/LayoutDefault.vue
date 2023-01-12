@@ -102,7 +102,7 @@ function check_announce() {
   apiGetAnnounce().then((res: any) => {
     console.log("check announce res:", res)
     if (res.data != null) {
-      if (annStore.version === res.data.version) {
+      if (annStore.version === res.data.version || res.data.version === 0) {
         return
       }
       annStore.setAnnounceVersion(res.data.version)
