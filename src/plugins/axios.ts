@@ -158,6 +158,8 @@ export const apiAuthLogin = (username: string, password: string) => post('/auth/
 })
 export const apiGetMe = () => post("/account/me");
 export const apiGetAnnounce = () => get("/conf/announce");
+export const apiGetConfig = () => get("/conf/getConf");
+export const apiSetConfig = (data: Record<string, boolean>) => post("/conf/setConf", data);
 export const apiPostAnnounce = (title: string, titlebar: string, content: string) => post("/conf/announce", {
     title: title,
     title_bar: titlebar,
@@ -214,6 +216,10 @@ export const getGameSettings = (username: string, platform: number) => post('/ga
     username,
     platform
 });
+export const getGameFriends = (username: string, platform: number) => post('/game/friends', {
+    username,
+    platform
+});
 export const setGameSettings = (username: string, platform: number, data: any) => post('/game/setSettings', {
     username,
     platform,
@@ -238,9 +244,32 @@ export const uploadUserModule = (script: string, name: string, desc: string) => 
     name,
     desc
 });
+export const addByShareModule = (hash: string) => post('/user-module/addbyshare', {
+    hash
+});
 export const compileUserModule = (hash: string) => post('/user-module/compile', {
     hash
 });
 export const deleteUserModule = (hash: string) => post('/user-module/delete', {
     hash
+});
+export const deployModuleToGames = (hash: string, accounts: any[], enable: boolean) => post('/user-module/quickdeploy', {
+    hash,
+    accounts,
+    enable
+});
+export const getGameModuleList = (username: string, platform: number) => post('/game/module/list', {
+    username,
+    platform
+});
+export const addGameModuleList = (username: string, platform: number, hash: string) => post('/game/module/add', {
+    username,
+    platform,
+    hash,
+});
+export const setGameModuleList = (username: string, platform: number, hash: string, enable: boolean) => post('/game/module/enable', {
+    username,
+    platform,
+    hash,
+    enable,
 });
