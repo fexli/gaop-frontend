@@ -1,11 +1,12 @@
 import global_const from "./global_const";
+import {BattleParam} from "./autoBattleMapProc";
 
 export interface AutoBattleMapCondition {
     Test(): boolean;
 }
 
 export class AutoBattleMapAtkSet {
-    mapSetting: string;
+    mapSetting: BattleParam;
     isComplete: boolean;
     conditions: Record<string, any>;
 

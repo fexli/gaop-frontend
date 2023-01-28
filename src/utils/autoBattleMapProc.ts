@@ -60,23 +60,23 @@ export class ManagedCharTrainingInfo {
 }
 
 export class BattleParam implements Record<any, any> {
-    Type: string;
-    Map: Array<string>;
-    MapT: Array<BattleMapWithTimes>
-    Managed: Array<ManagedCharTrainingInfo>
+    type: string;
+    maps: Array<string>;
+    mapt: Array<BattleMapWithTimes>
+    mng: Array<ManagedCharTrainingInfo>
 
     constructor() {
-        this.Type = "";
-        this.Map = [];
-        this.MapT = [];
-        this.Managed = [];
+        this.type = "";
+        this.maps = [];
+        this.mapt = [];
+        this.mng = [];
     }
 
     public Marshal(): string {
-        return "TYPE=" + this.Type +
-            (this.Map.length > 0 ? "|MAP=" + this.Map.join(",") : "") +
-            (this.MapT.length > 0 ? "|MAPT=" + this.MapT.map((v) => v.Map + "~" + v.Times).join(",") : "") +
-            (this.Managed.length > 0 ? "|MNG=" + this.Managed.map((v) => v.Marshal()).filter((v) => v !== '').join(",") : "");
+        return "TYPE=" + this.type +
+            (this.maps.length > 0 ? "|MAP=" + this.maps.join(",") : "") +
+            (this.mapt.length > 0 ? "|MAPT=" + this.mapt.map((v) => v.Map + "~" + v.Times).join(",") : "") +
+            (this.mng.length > 0 ? "|MNG=" + this.mng.map((v) => v.Marshal()).filter((v) => v !== '').join(",") : "");
     }
 }
 
@@ -163,7 +163,7 @@ export const parseSingleBattleParam = function (ctx: string): BattleParam {
     console.log("parseSingleBattleParam", ctx);
     let battleParam = new BattleParam();
 
-    battleParam.Type = 'AUTO'
+    battleParam.type = 'AUTO'
     if (!ctx || ctx === '') {
         return battleParam
     }
@@ -174,21 +174,21 @@ export const parseSingleBattleParam = function (ctx: string): BattleParam {
         }
         switch (args[0]) {
             case 'TYPE':
-                battleParam.Type = args[1]
+                battleParam.type = args[1]
                 break
             case 'MAP':
                 if (args[1] !== '') {
-                    battleParam.Map = args[1].split(',')
+                    battleParam.maps = args[1].split(',')
                 }
                 break
             case 'MAPT':
                 if (args[1] !== '') {
-                    battleParam.MapT = parseMatWithTimes(args[1])
+                    battleParam.mapt = parseMatWithTimes(args[1])
                 }
                 break
             case 'MNG':
                 if (args[1] !== '') {
-                    battleParam.Managed = parseCharManaged(args[1])
+                    battleParam.mng = parseCharManaged(args[1])
                 }
                 break
         }
@@ -196,21 +196,21 @@ export const parseSingleBattleParam = function (ctx: string): BattleParam {
     return battleParam;
 }
 
-export const parseSingleBattleParamToStr = function (ctx: string): string {
-    let data = parseSingleBattleParam(ctx)
+export const parseSingleBattleParamToStr = function (data: BattleParam): string {
     let result = ''
     for (let i = 0; i < bTypeDesc.length; i++) {
-        if (bTypeDesc[i].type === data.Type) {
+        if (bTypeDesc[i].type === data.type) {
             result += bTypeDesc[i].text
         }
     }
+    result += "："
     let r = [] as string[]
-    switch (data.Type) {
+    switch (data.type) {
         case 'AUTO':
             break
         case 'RANDOM':
         case 'FIRST':
-            for (let mid of data.Map) {
+            for (let mid of data.maps || []) {
                 if (global_const.gameData.stageTable['stages'][mid] != null) {
                     r.push(global_const.gameData.stageTable['stages'][mid].code)
                 } else {
@@ -220,7 +220,7 @@ export const parseSingleBattleParamToStr = function (ctx: string): string {
             result += r.join(',')
             break
         case 'MAPARG':
-            for (let mid of data.MapT) {
+            for (let mid of data.mapt || []) {
                 if (global_const.gameData.stageTable['stages'][mid.Map] != null) {
                     r.push(global_const.gameData.stageTable['stages'][mid.Map].code + "(" + mid.Times + "次)")
                 } else {
@@ -230,6 +230,24 @@ export const parseSingleBattleParamToStr = function (ctx: string): string {
             result += r.join(',')
             break
         case 'MANAGED':
+            let cInfos = {} as Record<string, string[]>
+
+            for (let minfo of data.mng || []) {
+                let cname = (global_const.gameData.characterData[minfo.CharId].name || minfo.CharId)
+                if (cInfos[cname] == null) {
+                    cInfos[cname] = []
+                }
+                if (minfo.EliteTo != 0) {
+                    cInfos[cname].push("精" + minfo.EliteTo)
+                }
+                for (let mskil of minfo.SkillTarget) {
+                    cInfos[cname].push(['一','二','三'][mskil.SkillId] + "技能至" + mskil.Target + "级")
+                }
+            }
+            for (let cname in cInfos) {
+                r.push(cname + "(" + cInfos[cname].join(",") + ")")
+            }
+            result += r.join(',')
             break
     }
     return result

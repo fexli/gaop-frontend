@@ -58,6 +58,16 @@ onMounted(() => {
     props.info.hasEl = true
     props.applyChange()
   })
+  props.info.elite = props.info.elite || false
+  watch(() => props.info.elite, (value) => {
+    console.log("watch elite changed", value)
+    props.applyChange()
+  })
+  props.info.skill = props.info.skill || false
+  watch(() => props.info.skill, (value) => {
+    console.log("watch skill changed", value)
+    props.applyChange()
+  })
   if (props.info.skillInfo?.total) {
     props.info.skill = props.info.skill || false
     props.info.hasSkill = props.info.hasSkill || false

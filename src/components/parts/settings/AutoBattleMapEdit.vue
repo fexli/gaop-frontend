@@ -60,8 +60,12 @@ const inDrag = ref(false)
 function atksRemapStart(el: any) {
 
 }
+
 function atksRemapEnd(el: any) {
   console.log("drag end, change index", el.newIndex, el.oldIndex)
+  if (el.newIndex === el.oldIndex) {
+    return
+  }
   inDrag.value = true
   // TODO:change index
   let minOf = Math.min(el.newIndex, el.oldIndex)
@@ -83,12 +87,40 @@ function trySaveCurrentBattleMapSet(index: number) {
       return
     }
     // 保存index设置
-    autoBattleMapSetting.value.atks[index].mapSetting = selectAttackSettings.value.Marshal()
+    autoBattleMapSetting.value.atks[index].mapSetting = selectAttackSettings.value
+  }
+}
+
+function deleteAtkMap(index: number) {
+  if (index !== -1) {
+    console.log("deleteAtkMap", index)
+    if ((autoBattleMapSetting.value?.atks?.length || 0) <= index) {
+      return
+    }
+    // 保存index设置
+    autoBattleMapSetting.value.atks.splice(index, 1)
+    if (currentIndex.value === index) {
+      if (index == 0) {
+        currentIndex.value = -1
+        selectAttackSettings.value = new BattleParam()
+      } else {
+        currentIndex.value = 0
+      }
+    } else if (currentIndex.value > index) {
+      currentIndex.value = currentIndex.value - 1
+    }
   }
 }
 
 watch(() => currentIndex.value, (index: number, old: number) => { // 监听index变化（点击切换）
   console.log("currentIndex", old, index)
+  if (autoBattleMapSetting.value.atks[index] == undefined) {
+    console.log("index not exist, ignore")
+    if (index >= 0) {
+      currentIndex.value = old
+    }
+    return;
+  }
   if (inDrag.value) {
     console.log("in drag, ignore")
     inDrag.value = false
@@ -97,7 +129,8 @@ watch(() => currentIndex.value, (index: number, old: number) => { // 监听index
   trySaveCurrentBattleMapSet(old)
   if (index !== -1) {
     // 加载index设置
-    selectAttackSettings.value = parseSingleBattleParam(autoBattleMapSetting.value.atks[index].mapSetting)
+    console.log("load index", index)
+    selectAttackSettings.value = autoBattleMapSetting.value.atks[index].mapSetting
     needRefreshed.value = true
     nextTick(() => {
       needRefreshed.value = false
@@ -133,8 +166,10 @@ watch(() => settingParsed.value, (val) => {
 })
 
 function addNewAtks() {
+  let mSet = new BattleParam()
+  mSet.type = "AUTO"
   let data = new AutoBattleMapAtkSet({
-    mapSetting: "TYPE=AUTO",
+    mapSetting: mSet,
     conditions: {type: 1, value: 1},
   })
   autoBattleMapSetting.value.atks.push(data)
@@ -168,12 +203,12 @@ onMounted(() => {
         <SettingSelect
             class="px-2"
             :settings="selectAttackSettings"
-            field="Type" title="关卡攻略模式" text-left
+            field="type" title="关卡攻略模式" text-left
             :list="bTypeDesc" item-text="text" item-value="type"
         >
           <template #extra>
             <svg class="w-6 h-6 text-info" viewBox="0 0 24 24">
-              <path fill="currentColor" :d="global_const.mdiPath[bTypeIcons[selectAttackSettings['Type']]]"/>
+              <path fill="currentColor" :d="global_const.mdiPath[bTypeIcons[selectAttackSettings['type']]]"/>
             </svg>
             <Explain class="-mr-2">
               <template #explain>
@@ -187,24 +222,24 @@ onMounted(() => {
           </template>
         </SettingSelect>
         <div class="text-primary text-lg font-bold px-1">>
-          {{ bTypeDesc.find(i => i.type === selectAttackSettings.Type)?.text }}
+          {{ bTypeDesc.find(i => i.type === selectAttackSettings.type)?.text }}
         </div>
         <div class="text-primary text-sm font-bold ml-1 px-1">>
-          {{ bTypeDesc.find(i => i.type === selectAttackSettings.Type)?.desc }}
+          {{ bTypeDesc.find(i => i.type === selectAttackSettings.type)?.desc }}
         </div>
-        <div v-if="selectAttackSettings['Type'] === 'AUTO'" class="ab-inner"></div>
-        <div v-else-if="['FIRST','RANDOM','MAPARG'].some(i => i === selectAttackSettings['Type'])"
+        <div v-if="selectAttackSettings['type'] === 'AUTO'" class="ab-inner"></div>
+        <div v-else-if="['FIRST','RANDOM','MAPARG'].some(i => i === selectAttackSettings['type'])"
              class="ab-inner">
           <StageSelector
               :inventory="inventory"
-              :has-index="selectAttackSettings['Type'] === 'FIRST'"
-              :has-times="selectAttackSettings['Type'] === 'MAPARG'"
-              :settings="selectAttackSettings" field-map="Map" field-map-t="MapT"
+              :has-index="selectAttackSettings['type'] === 'FIRST'"
+              :has-times="selectAttackSettings['type'] === 'MAPARG'"
+              :settings="selectAttackSettings" field-map="maps" field-map-t="mapt"
           />
         </div>
-        <div v-else-if="selectAttackSettings['Type'] === 'MANAGED'" class="ab-inner">
+        <div v-else-if="selectAttackSettings['type'] === 'MANAGED'" class="ab-inner">
           <CharUpgSelector
-              :settings="selectAttackSettings" field="Managed"
+              :settings="selectAttackSettings" field="mng"
           />
         </div>
         <div
@@ -233,10 +268,10 @@ onMounted(() => {
         </button>
       </div>
       <div class="h-full mb-1 border border-base-content rounded-md relative flex flex-col">
-<!--        <div class="p-1 text-xs text-info">[D]当前选择：{{-->
-<!--            parseSingleBattleParamToStr(selectAttackSettings.Marshal())-->
-<!--          }}-->
-<!--        </div>-->
+        <!--        <div class="p-1 text-xs text-info">[D]当前选择：{{-->
+        <!--            parseSingleBattleParamToStr(selectAttackSettings.Marshal())-->
+        <!--          }}-->
+        <!--        </div>-->
 
         <div class="flex px-1">
           <div class="px-1 -mb-1 text-sm">进攻组合参数</div>
@@ -263,8 +298,19 @@ onMounted(() => {
                   @click="currentIndex = index"
                   class="border border-base-content rounded-md text-sm"
               >
-                <div class="break-words">
-                  {{ element }} - {{ index }}
+                <div class="flex gap-1 items-center h-full px-0.5">
+                  <div class="text-primary font-bold">
+                    {{ index + 1 }}
+                  </div>
+                  <div class="break-all">
+                    {{ parseSingleBattleParamToStr(element.mapSetting || {}) }}
+                  </div>
+                  <div class="spacer"/>
+                  <button class="btn btn-ghost btn-circle btn-xs btn-primary" @click="deleteAtkMap(index)">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24">
+                      <path fill="currentColor" :d="global_const.mdiPath['close']"/>
+                    </svg>
+                  </button>
                 </div>
               </div>
             </template>

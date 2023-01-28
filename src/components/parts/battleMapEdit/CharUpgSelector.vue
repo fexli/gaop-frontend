@@ -78,14 +78,14 @@ function uploadChange() {
   let chs = [] as Array<ManagedCharTrainingInfo>
   for (let i = 0; i < list2.value.length; i++) {
     let item = list2.value[i]
-    if (item.hasEl && item.eliteLevel > 0) {
+    if (item.hasEl && item.eliteLevel > 0 && item.elite) {
       let el = new ManagedCharTrainingInfo()
       el.CharId = item.id
       el.TrainType = 'e'
       el.EliteTo = item.eliteLevel
       chs.push(el)
     }
-    if (item.hasSkill) {
+    if (item.hasSkill && item.skill) {
       let el = new ManagedCharTrainingInfo()
       el.CharId = item.id
       el.TrainType = 's'
@@ -135,7 +135,7 @@ function initSelected() {
   }
   list2.value = []
   let charMngMap = {} as Record<string, any>
-  for (let i = 0; i < props.settings[props.field].length; i++) {
+  for (let i = 0; i < (props.settings[props.field] || []).length; i++) {
     let curChar = props.settings[props.field][i]
     if (charData[curChar.CharId] == null) {
       continue
