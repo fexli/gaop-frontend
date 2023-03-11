@@ -1,57 +1,61 @@
 import global_const from "./global_const";
 
 export class BattleMapWithTimes {
-    Map: string;
-    Times: number;
+    mapId: string;
+    times: number;
 
     constructor() {
-        this.Map = "";
-        this.Times = 0;
+        this.mapId = "";
+        this.times = 0;
     }
 }
 
 export class ManagedSkillTarget {
-    SkillId: number;
-    Target: number;
+    skillId: number;
+    target: number;
 
     constructor() {
-        this.SkillId = 0;
-        this.Target = 0;
+        this.skillId = 0;
+        this.target = 0;
     }
 }
 
+export const ManagedCharTrainingUnknown = 0;
+export const ManagedCharTrainingSkill = 1;
+export const ManagedCharTrainingElite = 2;
+
 export class ManagedCharTrainingInfo {
-    CharId: string;
-    TrainType: string;
-    EliteTo: number;
-    SkillTarget: Array<ManagedSkillTarget>;
+    charId: string;
+    trainType: number;
+    eliteTo: number;
+    skillTarg: Array<ManagedSkillTarget>;
 
     constructor() {
-        this.CharId = "";
-        this.TrainType = "";
-        this.EliteTo = 0;
-        this.SkillTarget = [];
+        this.charId = "";
+        this.trainType = 0;
+        this.eliteTo = 0;
+        this.skillTarg = [];
     }
 
     public Marshal(): string {
-        let s = this.CharId + "/"
-        switch (this.TrainType) {
-            case "e":
-                if (this.EliteTo === 0) {
+        let s = this.charId + "/"
+        switch (this.trainType) {
+            case ManagedCharTrainingElite:
+                if (this.eliteTo === 0) {
                     return "";
                 }
-                s += "e/" + this.EliteTo;
+                s += "e/" + this.eliteTo;
                 break;
-            case "s":
-                if (this.SkillTarget.length === 0) {
+            case ManagedCharTrainingSkill:
+                if (this.skillTarg.length === 0) {
                     return "";
                 }
                 s += "s/";
-                for (let i = 0; i < this.SkillTarget.length; i++) {
+                for (let i = 0; i < this.skillTarg.length; i++) {
                     if (i > 0) {
                         s += "/";
                     }
-                    s += this.SkillTarget[i].SkillId + "-" + this.SkillTarget[i].Target;
+                    s += this.skillTarg[i].skillId + "-" + this.skillTarg[i].target;
                 }
                 break
         }
@@ -75,7 +79,7 @@ export class BattleParam implements Record<any, any> {
     public Marshal(): string {
         return "TYPE=" + this.type +
             (this.maps.length > 0 ? "|MAP=" + this.maps.join(",") : "") +
-            (this.mapt.length > 0 ? "|MAPT=" + this.mapt.map((v) => v.Map + "~" + v.Times).join(",") : "") +
+            (this.mapt.length > 0 ? "|MAPT=" + this.mapt.map((v) => v.mapId + "~" + v.times).join(",") : "") +
             (this.mng.length > 0 ? "|MNG=" + this.mng.map((v) => v.Marshal()).filter((v) => v !== '').join(",") : "");
     }
 }
@@ -121,8 +125,8 @@ export const parseMatWithTimes = function (ctx: string): Array<BattleMapWithTime
             continue;
         }
         let tmp = new BattleMapWithTimes();
-        tmp.Map = part[0];
-        tmp.Times = parseInt(part[1]) || 0;
+        tmp.mapId = part[0];
+        tmp.times = parseInt(part[1]) || 0;
         result.push(tmp);
     }
     return result;
@@ -137,21 +141,21 @@ export const parseCharManaged = function (ctx: string): Array<ManagedCharTrainin
             continue;
         }
         let tmp = new ManagedCharTrainingInfo();
-        tmp.CharId = part[0];
-        tmp.TrainType = part[1];
-        if (tmp.TrainType === "e") {
-            tmp.EliteTo = parseInt(part[2]) || 0;
+        tmp.charId = part[0];
+        tmp.trainType = part[1] === 's' ? ManagedCharTrainingSkill : part[1] === 'e' ? ManagedCharTrainingElite : ManagedCharTrainingUnknown
+        if (tmp.trainType === ManagedCharTrainingElite) {
+            tmp.eliteTo = parseInt(part[2]) || 0;
         }
-        if (tmp.TrainType === "s") {
+        if (tmp.trainType === ManagedCharTrainingSkill) {
             for (let j = 2; j < part.length; j++) {
                 let parts2 = part[j].split("-");
                 if (parts2.length !== 2) {
                     continue;
                 }
                 let skillTarget = new ManagedSkillTarget();
-                skillTarget.SkillId = parseInt(parts2[0]) || 0;
-                skillTarget.Target = parseInt(parts2[1]) || 0;
-                tmp.SkillTarget.push(skillTarget);
+                skillTarget.skillId = parseInt(parts2[0]) || 0;
+                skillTarget.target = parseInt(parts2[1]) || 0;
+                tmp.skillTarg.push(skillTarget);
             }
         }
         result.push(tmp);
@@ -221,10 +225,10 @@ export const parseSingleBattleParamToStr = function (data: BattleParam): string 
             break
         case 'MAPARG':
             for (let mid of data.mapt || []) {
-                if (global_const.gameData.stageTable['stages'][mid.Map] != null) {
-                    r.push(global_const.gameData.stageTable['stages'][mid.Map].code + "(" + mid.Times + "次)")
+                if (global_const.gameData.stageTable['stages'][mid.mapId] != null) {
+                    r.push(global_const.gameData.stageTable['stages'][mid.mapId].code + "(" + mid.times + "次)")
                 } else {
-                    r.push("未知关卡" + mid.Map + "(" + mid.Times + "次)")
+                    r.push("未知关卡" + mid.mapId + "(" + mid.times + "次)")
                 }
             }
             result += r.join(',')
@@ -233,15 +237,16 @@ export const parseSingleBattleParamToStr = function (data: BattleParam): string 
             let cInfos = {} as Record<string, string[]>
 
             for (let minfo of data.mng || []) {
-                let cname = (global_const.gameData.characterData[minfo.CharId].name || minfo.CharId)
+                console.log("mifo", minfo)
+                let cname = (global_const.gameData.characterData[minfo.charId]?.name || minfo.charId)
                 if (cInfos[cname] == null) {
                     cInfos[cname] = []
                 }
-                if (minfo.EliteTo != 0) {
-                    cInfos[cname].push("精" + minfo.EliteTo)
+                if (minfo.eliteTo != 0) {
+                    cInfos[cname].push("精" + minfo.eliteTo)
                 }
-                for (let mskil of minfo.SkillTarget) {
-                    cInfos[cname].push(['一','二','三'][mskil.SkillId] + "技能至" + mskil.Target + "级")
+                for (let mskil of minfo.skillTarg) {
+                    cInfos[cname].push(['一', '二', '三'][mskil.skillId] + "技能至" + mskil.target + "级")
                 }
             }
             for (let cname in cInfos) {

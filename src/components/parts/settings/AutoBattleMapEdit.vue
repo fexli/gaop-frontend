@@ -52,6 +52,7 @@ const autoBattleMapSetting: Ref<AutoBattleMapSumms> = ref(new AutoBattleMapSumms
 const currentIndex: Ref<number> = ref(-1) // 当前的index
 const selectAttackSettings: Ref<BattleParam> = ref(new BattleParam()) // 当前选择的解析的进攻设置
 const needRefreshed: Ref<boolean> = ref(false) // 是否需要刷新
+const onDelete: Ref<boolean> = ref(false)
 
 const drag = ref(false)
 
@@ -72,6 +73,7 @@ function atksRemapEnd(el: any) {
   let maxOf = Math.max(el.newIndex, el.oldIndex)
   let isSub = el.newIndex < el.oldIndex
   if (currentIndex.value < minOf || currentIndex.value > maxOf) {
+    inDrag.value = false
     return
   }
   if (isSub) {
@@ -99,6 +101,7 @@ function deleteAtkMap(index: number) {
     }
     // 保存index设置
     autoBattleMapSetting.value.atks.splice(index, 1)
+    onDelete.value = true
     if (currentIndex.value === index) {
       if (index == 0) {
         currentIndex.value = -1
@@ -119,7 +122,13 @@ watch(() => currentIndex.value, (index: number, old: number) => { // 监听index
     if (index >= 0) {
       currentIndex.value = old
     }
+    onDelete.value = false
     return;
+  }
+  if (onDelete.value){
+    onDelete.value = false
+    console.log("in delete, ignore")
+    return
   }
   if (inDrag.value) {
     console.log("in drag, ignore")
@@ -257,7 +266,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    <div class="basis-1/4 border-base-content border rounded-r-lg px-1 flex flex-col">
+    <div class="basis-1/4 border-base-content border rounded-r-lg px-1 flex flex-col max-w-[30%]">
       <div class="flex items-center">
         <div class="text-primary text-lg font-bold">差分综合控制</div>
         <div class="spacer"/>
@@ -304,6 +313,7 @@ onMounted(() => {
                   </div>
                   <div class="break-all">
                     {{ parseSingleBattleParamToStr(element.mapSetting || {}) }}
+                    <span class="text-success">{{ element.isComplete ? ' √ 搞定了' : '' }}</span>
                   </div>
                   <div class="spacer"/>
                   <button class="btn btn-ghost btn-circle btn-xs btn-primary" @click="deleteAtkMap(index)">
@@ -317,7 +327,7 @@ onMounted(() => {
           </draggable>
         </div>
 
-        <div class="p-1 bottom-0 break-all text-xs">{{ autoBattleMapSetting }}</div>
+        <div class="p-1 bottom-0 break-all text-xs max-h-[16rem] overflow-auto">{{ autoBattleMapSetting }}</div>
         <!--        <SettingTextInput :settings="autoBattleMapSetting" field="fbid" title="默认关卡" width="w-20"/>-->
         <!--        <div class="w-full h-44">-->
         <!--          <draggable-->

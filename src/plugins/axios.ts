@@ -166,7 +166,21 @@ export const apiPostAnnounce = (title: string, titlebar: string, content: string
     content: content
 });
 export const syncUserAccounts = () => post('/account/syncUserAccounts');
+export const getUserEvents = () => get('/account/events');
+export const createUserEvents = (data: Record<string, any>) => post('/account/events', data);
+export const deleteUserEvents = (eventId: number) => post('/account/events/delete', {
+    eventId
+});
+export const updateUserEvents = (data: Record<string, any>) => post('/account/events/update', data);
 export const getLogHistory = () => post('/game/getLogHistory');
+export const gameFreezeAccount = (username: string, platform: number) => post('/game/freezeAccount', {
+    username,
+    platform
+});
+export const gameUnFreezeAccount = (username: string, platform: number) => post('/game/unFreezeAccount', {
+    username,
+    platform
+});
 export const gameStartAccount = (username: string, platform: number) => post('/game/startAccount', {
     username,
     platform

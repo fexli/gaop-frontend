@@ -7,7 +7,9 @@
         <div class="spacer"/>
         <SettingToggle :settings="data" field="showAll" enable-text="" disable-text="" padding="">
           <template #extra>
-            <span class="text-primary font-bold overflow-hidden whitespace-nowrap">{{ data['showAll'] ? '全部' : '可攻' }}</span>
+            <span class="text-primary font-bold overflow-hidden whitespace-nowrap">{{
+                data['showAll'] ? '全部' : '可攻'
+              }}</span>
           </template>
         </SettingToggle>
       </div>
@@ -275,14 +277,17 @@ function initSelected(v) {
     return
   }
   list2.value = []
+  if (v == null) {
+    return
+  }
   for (let i = 0; i < v.length; i++) {
     let et
     if (props.hasTimes) {
-      et = checkStage(stageInfo, v[i].Map)
+      et = checkStage(stageInfo, v[i].mapId)
       if (!et) {
         continue
       }
-      et.times = v[i].Times
+      et.times = v[i].times
     } else {
       et = checkStage(stageInfo, v[i])
       if (!et) {
@@ -297,8 +302,8 @@ function uploadChange() {
   if (props.hasTimes) {
     props.settings[props.fieldMapT] = list2.value.map(item => {
       let r = new BattleMapWithTimes()
-      r.Map = item.id
-      r.Times = item.times || 1
+      r.mapId = item.id
+      r.times = item.times || 1
       return r
     })
   } else {

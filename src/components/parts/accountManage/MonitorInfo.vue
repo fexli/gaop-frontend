@@ -81,7 +81,7 @@ const defaultClassIsErr = function (checker: string): string {
 
 </script>
 <template>
-  <div class="card w-60 bg-base-200 p-2 rounded-xl transition-all">
+  <div class="card w-[15.5rem] bg-base-200 p-2 rounded-xl transition-all">
     <div class="flex gap-x-3 items-center">
       <FeImg
           :class="data.maxAp ? 'ring-success':'ring-error'"
@@ -151,9 +151,9 @@ const defaultClassIsErr = function (checker: string): string {
         <div class="rounded-md bg-base-100 px-1" :class="defaultClassIsErr(recruitColor)">
           公招余 <span :class="recruitColor">{{ data.maxAp ? data.recruit : '-' }}</span>
         </div>
-        <template v-for="(i,k) of data.shopInfos" v-bind:key="k">
+        <template v-for="(i,k) of data.exInfos || []" v-bind:key="k">
           <div class="rounded-md bg-base-100 px-1">
-            {{ i.shopName }} <span class="text-success">{{ i.coin >= 0 ? i.coin : '-' }}</span>
+            {{ i.name }} <span class="text-success">{{ i.count >= 0 ? i.count : '-' }}</span>
           </div>
         </template>
       </div>
@@ -190,11 +190,11 @@ const defaultClassIsErr = function (checker: string): string {
             {{ data.maxAp ? data.recruit + '次' : '-' }}
           </div>
         </div>
-        <template v-for="(i,k) of data.shopInfos" v-bind:key="k">
+        <template v-for="(i,k) of data.exInfos || []" v-bind:key="k">
           <div class="flex justify-between">
-            <div>{{ i.shopName }}</div>
+            <div>{{ i.name }}</div>
             <div>
-              {{ i.coin >= 0 ? i.coin : '-' }}
+              {{ i.count >= 0 ? i.count : '-' }}
             </div>
           </div>
         </template>

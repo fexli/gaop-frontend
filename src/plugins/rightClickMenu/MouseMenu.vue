@@ -1,5 +1,5 @@
-<script setup lang="ts">
-import {defineProps, PropType, Ref} from 'vue';
+<script lang="ts">
+import {defineComponent, ref, computed, nextTick, PropType, Ref, watch, onUnmounted} from 'vue';
 import {MenuCallback, MenuSetting} from './type';
 import global_const from "../../utils/global_const";
 
@@ -19,188 +19,216 @@ const clone = function (obj: any) {
   return newObj;
 };
 
-const props = defineProps({
-  appendToBody: {
-    type: Boolean,
-    default: true
+export default defineComponent({
+  name: 'MouseMenu',
+  props: {
+    appendToBody: {
+      type: Boolean,
+      default: true
+    },
+    menuWidth: {
+      type: Number,
+      default: 200
+    },
+    menuList: {
+      type: Array as PropType<MenuSetting[]>,
+      required: true
+    },
+    menuHiddenFn: {
+      type: Function as PropType<MenuCallback>
+    },
+    hasIcon: {
+      type: Boolean,
+      default: false
+    },
+    iconType: {
+      type: String,
+      default: 'font-icon'
+    },
+    menuWrapperCss: Object as PropType<Record<string, string>>,
+    menuItemCss: Object as PropType<Record<string, string>>,
+    el: {
+      type: Object as PropType<HTMLElement>,
+      required: true
+    },
+    params: {
+      type: [String, Number, Array, Object] as PropType<any>
+    },
+    useLongPressInMobile: Boolean,
+    longPressDuration: Number,
+    injectCloseListener: {
+      type: Boolean,
+      default: true
+    },
+    customClass: String,
+    disabled: {
+      type: Function as PropType<MenuCallback<boolean>>
+    }
   },
-  menuWidth: {
-    type: Number,
-    default: 200
-  },
-  menuList: {
-    type: Array as PropType<MenuSetting[]>,
-    required: true
-  },
-  menuHiddenFn: {
-    type: Function as PropType<MenuCallback>
-  },
-  hasIcon: {
-    type: Boolean,
-    default: false
-  },
-  menuWrapperCss: Object as PropType<Record<string, string>>,
-  menuItemCss: Object as PropType<Record<string, string>>,
-  el: {
-    type: Object as PropType<HTMLElement>,
-    required: true
-  },
-  params: {
-    type: [String, Number, Array, Object] as PropType<any>
-  },
-  useLongPressInMobile: Boolean,
-  longPressDuration: Number,
-  injectCloseListener: {
-    type: Boolean,
-    default: true
-  },
-  customClass: String,
-  disabled: {
-    type: Function as PropType<MenuCallback<boolean>>
-  }
-})
+  setup(props) {
+    const subLeft = ref(0);
+    const subTop = ref(0);
+    const hoverFlag = ref(false);
+    const menuTop = ref(0);
+    const menuLeft = ref(0);
+    const showMenu = ref(false);
+    const clickDomEl = ref(null) as Ref<null | HTMLElement>;
+    const calcMenuList = ref([] as MenuSetting[]);
+    const hasSubMenu = computed(() => props.menuList.some(item => item.children && item.children.length > 0));
+    const arrowSize = ref(10);
+    const MenuWrapper = ref();
 
-const subLeft = ref(0);
-const subTop = ref(0);
-const hoverFlag = ref(false);
-const menuTop = ref(0);
-const menuLeft = ref(0);
-const showMenu = ref(false);
-const clickDomEl = ref(null) as Ref<null | HTMLElement>;
-const calcMenuList = ref([] as MenuSetting[]);
-const hasSubMenu = computed(() => props.menuList.some(item => item.children && item.children.length > 0));
-const arrowSize = ref(10);
-const MenuWrapper = ref();
+    watch(showMenu, async (val) => {
+      if (val) {
+        await nextTick();
+        let el = MenuWrapper.value;
+        if (props.menuWrapperCss) {
+          Object.keys(props.menuWrapperCss).map(item => {
+            el.style.setProperty(`--menu-${item}`, props.menuWrapperCss && props.menuWrapperCss[item]);
+          });
+        }
+        if (props.menuItemCss) {
+          Object.keys(props.menuItemCss).map(item => {
+            el.style.setProperty(`--menu-item-${item}`, props.menuItemCss && props.menuItemCss[item]);
+          });
+        }
+        let _arrowSize: RegExpMatchArray | null | undefined | number = props.menuItemCss?.arrowSize?.match(/\d+/);
+        if (_arrowSize) {
+          arrowSize.value = ~~_arrowSize[0] || 10;
+        } else {
+          arrowSize.value = 10;
+        }
+        el.style.setProperty('--menu-item-arrowRealSize', arrowSize.value / 2 + 'px');
+      }
+    });
 
-watch(showMenu, async (val) => {
-  if (val) {
-    await nextTick();
-    let el = MenuWrapper.value;
-    if (props.menuWrapperCss) {
-      Object.keys(props.menuWrapperCss).map(item => {
-        el.style.setProperty(`--menu-${item}`, props.menuWrapperCss && props.menuWrapperCss[item]);
+    const handleMenuItemClick = (item: MenuSetting, $event: any) => {
+      if (item.disabled) return;
+      if (item.fn && typeof item.fn === 'function') {
+        item.fn(props.params, clickDomEl.value, props.el, $event);
+      }
+      showMenu.value = false;
+    };
+    const handleSubMenuItemClick = (subItem: MenuSetting, $event: any) => {
+      if (subItem.disabled) return;
+      if (subItem.fn && typeof subItem.fn === 'function' && !subItem.disabled) {
+        subItem.fn(props.params, clickDomEl.value, props.el, $event);
+        hoverFlag.value = false;
+      }
+      showMenu.value = false;
+    };
+    const handleMenuMouseEnter = ($event: MouseEvent, item: MenuSetting) => {
+      if (item.children && !item.disabled) {
+        hoverFlag.value = true;
+        const el = $event.currentTarget as HTMLElement;
+        if (!el) return;
+        const {offsetWidth} = el;
+        const subEl = el.querySelector('.__menu__sub__wrapper') as HTMLElement;
+        if (!subEl) return;
+        const {offsetWidth: subOffsetWidth, offsetHeight: subOffsetHeight} = subEl;
+        const {innerWidth: windowWidth, innerHeight: windowHeight} = window;
+        const {top, left} = el.getBoundingClientRect();
+        if (left + offsetWidth + subOffsetWidth > windowWidth - 5) {
+          subLeft.value = left - subOffsetWidth + 5;
+        } else {
+          subLeft.value = left + offsetWidth;
+        }
+        if (top + subOffsetHeight > windowHeight - 5) {
+          subTop.value = windowHeight - subOffsetHeight;
+        } else {
+          subTop.value = top + 5;
+        }
+      }
+    };
+
+    const formatterFnOption = (list: MenuSetting[], clickDomEl: HTMLElement, el: HTMLElement, params: any): MenuSetting[] => {
+      return list.map(item => {
+        if (item.children) {
+          item.children = formatterFnOption(item.children, clickDomEl, el, params);
+        }
+        if (item.label && typeof item.label === 'function') {
+          item.label = item.label(params, clickDomEl, el);
+        }
+        if (item.tips && typeof item.tips === 'function') {
+          item.tips = item.tips(params, clickDomEl, el);
+        }
+        if (item.icon && typeof item.icon === 'function') {
+          item.icon = item.icon(params, clickDomEl, el);
+        }
+        if (item.hidden && typeof item.hidden === 'function') {
+          item.hidden = item.hidden(params, clickDomEl, el);
+        }
+        if (item.disabled && typeof item.disabled === 'function') {
+          item.disabled = item.disabled(params, clickDomEl, el);
+        }
+        return item;
       });
-    }
-    if (props.menuItemCss) {
-      Object.keys(props.menuItemCss).map(item => {
-        el.style.setProperty(`--menu-item-${item}`, props.menuItemCss && props.menuItemCss[item]);
-      });
-    }
-    let _arrowSize: RegExpMatchArray | null | undefined | number = props.menuItemCss?.arrowSize?.match(/\d+/);
-    if (_arrowSize) {
-      arrowSize.value = ~~_arrowSize[0] || 10;
-    } else {
-      arrowSize.value = 10;
-    }
-    el.style.setProperty('--menu-item-arrowRealSize', arrowSize.value / 2 + 'px');
-  }
-});
-
-const handleMenuItemClick = (item: MenuSetting, $event: any) => {
-  if (item.disabled) return;
-  if (item.fn && typeof item.fn === 'function') {
-    item.fn(props.params, clickDomEl.value, props.el, $event);
-  }
-  showMenu.value = false;
-};
-const handleSubMenuItemClick = (subItem: MenuSetting, $event: any) => {
-  if (subItem.disabled) return;
-  if (subItem.fn && typeof subItem.fn === 'function' && !subItem.disabled) {
-    subItem.fn(props.params, clickDomEl.value, props.el, $event);
-    hoverFlag.value = false;
-  }
-  showMenu.value = false;
-};
-const handleMenuMouseEnter = ($event: MouseEvent, item: MenuSetting) => {
-  if (item.children && !item.disabled) {
-    hoverFlag.value = true;
-    const el = $event.currentTarget as HTMLElement;
-    if (!el) return;
-    const {offsetWidth} = el;
-    const subEl = el.querySelector('.__menu__sub__wrapper') as HTMLElement;
-    if (!subEl) return;
-    const {offsetWidth: subOffsetWidth, offsetHeight: subOffsetHeight} = subEl;
-    const {innerWidth: windowWidth, innerHeight: windowHeight} = window;
-    const {top, left} = el.getBoundingClientRect();
-    if (left + offsetWidth + subOffsetWidth > windowWidth - 5) {
-      subLeft.value = left - subOffsetWidth + 5;
-    } else {
-      subLeft.value = left + offsetWidth;
-    }
-    if (top + subOffsetHeight > windowHeight - 5) {
-      subTop.value = windowHeight - subOffsetHeight;
-    } else {
-      subTop.value = top + 5;
-    }
-  }
-};
-
-const formatterFnOption = (list: MenuSetting[], clickDomEl: HTMLElement, el: HTMLElement, params: any): MenuSetting[] => {
-  return list.map(item => {
-    if (item.children) {
-      item.children = formatterFnOption(item.children, clickDomEl, el, params);
-    }
-    if (item.label && typeof item.label === 'function') {
-      item.label = item.label(params, clickDomEl, el);
-    }
-    if (item.tips && typeof item.tips === 'function') {
-      item.tips = item.tips(params, clickDomEl, el);
-    }
-    if (item.icon && typeof item.icon === 'function') {
-      item.icon = item.icon(params, clickDomEl, el);
-    }
-    if (item.hidden && typeof item.hidden === 'function') {
-      item.hidden = item.hidden(params, clickDomEl, el);
-    }
-    if (item.disabled && typeof item.disabled === 'function') {
-      item.disabled = item.disabled(params, clickDomEl, el);
-    }
-    return item;
-  });
-};
+    };
 
 
-// public methods
-const show = async (x = 0, y = 0) => {
-  clickDomEl.value = document.elementFromPoint(x - 1, y - 1) as HTMLElement;
-  if (props.menuHiddenFn) {
-    showMenu.value = !props.menuHiddenFn(props.params, clickDomEl.value, props.el);
-  } else {
-    showMenu.value = true;
-  }
-  if (!showMenu.value) return;
-  calcMenuList.value = clone(props.menuList);
-  calcMenuList.value = formatterFnOption(calcMenuList.value, clickDomEl.value, props.el, props.params);
-  await nextTick();
-  const {innerWidth: windowWidth, innerHeight: windowHeight} = window;
-  const menu = MenuWrapper.value;
-  const menuHeight = menu.offsetHeight;
-  const menuWidth = props.menuWidth || 200;
-  menuLeft.value = x + menuWidth + 1 > windowWidth ? windowWidth - menuWidth - 5 : x + 1;
-  menuTop.value = y + menuHeight + 1 > windowHeight ? windowHeight - menuHeight - 5 : y + 1;
-};
-const close = () => {
-  showMenu.value = false;
-};
+    // public methods
+    const show = async (x = 0, y = 0) => {
+      clickDomEl.value = document.elementFromPoint(x - 1, y - 1) as HTMLElement;
+      if (props.menuHiddenFn) {
+        showMenu.value = !props.menuHiddenFn(props.params, clickDomEl.value, props.el);
+      } else {
+        showMenu.value = true;
+      }
+      if (!showMenu.value) return;
+      calcMenuList.value = clone(props.menuList);
+      calcMenuList.value = formatterFnOption(calcMenuList.value, clickDomEl.value, props.el, props.params);
+      await nextTick();
+      const {innerWidth: windowWidth, innerHeight: windowHeight} = window;
+      const menu = MenuWrapper.value;
+      const menuHeight = menu.offsetHeight;
+      const menuWidth = props.menuWidth || 200;
+      menuLeft.value = x + menuWidth + 1 > windowWidth ? windowWidth - menuWidth - 5 : x + 1;
+      menuTop.value = y + menuHeight + 1 > windowHeight ? windowHeight - menuHeight - 5 : y + 1;
+    };
+    const close = () => {
+      showMenu.value = false;
+    };
 
-// injectCloseListener
-const listenerFn = (e: MouseEvent) => {
-  if (MenuWrapper.value && !MenuWrapper.value.contains(e.currentTarget)) {
-    showMenu.value = false;
-    document.oncontextmenu = null;
+    // injectCloseListener
+    const listenerFn = (e: MouseEvent) => {
+      if (MenuWrapper.value && !MenuWrapper.value.contains(e.currentTarget)) {
+        showMenu.value = false;
+        document.oncontextmenu = null;
+      }
+    };
+    watch(() => props.injectCloseListener, (val) => {
+      if (val) {
+        document.addEventListener('mousedown', listenerFn);
+      } else {
+        document.removeEventListener('mousedown', listenerFn);
+      }
+    }, {
+      immediate: true
+    });
+    onUnmounted(() => {
+      document.removeEventListener('mousedown', listenerFn);
+    });
+
+    return {
+      subLeft,
+      subTop,
+      hoverFlag,
+      menuTop,
+      menuLeft,
+      showMenu,
+      clickDomEl,
+      calcMenuList,
+      arrowSize,
+      hasSubMenu,
+      MenuWrapper,
+      handleMenuItemClick,
+      handleSubMenuItemClick,
+      handleMenuMouseEnter,
+      show,
+      close,
+      global_const
+    };
   }
-};
-watch(() => props.injectCloseListener, (val) => {
-  if (val) {
-    document.addEventListener('mousedown', listenerFn);
-  } else {
-    document.removeEventListener('mousedown', listenerFn);
-  }
-}, {
-  immediate: true
-});
-onUnmounted(() => {
-  document.removeEventListener('mousedown', listenerFn);
 });
 </script>
 

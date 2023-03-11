@@ -5,7 +5,12 @@ import SettingToggle from "../settings/SettingToggle.vue";
 import global_const from "../../../utils/global_const";
 import {Ref} from "vue";
 import CharInfo from "./CharInfo.vue";
-import {ManagedCharTrainingInfo, ManagedSkillTarget} from "../../../utils/autoBattleMapProc";
+import {
+  ManagedCharTrainingElite,
+  ManagedCharTrainingInfo,
+  ManagedCharTrainingSkill,
+  ManagedSkillTarget
+} from "../../../utils/autoBattleMapProc";
 
 
 const props = defineProps({
@@ -80,24 +85,24 @@ function uploadChange() {
     let item = list2.value[i]
     if (item.hasEl && item.eliteLevel > 0 && item.elite) {
       let el = new ManagedCharTrainingInfo()
-      el.CharId = item.id
-      el.TrainType = 'e'
-      el.EliteTo = item.eliteLevel
+      el.charId = item.id
+      el.trainType = ManagedCharTrainingElite
+      el.eliteTo = item.eliteLevel
       chs.push(el)
     }
     if (item.hasSkill && item.skill) {
       let el = new ManagedCharTrainingInfo()
-      el.CharId = item.id
-      el.TrainType = 's'
+      el.charId = item.id
+      el.trainType = ManagedCharTrainingSkill
       for (let j = 0; j < item.skillInfo.total; j++) {
         if (item['skill_' + j]) {
           let el2 = new ManagedSkillTarget()
-          el2.SkillId = j
-          el2.Target = item['skill_' + j]
-          el.SkillTarget.push(el2)
+          el2.skillId = j
+          el2.target = item['skill_' + j]
+          el.skillTarg.push(el2)
         }
       }
-      if (el.SkillTarget.length > 0) {
+      if (el.skillTarg.length > 0) {
         chs.push(el)
       }
     }
@@ -136,26 +141,27 @@ function initSelected() {
   list2.value = []
   let charMngMap = {} as Record<string, any>
   for (let i = 0; i < (props.settings[props.field] || []).length; i++) {
+    console.log("initCHar", props.settings[props.field][i])
     let curChar = props.settings[props.field][i]
-    if (charData[curChar.CharId] == null) {
+    if (charData[curChar.charId] == null) {
       continue
     }
-    if (charMngMap[curChar.CharId] == null) {
-      charMngMap[curChar.CharId] = checkChar(curChar.CharId, charData[curChar.CharId])
+    if (charMngMap[curChar.charId] == null) {
+      charMngMap[curChar.charId] = checkChar(curChar.charId, charData[curChar.charId])
     }
     console.log("initCHar", curChar)
-    switch (curChar.TrainType) {
-      case 'e':
-        charMngMap[curChar.CharId].elite = true
-        charMngMap[curChar.CharId].hasEl = true
-        charMngMap[curChar.CharId].eliteLevel = curChar.EliteTo
-        console.log("initCHar E", curChar.CharId, charMngMap)
+    switch (curChar.trainType) {
+      case ManagedCharTrainingElite:
+        charMngMap[curChar.charId].elite = true
+        charMngMap[curChar.charId].hasEl = true
+        charMngMap[curChar.charId].eliteLevel = curChar.eliteTo
+        console.log("initCHar E", curChar.charId, charMngMap)
         break
-      case 's':
-        charMngMap[curChar.CharId].skill = true
-        charMngMap[curChar.CharId].hasSkill = true
-        for (let j = 0; j < curChar.SkillTarget.length; j++) {
-          charMngMap[curChar.CharId]['skill_' + (curChar.SkillTarget[j].SkillId)] = curChar.SkillTarget[j].Target
+      case ManagedCharTrainingSkill:
+        charMngMap[curChar.charId].skill = true
+        charMngMap[curChar.charId].hasSkill = true
+        for (let j = 0; j < curChar.skillTarg.length; j++) {
+          charMngMap[curChar.charId]['skill_' + (curChar.skillTarg[j].skillId)] = curChar.skillTarg[j].target
         }
         break
     }

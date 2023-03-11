@@ -11,7 +11,7 @@ import {getGameInfoGSP, getGameUserCustomAll} from "../../../plugins/axios";
 import FileSaver from "file-saver";
 
 const account = accountStore();
-const {accountInfo} = storeToRefs(account)
+const {accountInfo,webUserInfo} = storeToRefs(account)
 const {translate} = useTranslate();
 const {showMessage} = useToast()
 const onGameDataShow: Ref = ref(true)
@@ -99,7 +99,7 @@ const tryFilterJson = computed(() => {
 </script>
 <template>
   <div>
-    <div class="flex card border-primary border w-full mt-2 p-2">
+    <div class="flex card border-primary border w-full mt-2 p-2" v-if="webUserInfo.ul === 3">
       <div class="flex gap-1 justify-center items-center">
         <h1 class="card-title">Game Data/游戏元数据</h1>
         <div class="spacer"></div>
@@ -135,7 +135,7 @@ const tryFilterJson = computed(() => {
           :closed="tryFilterJson[1]"
       />
     </div>
-    <div class="flex card border-primary border w-full mt-2 p-2">
+    <div class="flex card border-primary border w-full mt-2 p-2" v-if="webUserInfo.ul === 3">
       <div class="flex gap-1 justify-center items-center">
         <h1 class="card-title">Game Server Poster/用户-服务器传递数据</h1>
         <div class="spacer"></div>

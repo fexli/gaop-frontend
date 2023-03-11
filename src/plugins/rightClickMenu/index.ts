@@ -1,28 +1,27 @@
-import { App, DirectiveBinding, h, render, ComponentPublicInstance, ObjectDirective } from 'vue';
-import { CustomMouseMenuOptions } from './type';
+import {App, DirectiveBinding, render, ComponentPublicInstance, ObjectDirective, createVNode} from 'vue';
+import {CustomMouseMenuOptions} from './type';
 import MouseMenu from './MouseMenu.vue';
 
 MouseMenu.install = (app: App): void => {
     app.component(MouseMenu.name, MouseMenu);
 };
 
-export function createClassDom (tag: string, className: string, innerText?: string) {
+export function createClassDom(tag: string, className: string, innerText?: string) {
     let el = document.createElement(tag);
     el.setAttribute('class', className);
     if (innerText) el.innerText = innerText;
     return el;
 }
 
-function CustomMouseMenu (options: CustomMouseMenuOptions) {
+function CustomMouseMenu(options: CustomMouseMenuOptions) {
     const className = '__mouse__menu__container';
-    let container:HTMLElement;
+    let container: HTMLElement;
     if (document.querySelector(`.${className}`)) {
         container = document.querySelector(`.${className}`) as HTMLElement;
     } else {
         container = createClassDom('div', className);
     }
-    // @ts-ignore
-    const vm = h(MouseMenu, options);
+    const vm = createVNode(MouseMenu, options);
     render(vm, container);
     document.body.appendChild(container);
     return vm.component?.proxy as ComponentPublicInstance<typeof MouseMenu>;
@@ -35,7 +34,8 @@ let MouseMenuCtx: any;
 let longPressTimer: number;
 let longPressTouchStart: TouchListenFn;
 let longPressTouchEnd: TouchListenFn;
-function addLongPressListener (el: HTMLElement, fn: TouchListenFn, longPressDuration = 500) {
+
+function addLongPressListener(el: HTMLElement, fn: TouchListenFn, longPressDuration = 500) {
     longPressTouchStart = (e: TouchEvent) => {
         MouseMenuCtx && MouseMenuCtx.close();
         e.preventDefault();
@@ -52,7 +52,8 @@ function addLongPressListener (el: HTMLElement, fn: TouchListenFn, longPressDura
     el.addEventListener('touchend', longPressTouchEnd);
     el.addEventListener('touchcancel', longPressTouchEnd);
 }
-function removeLongPressListener (el: HTMLElement) {
+
+function removeLongPressListener(el: HTMLElement) {
     el.removeEventListener('touchstart', longPressTouchStart);
     el.removeEventListener('touchmove', longPressTouchEnd);
     el.removeEventListener('touchend', longPressTouchEnd);
@@ -63,7 +64,7 @@ function removeLongPressListener (el: HTMLElement) {
 let contextMenuEvent: ContextMenuListenFn;
 let longPressEvent: TouchListenFn;
 const mounted = (el: HTMLElement, binding: DirectiveBinding) => {
-    const { value } = binding;
+    const {value} = binding;
     if (value.menuList.length > 0) {
         contextMenuEvent = (e: MouseEvent) => {
             if (typeof value.disabled === 'function' && value.disabled(value.params)) return;
@@ -72,8 +73,9 @@ const mounted = (el: HTMLElement, binding: DirectiveBinding) => {
                 el,
                 ...value
             });
-            const { x, y } = e;
-            MouseMenuCtx.show(x,y);
+            console.log("contextMenuEvent", MouseMenuCtx)
+            const {x, y} = e;
+            MouseMenuCtx.show(x, y);
         };
         el.removeEventListener('contextmenu', contextMenuEvent);
         el.addEventListener('contextmenu', contextMenuEvent);
@@ -85,8 +87,8 @@ const mounted = (el: HTMLElement, binding: DirectiveBinding) => {
                     el,
                     ...value
                 });
-                const { touches } = e;
-                const { clientX, clientY } = touches[0];
+                const {touches} = e;
+                const {clientX, clientY} = touches[0];
                 MouseMenuCtx.show(clientX, clientY);
                 document.onmousedown = null;
                 el.onmousedown = null;
@@ -115,5 +117,5 @@ const MouseMenuDirective: ObjectDirective = {
     unmounted
 };
 
-export { MouseMenuDirective, CustomMouseMenu };
+export {MouseMenuDirective, CustomMouseMenu};
 export default MouseMenu;

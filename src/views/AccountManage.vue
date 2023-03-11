@@ -6,12 +6,13 @@ import StatusInfo from "../components/parts/accountManage/StatusInfo.vue";
 import {accountStore} from "../store/account";
 import global_const from "../utils/global_const";
 import LogTextCtx from "../components/parts/accountManage/LogTextCtx.vue";
+import formatter from "../utils/formatter";
 import {
   accountSetRemark,
   gameCreateAccount,
-  gameDeleteAccount,
+  gameDeleteAccount, gameFreezeAccount,
   gameStartAccount,
-  gameStopAccount
+  gameStopAccount, gameUnFreezeAccount, syncUserAccounts
 } from "../plugins/axios";
 import {useToast} from "../hooks/toast";
 import {router} from "../router/router";
@@ -20,7 +21,110 @@ import {Ref} from "vue";
 import TransitionOverlay from "../components/element/TransitionOverlay.vue";
 import {ColorPicker} from "vue-color-kit";
 import VueTailwindDatePicker from "../thirdparty/VueTailwindDatePicker.vue";
+import {MouseMenuDirective} from "../plugins/rightClickMenu";
 
+const vMouseMenu = MouseMenuDirective
+const rightClkOpt = {
+  hasIcon: true,
+  useLongPressInMobile: true,
+  menuList: [
+    {
+      icon: 'account-card-outline',
+      label: (params: any) => `${params.name}#${params.account}`,
+      disabled: true
+    },
+    {
+      line: true,
+    },
+    {
+      label: '开启',
+      icon: 'play',
+      tips: 'Start',
+      hidden: (params: any) => !(params.status <= 0) || currentFreezeType.value,
+      fn: (params: any, currentEl: HTMLElement, bindingEl: HTMLElement, e: MouseEvent) => {
+        console.log('open', params, currentEl, bindingEl, e)
+        startAccount(params)
+      }
+    },
+    {
+      label: '关闭',
+      icon: 'stop',
+      tips: 'Stop',
+      hidden: (params: any) => !(params.status > 0) || currentFreezeType.value,
+      fn: (params: any, currentEl: HTMLElement, bindingEl: HTMLElement, e: MouseEvent) => {
+        console.log('close', params, currentEl, bindingEl, e)
+        stopAccount(params)
+      }
+    },
+    {
+      label: '重启',
+      icon: 'restart',
+      tips: 'Restart',
+      hidden: (params: any) => !(params.status > 0) || currentFreezeType.value,
+      fn: (params: any, currentEl: HTMLElement, bindingEl: HTMLElement, e: MouseEvent) => {
+        console.log('restart', params, currentEl, bindingEl, e)
+        restartAccount(params)
+      }
+    },
+    {
+      label: '删除',
+      icon: 'delete-forever-outline',
+      tips: 'Delete',
+      hidden: (params: any) => !(params.status <= 0) || currentFreezeType.value,
+      fn: (params: any, currentEl: HTMLElement, bindingEl: HTMLElement, e: MouseEvent) => {
+        console.log('del', params, currentEl, bindingEl, e)
+        deleteAccount(params)
+      }
+    },
+    // {
+    //   label: '编辑',
+    //   tips: 'Edit',
+    //   fn: (params: any, currentEl: HTMLElement, bindingEl: HTMLElement, e: MouseEvent) => {
+    //     console.log('edit', params, currentEl, bindingEl, e)
+    //   }
+    // },
+    // {
+    //   label: '删除',
+    //   tips: 'Delete',
+    //   fn: (params: any, currentEl: HTMLElement, bindingEl: HTMLElement, e: MouseEvent) => {
+    //     console.log('delete', params, currentEl, bindingEl, e)
+    //   },
+    //   children: [
+    //     {
+    //       label: '12',
+    //       tips: '3334',
+    //       fn: (...args: []) => console.log('open', args)
+    //     },
+    //     {
+    //       label: '1345678',
+    //       tips: '12345678',
+    //       disabled: () => true,
+    //       fn: (...args: []) => console.log('edit', args)
+    //     }
+    //   ]
+    // },
+    {
+      label: '冻结账号',
+      tips: 'Freeze',
+      icon: 'archive-arrow-down-outline',
+      hidden: () => currentFreezeType.value,
+      fn: (params: any, currentEl: HTMLElement, bindingEl: HTMLElement, e: MouseEvent) => {
+        console.log('freeze', params, currentEl, bindingEl, e)
+        freezeAccount(params.account, params.platform)
+      }
+    },
+    {
+      label: '解冻账号',
+      tips: 'Freeze',
+      icon: 'archive-arrow-down-outline',
+      hidden: () => !currentFreezeType.value,
+      fn: (params: any, currentEl: HTMLElement, bindingEl: HTMLElement, e: MouseEvent) => {
+        console.log('unfreeze', params, currentEl, bindingEl, e)
+        unFreezeAccount(params.account, params.platform)
+      }
+    }
+  ]
+}
 const {translate} = useTranslate();
 const auth = authStore();
 const {username} = storeToRefs(auth);
@@ -32,6 +136,8 @@ const cardLoading = ref(false);
 const loadingReload = ref(false); // reload按钮的loading
 const loadingStopAll = ref(false); // stopall按钮的loading
 const loadingCreateNewAccount = ref(false); // 创建新账号按钮的loading
+const currentFreezeType = ref(false)
+const freezeTableRefresh = ref(true)
 
 const createAccountOverlay: Ref<Boolean> = ref(false);
 const deleteAccountOverlay: Ref<Boolean> = ref(false);
@@ -84,7 +190,7 @@ const remarkUserInfo: Ref<RemarkUserInfoT> = ref({
 });
 
 
-const formatter = ref({
+const formatterTyp = ref({
   date: 'YYYY-MM-DD',
   month: 'MM'
 })
@@ -109,7 +215,42 @@ const userLevelPath = {
   2: 'M11 9.47V11H14.76L13 14.53V13H9.24L11 9.47M13 1L6 15H11V23L18 9H13V1Z',
   3: 'M19,22H5V20H19V22M17,10C15.58,10 14.26,10.77 13.55,12H13V7H16V5H13V2H11V5H8V7H11V12H10.45C9.35,10.09 6.9,9.43 5,10.54C3.07,11.64 2.42,14.09 3.5,16C4.24,17.24 5.57,18 7,18H17A4,4 0 0,0 21,14A4,4 0 0,0 17,10Z'
 }
-
+const gameAccountFreezeHeaders = [
+  {
+    text: computed(() => translate('account.name')),
+    value: 'name',
+    width: '9%'
+  },
+  {
+    text: computed(() => translate('account.account')),
+    value: 'account',
+    width: '13%'
+  },
+  {
+    text: computed(() => translate('account.platform')),
+    value: 'platform',
+    class: 'text-center',
+    width: '6%'
+  },
+  {
+    text: computed(() => translate('account.freeze_start')),
+    value: 'freezeStart',
+    class: 'text-center',
+    width: '10rem'
+  },
+  {
+    text: computed(() => translate('account.remarks')),
+    value: 'remakrs',
+    class: 'text-center',
+    sortable: false,
+  },
+  {
+    text: computed(() => translate('account.operation')),
+    value: 'actions',
+    sortable: false,
+    width: '4rem',
+  }
+]
 const gameAccountHeaders = [
   {
     text: computed(() => translate('account.name')),
@@ -221,6 +362,18 @@ const computedGameAccountLi = computed(() => {
   return data
 })
 
+function freshTable() {
+  freezeTableRefresh.value = false
+  nextTick(() => {
+    freezeTableRefresh.value = true
+  })
+}
+
+function changeFreezeTable() {
+  currentFreezeType.value = !currentFreezeType.value
+  freshTable()
+}
+
 function syncGameAccounts(silent = false) {
   cardLoading.value = true
   let resp = account.getSyncUserData();
@@ -244,7 +397,9 @@ function syncGameAccounts(silent = false) {
     }
   }).catch(() => {
     loadingReload.value = false
+  }).finally(() => {
     cardLoading.value = false
+    freshTable()
   })
 }
 
@@ -284,12 +439,11 @@ function stopAccount(accInfo: any, show: boolean = true) {
 function restartAccount(accInfo: any) {
   console.log("restartAccount", accInfo)
   gameStopAccount(accInfo.account, accInfo.platform).then(
-      (suc1: any) => {
-        showMessage(suc1.msg, 2000, 'success', accInfo.account)
+      () => {
         account.clearLoggerInfo(accInfo.account, accInfo.platform)
         gameStartAccount(accInfo.account, accInfo.platform).then(
             (suc: any) => {
-              showMessage(suc.msg, 2000, 'success', accInfo.account)
+              showMessage("game.restart.success", 2000, 'success', accInfo.account)
               setTimeout(() => {
                 syncGameAccounts(true)
               }, 300)
@@ -305,6 +459,27 @@ function restartAccount(accInfo: any) {
         showMessage(err.data.msg, 2000, 'danger', accInfo.account)
       }
   )
+}
+
+function freezeAccount(account: string, platform: number) {
+  gameFreezeAccount(account, platform).then((res: any) => {
+    console.log('freeze success', res)
+    syncGameAccounts(true)
+    showMessage(translate('freezeSuccess'), 3000, 'success');
+  }).catch((err: any) => {
+    console.log('freeze fail', err)
+    showMessage(translate('freezeFail'), 3000, 'warning');
+  })
+}
+function unFreezeAccount(account: string, platform: number) {
+  gameUnFreezeAccount(account, platform).then((res: any) => {
+    console.log('unfreeze success', res)
+    syncGameAccounts(true)
+    showMessage(translate('freezeSuccess'), 3000, 'success');
+  }).catch((err: any) => {
+    console.log('unfreeze fail', err)
+    showMessage(translate('freezeFail'), 3000, 'warning');
+  })
 }
 
 function deleteAccount(accInfo: any) {
@@ -339,8 +514,7 @@ function changeAccountSetting(accInfo: any) {
 }
 
 function changeRemarkColor(c: any) {
-  console.log("changeRemarkColor", c)
-  remarkInfo.value.userColor = c.hex
+  remarkInfo.value.userColor = c.hex + Math.round(c.rgba.a * 255).toString(16).padStart(2, '0')
 }
 
 function parseRemark(remark: RemarkInfoT) {
@@ -496,15 +670,20 @@ function styledRemarks(remark: RemarkInfoT): RemarkInfoS {
   let style = new RemarkInfoS()
 
   if (remark.endTs) {
-    let lts = Math.ceil((new Date(remark.endTs).getTime() - new Date().getTime()) / (1000 * 24 * 60 * 60))
-    if (lts < 5) {
-      style.class += "bg-opacity-20 hover:bg-opacity-90 "
-      if (lts > 2) {
-        style.class += "bg-yellow-500 "
-      } else if (lts > 0) {
-        style.class += "bg-warning "
-      } else {
-        style.class += "bg-error "
+    let sts = Math.ceil((new Date(remark.startTs).getTime() - new Date().getTime()) / (1000 * 24 * 60 * 60))
+    if (sts > 0) {
+      style.class = "bg-opacity-20 hover:bg-opacity-90 bg-green-500 "
+    } else {
+      let lts = Math.ceil((new Date(remark.endTs).getTime() - new Date().getTime()) / (1000 * 24 * 60 * 60))
+      if (lts < 5) {
+        style.class += "bg-opacity-20 hover:bg-opacity-90 "
+        if (lts > 2) {
+          style.class += "bg-yellow-500 "
+        } else if (lts > 0) {
+          style.class += "bg-warning "
+        } else {
+          style.class += "bg-error "
+        }
       }
     }
   }
@@ -546,10 +725,9 @@ function displayRemarks(remark: Record<string, any>): string {
 <template>
   <div v-if="!isMonitorType" class="hidden xs:flex shadow-lg h-10 rounded-xl bg-base-200 bg-opacity-80">
     <div class="w-full flex items-center justify-center">
-      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6 text-primary" fill="none"
+      <svg class="h-6 w-6 text-primary" fill="currentColor"
            viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <path :d="global_const.mdiPath['lightbulb-on-outline']"/>
       </svg>
       <div class="text-primary">{{ translate("account.welcome", username) }}</div>
     </div>
@@ -558,7 +736,7 @@ function displayRemarks(remark: Record<string, any>): string {
     <div v-if="!isMonitorType" class="flex flex-wrap flex-row lg:flex-col">
       <StatusInfo class="mr-1 lg:mr-0 mt-1" title="account.current" :content="currentAccounts">
         <template v-slot:icon>
-          <svg class="w-6 h-6" stroke="currentColor" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg class="w-6 h-6" stroke="currentColor" viewBox="0 0 48 48" fill="none">
             <path
                 d="M38 30H10C6.68629 30 4 32.6863 4 36C4 39.3137 6.68629 42 10 42H38C41.3137 42 44 39.3137 44 36C44 32.6863 41.3137 30 38 30Z M36 22C40.4183 22 44 18.4183 44 14C44 9.58172 40.4183 6 36 6C31.5817 6 28 9.58172 28 14C28 18.4183 31.5817 22 36 22Z M4 14L13 5L22 14L13 23L4 14Z"
                 fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
@@ -582,11 +760,20 @@ function displayRemarks(remark: Record<string, any>): string {
         </template>
       </StatusInfo>
     </div>
-    <div class="ml-0 lg:ml-1 mt-1 w-full">
+    <div class="ml-0 lg:ml-1 w-full" :class="{'mt-1':!isMonitorType}">
       <div class="overflow-hidden rounded-xl">
         <div class="flex items-center bg-base-200 py-2 px-1 font-bold">
           <div class="text-xl ml-2 py-2 nowrap-hidden-ellipsis">{{ translate('account.game_account') }}</div>
           <div class="spacer"></div>
+          <div v-if="!isMonitorType" class="table-head-btn" @click="changeFreezeTable">
+            <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+              <path fill="currentColor" :d="global_const.mdiPath['archive-arrow-down-outline']"/>
+            </svg>
+            <div class="hidden md:flex">{{
+                translate(currentFreezeType ? 'account.change_freeze_1' : 'account.change_freeze')
+              }}
+            </div>
+          </div>
           <div v-if="isMonitorType" class="table-head-btn" @click="changeMinotorIsSimple">
             <svg style="width:24px;height:24px" viewBox="0 0 24 24">
               <path fill="currentColor"
@@ -596,56 +783,61 @@ function displayRemarks(remark: Record<string, any>): string {
           </div>
           <div class="table-head-btn" @click="changeMinotorType">
             <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-              <path fill="currentColor"
-                    d="M3 4V16H21V4H3M3 2H21C22.1 2 23 2.89 23 4V16C23 16.53 22.79 17.04 22.41 17.41C22.04 17.79 21.53 18 21 18H14V20H16V22H8V20H10V18H3C2.47 18 1.96 17.79 1.59 17.41C1.21 17.04 1 16.53 1 16V4C1 2.89 1.89 2 3 2M10.84 8.93C11.15 8.63 11.57 8.45 12 8.45C12.43 8.46 12.85 8.63 13.16 8.94C13.46 9.24 13.64 9.66 13.64 10.09C13.64 10.53 13.46 10.94 13.16 11.25C12.85 11.56 12.43 11.73 12 11.73C11.57 11.73 11.15 11.55 10.84 11.25C10.54 10.94 10.36 10.53 10.36 10.09C10.36 9.66 10.54 9.24 10.84 8.93M10.07 12C10.58 12.53 11.28 12.82 12 12.82C12.72 12.82 13.42 12.53 13.93 12C14.44 11.5 14.73 10.81 14.73 10.09C14.73 9.37 14.44 8.67 13.93 8.16C13.42 7.65 12.72 7.36 12 7.36C11.28 7.36 10.58 7.65 10.07 8.16C9.56 8.67 9.27 9.37 9.27 10.09C9.27 10.81 9.56 11.5 10.07 12M6 10.09C6.94 7.7 9.27 6 12 6C14.73 6 17.06 7.7 18 10.09C17.06 12.5 14.73 14.18 12 14.18C9.27 14.18 6.94 12.5 6 10.09Z"/>
+              <path fill="currentColor" :d="global_const.mdiPath['monitor-eye']"/>
             </svg>
             <div class="hidden md:flex">{{ translate('account.change_type') }}</div>
           </div>
           <div class="table-head-btn" :class="loadingReload ? 'loading disabled' : ''" @click="reloadGameAccount">
             <svg v-show="!loadingReload" style="width:24px;height:24px" viewBox="0 0 24 24">
-              <path fill="currentColor"
-                    d="M21.5 9H16.5L18.36 7.14C16.9 5.23 14.59 4 12 4C7.58 4 4 7.58 4 12C4 13.83 4.61 15.5 5.64 16.85C6.86 15.45 9.15 14.5 12 14.5C14.85 14.5 17.15 15.45 18.36 16.85C19.39 15.5 20 13.83 20 12H22C22 17.5 17.5 22 12 22C6.5 22 2 17.5 2 12C2 6.5 6.5 2 12 2C15.14 2 17.95 3.45 19.78 5.72L21.5 4V9M12 7C13.66 7 15 8.34 15 10C15 11.66 13.66 13 12 13C10.34 13 9 11.66 9 10C9 8.34 10.34 7 12 7Z"/>
+              <path fill="currentColor" :d="global_const.mdiPath['account-reactivate']"/>
             </svg>
             <div class="hidden sm:flex">{{ translate('account.reload_account') }}</div>
           </div>
           <div class="table-head-btn" @click="addGameAccount">
             <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-              <path fill="currentColor"
-                    d="M15,14C12.33,14 7,15.33 7,18V20H23V18C23,15.33 17.67,14 15,14M6,10V7H4V10H1V12H4V15H6V12H9V10M15,12A4,4 0 0,0 19,8A4,4 0 0,0 15,4A4,4 0 0,0 11,8A4,4 0 0,0 15,12Z"/>
+              <path fill="currentColor" :d="global_const.mdiPath['account-plus']"/>
             </svg>
             <div class="hidden sm:flex">{{ translate('account.create_account') }}</div>
           </div>
           <div class="table-head-btn mr-1" :class="loadingStopAll ? 'loading disabled' : ''" @click="stopAllAccount">
             <svg v-show="!loadingStopAll" style="width:24px;height:24px" viewBox="0 0 24 24">
-              <path fill="currentColor"
-                    d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4M9,9V15H15V9"/>
+              <path fill="currentColor" :d="global_const.mdiPath['stop-circle-outline']"/>
             </svg>
             <div class="hidden sm:flex">{{ translate('account.stop_all_account') }}</div>
           </div>
         </div>
-        <div class="px-1 bg-base-200 overflow-x-auto">
+        <div class="px-1 bg-base-200">
           <table v-if="!isMonitorType" class="text-left table-fixed w-full text-sm table-compact">
             <thead>
             <tr>
-              <template v-for="(i,k) of gameAccountHeaders" v-bind:key="k">
+              <template v-for="(i,k) of (currentFreezeType ? gameAccountFreezeHeaders : gameAccountHeaders)"
+                        v-bind:key="k">
                 <th :style="'width: '+i['width']" :class="i['class']">{{ i.text.value }}</th>
               </template>
             </tr>
             </thead>
             <tbody>
-            <template v-for="(i,k) of computedGameAccountLi" v-bind:key="k">
+            <template v-for="(i,k) of computedGameAccountLi.filter(v => v.freeze === currentFreezeType)" v-bind:key="k">
               <tr
+                  v-if="freezeTableRefresh"
                   :class="enableRemark ? i.remarksA.class : ''"
                   class="transition-all hover:bg-base-300"
+                  v-mouse-menu="{
+                    params:i,
+                    ...rightClkOpt
+                  }"
               >
                 <td :style="enableRemark ? i.remarksA.style : ''">{{ i.name }}</td>
                 <td>{{ i.account }}</td>
                 <td class="text-center">{{ global_const.platformSelector[i.platform]?.text || '未知' }}</td>
-                <td class="no-hidden text-center"
+                <td v-if="!currentFreezeType" class="no-hidden text-center"
                     style="white-space: break-spaces!important;padding: 0!important;word-break: keep-all;"
                     :style="`color: ${global_const.statusType[i.status.toString()]}`">{{ i.statusText }}
                 </td>
-                <td>
+                <td v-else class="text-center">
+                  {{ formatter.formatDate(i.freezeStart * 1000, 'yyyy-MM-dd HH:mm') }}
+                </td>
+                <td v-if="!currentFreezeType">
                   <h4 v-if="i.finalLog === null">-</h4>
                   <h4 v-else class="nowrap-hidden-ellipsis">
                     <span>[</span>
@@ -663,9 +855,12 @@ function displayRemarks(remark: Record<string, any>): string {
                     />
                   </h4>
                 </td>
-                <td class="no-hidden">
-                  <div title="DATE CHG" class="dropdown dropdown-hover dropdown-left"
-                       :class="k >= (account.getGameAccounList.length)/2 ? 'dropdown-top' :''">
+                <td v-else class="text-center">
+                  <pre>{{ displayRemarks(i.remarks) }}</pre>
+                </td>
+                <td class="no-hidden" v-if="!currentFreezeType">
+                  <div class="dropdown dropdown-hover dropdown-left"
+                       :class="k >= (account.getGameAccounList.filter(v => v.freeze === currentFreezeType).length)/2 ? 'dropdown-top' :''">
                     <button v-show="i.status <= 0" class="btn btn-ghost btn-circle btn-xs mr-1"
                             @click="startAccount(i)">
                       <svg class="w-4 h-4" viewBox="0 0 24 24">
@@ -706,7 +901,7 @@ function displayRemarks(remark: Record<string, any>): string {
                   </button>
 
                   <div title="DATE CHG" class="dropdown dropdown-hover dropdown-left" v-if="enableRemark"
-                       :class="k >= (computedGameAccountLi.length)/2 ? 'dropdown-top' :''">
+                       :class="k >= (computedGameAccountLi.filter(v => v.freeze === currentFreezeType).length)/2 ? 'dropdown-top' :''">
                     <button class="btn btn-ghost btn-circle btn-xs" @click="showTimeBar(i)">
                       <svg class="w-4 h-4" viewBox="0 0 24 24">
                         <path fill="currentColor" :d="global_const.mdiPath['clipboard-text-clock-outline']"/>
@@ -724,6 +919,13 @@ function displayRemarks(remark: Record<string, any>): string {
                     <svg class="w-4 h-4" viewBox="0 0 24 24">
                       <path fill="currentColor"
                             d="M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M10,22C9.75,22 9.54,21.82 9.5,21.58L9.13,18.93C8.5,18.68 7.96,18.34 7.44,17.94L4.95,18.95C4.73,19.03 4.46,18.95 4.34,18.73L2.34,15.27C2.21,15.05 2.27,14.78 2.46,14.63L4.57,12.97L4.5,12L4.57,11L2.46,9.37C2.27,9.22 2.21,8.95 2.34,8.73L4.34,5.27C4.46,5.05 4.73,4.96 4.95,5.05L7.44,6.05C7.96,5.66 8.5,5.32 9.13,5.07L9.5,2.42C9.54,2.18 9.75,2 10,2H14C14.25,2 14.46,2.18 14.5,2.42L14.87,5.07C15.5,5.32 16.04,5.66 16.56,6.05L19.05,5.05C19.27,4.96 19.54,5.05 19.66,5.27L21.66,8.73C21.79,8.95 21.73,9.22 21.54,9.37L19.43,11L19.5,12L19.43,13L21.54,14.63C21.73,14.78 21.79,15.05 21.66,15.27L19.66,18.73C19.54,18.95 19.27,19.04 19.05,18.95L16.56,17.95C16.04,18.34 15.5,18.68 14.87,18.93L14.5,21.58C14.46,21.82 14.25,22 14,22H10M11.25,4L10.88,6.61C9.68,6.86 8.62,7.5 7.85,8.39L5.44,7.35L4.69,8.65L6.8,10.2C6.4,11.37 6.4,12.64 6.8,13.8L4.68,15.36L5.43,16.66L7.86,15.62C8.63,16.5 9.68,17.14 10.87,17.38L11.24,20H12.76L13.13,17.39C14.32,17.14 15.37,16.5 16.14,15.62L18.57,16.66L19.32,15.36L17.2,13.81C17.6,12.64 17.6,11.37 17.2,10.2L19.31,8.65L18.56,7.35L16.15,8.39C15.38,7.5 14.32,6.86 13.12,6.62L12.75,4H11.25Z"/>
+                    </svg>
+                  </button>
+                </td>
+                <td v-else>
+                  <button class="btn btn-ghost btn-circle btn-xs mr-1" @click="unFreezeAccount(i.account,i.platform)">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24">
+                      <path fill="currentColor" :d="global_const.mdiPath['archive-arrow-up-outline']"/>
                     </svg>
                   </button>
                 </td>
@@ -787,7 +989,7 @@ function displayRemarks(remark: Record<string, any>): string {
                   v-model="remarkInfo.startTs"
                   class="h-5"
                   :shortcuts="false"
-                  :formatter="formatter"
+                  :formatter="formatterTyp"
                   placeholder="未选择时间"
                   i18n="zh-cn"
                   separator="~"
@@ -803,7 +1005,7 @@ function displayRemarks(remark: Record<string, any>): string {
                   v-model="remarkInfo.endTs"
                   class="h-5"
                   :shortcuts="customShortcuts"
-                  :formatter="formatter"
+                  :formatter="formatterTyp"
                   placeholder="未选择时间"
                   i18n="zh-cn"
                   separator="~"
@@ -850,15 +1052,15 @@ function displayRemarks(remark: Record<string, any>): string {
       :show="createAccountOverlay"
       class="overlay bg-base-200 bg-opacity-50"
   >
-    <div class="card w-96 max-w-md glass" v-if="createAccountOverlay">
-      <figure class="select-none"><img :src="`static/im/create_user.jpg`" alt="welcome"></figure>
+    <div class="card w-96 max-w-md glass rounded-2xl" v-if="createAccountOverlay">
+      <figure class="select-none rounded-2xl"><img :src="`static/im/create_user.jpg`" alt="welcome"></figure>
       <div class="absolute right-0 top-0 p-2" @click="closeCreateAccount">
         <svg class="w-8 h-8" viewBox="0 0 24 24">
           <path fill="currentColor"
                 d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
         </svg>
       </div>
-      <div class="create-user-card-body">
+      <div class="create-user-card-body rounded-b-2xl">
         <h2 class="card-title text-neutral">{{ translate('account.create_btn') }}</h2>
         <p class="text-neutral">{{ translate('account.create_welcome') }}</p>
 

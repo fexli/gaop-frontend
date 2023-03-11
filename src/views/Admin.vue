@@ -18,6 +18,8 @@ const config = ref({
   login: true,
   battle: true,
   ap_supply: true,
+  penguin_report_err: true,
+  battle_need_ss: false,
 })
 
 
@@ -129,6 +131,18 @@ function updateAnnounce() {
             :settings="config"
             field="ap_supply"
             :title="translate('admin_panel.ap_supply')"
+            @change="onConfigChange"
+        />
+        <SettingToggle
+            :settings="config"
+            field="penguin_report_err"
+            :title="translate('admin_panel.penguin_report_err')"
+            @change="onConfigChange"
+        />
+        <SettingToggle
+            :settings="config"
+            field="battle_need_ss"
+            :title="translate('admin_panel.battle_ss')"
             @change="onConfigChange"
         />
       </div>

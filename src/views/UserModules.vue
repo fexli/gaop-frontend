@@ -157,20 +157,6 @@ onMounted(() => {
         <div class="flex items-center bg-base-200 py-2 px-1 font-bold">
           <div class="text-xl ml-2 py-2 nowrap-hidden-ellipsis">{{ translate('module.list.title') }}</div>
           <div class="spacer"></div>
-          <!--          <div class="table-head-btn" @click="changeMinotorType">-->
-          <!--            <svg style="width:24px;height:24px" viewBox="0 0 24 24">-->
-          <!--              <path fill="currentColor"-->
-          <!--                    d="M3 4V16H21V4H3M3 2H21C22.1 2 23 2.89 23 4V16C23 16.53 22.79 17.04 22.41 17.41C22.04 17.79 21.53 18 21 18H14V20H16V22H8V20H10V18H3C2.47 18 1.96 17.79 1.59 17.41C1.21 17.04 1 16.53 1 16V4C1 2.89 1.89 2 3 2M10.84 8.93C11.15 8.63 11.57 8.45 12 8.45C12.43 8.46 12.85 8.63 13.16 8.94C13.46 9.24 13.64 9.66 13.64 10.09C13.64 10.53 13.46 10.94 13.16 11.25C12.85 11.56 12.43 11.73 12 11.73C11.57 11.73 11.15 11.55 10.84 11.25C10.54 10.94 10.36 10.53 10.36 10.09C10.36 9.66 10.54 9.24 10.84 8.93M10.07 12C10.58 12.53 11.28 12.82 12 12.82C12.72 12.82 13.42 12.53 13.93 12C14.44 11.5 14.73 10.81 14.73 10.09C14.73 9.37 14.44 8.67 13.93 8.16C13.42 7.65 12.72 7.36 12 7.36C11.28 7.36 10.58 7.65 10.07 8.16C9.56 8.67 9.27 9.37 9.27 10.09C9.27 10.81 9.56 11.5 10.07 12M6 10.09C6.94 7.7 9.27 6 12 6C14.73 6 17.06 7.7 18 10.09C17.06 12.5 14.73 14.18 12 14.18C9.27 14.18 6.94 12.5 6 10.09Z"/>-->
-          <!--            </svg>-->
-          <!--            <div class="hidden md:flex">{{ translate('account.change_type') }}</div>-->
-          <!--          </div>-->
-          <!--          <div class="table-head-btn" :class="loadingReload ? 'loading disabled' : ''" @click="reloadGameAccount">-->
-          <!--            <svg v-show="!loadingReload" style="width:24px;height:24px" viewBox="0 0 24 24">-->
-          <!--              <path fill="currentColor"-->
-          <!--                    d="M21.5 9H16.5L18.36 7.14C16.9 5.23 14.59 4 12 4C7.58 4 4 7.58 4 12C4 13.83 4.61 15.5 5.64 16.85C6.86 15.45 9.15 14.5 12 14.5C14.85 14.5 17.15 15.45 18.36 16.85C19.39 15.5 20 13.83 20 12H22C22 17.5 17.5 22 12 22C6.5 22 2 17.5 2 12C2 6.5 6.5 2 12 2C15.14 2 17.95 3.45 19.78 5.72L21.5 4V9M12 7C13.66 7 15 8.34 15 10C15 11.66 13.66 13 12 13C10.34 13 9 11.66 9 10C9 8.34 10.34 7 12 7Z"/>-->
-          <!--            </svg>-->
-          <!--            <div class="hidden sm:flex">{{ translate('account.reload_account') }}</div>-->
-          <!--          </div>-->
           <div class="table-head-btn" @click="shareModuleOverlay = true">
             <svg style="width:24px;height:24px" viewBox="0 0 24 24">
               <path fill="currentColor" :d="global_const.mdiPath['share-variant']"/>

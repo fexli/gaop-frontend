@@ -6,6 +6,7 @@ import Translate from "./nav/Translate.vue";
 import WebSocket from "./nav/WebSocket.vue";
 import BreadCrumb from "./nav/BreadCrumb.vue";
 import Avatar from "./nav/Avatar.vue";
+import Event from "./nav/Event.vue";
 
 </script>
 
@@ -19,6 +20,7 @@ import Avatar from "./nav/Avatar.vue";
     <div class="spacer"/>
     <div class="nav-flex-cc text-right">
       <WebSocket/>
+      <Event/>
       <Translate/>
       <FullScreen/>
       <DarkMode/>

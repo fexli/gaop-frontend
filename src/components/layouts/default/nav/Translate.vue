@@ -7,8 +7,8 @@ const app = appStore()
 </script>
 
 <template>
-  <div title="Change Language" class="dropdown dropdown-end">
-    <label tabindex="0" class="gap-1 normal-case mx-2">
+  <div title="Change Language" class="dropdown dropdown-end dropdown-hover">
+    <label tabindex="0" class="gap-1 normal-case mx-2 py-2">
       <svg class="inline-block ml-[0.1rem] mr-[0.4rem] h-6 w-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
         <path d="M363,176,246,464h47.24l24.49-58h90.54l24.49,58H480ZM336.31,362,363,279.85,389.69,362Z"></path>
         <path
@@ -20,7 +20,7 @@ const app = appStore()
       </svg>
     </label>
     <div
-        class="dropdown-content bg-base-200 text-base-content rounded-t-box rounded-b-box top-px mt-10 w-36 overflow-y-auto shadow-lg">
+        class="dropdown-content bg-base-200 text-base-content rounded-t-box rounded-b-box top-px mt-7 w-36 overflow-y-auto shadow-lg">
       <ul class="menu menu-compact gap-1 p-2" tabindex="0">
         <li>
           <button class="flex" :class="{'active':app.language === 'en'}" @click="setLanguage('en')">
