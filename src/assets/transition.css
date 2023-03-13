@@ -20,7 +20,7 @@
 
 .drop-down-enter-active,
 .drop-down-leave-active {
-    transition: max-height 0.2s cubic-bezier(.8,0,.33,.76);
+    transition: max-height 0.2s cubic-bezier(.8, 0, .33, .76);
 }
 
 .drop-down-enter-from,
@@ -31,4 +31,33 @@
 .drop-down-enter-to,
 .drop-down-leave-from {
     max-height: 14rem;
+}
+
+.slide-left-to-right {
+}
+
+
+.slide-left-to-right-enter-active {
+    transition: all 0.2s ease;
+}
+
+.slide-left-to-right-leave-active {
+    transition: all 0.2s ease;
+}
+
+
+.slide-left-to-right-enter-from {
+    transform: translateX(-100px);
+    opacity: 0;
+}
+
+.slide-left-to-right-leave-to {
+    transform: translateX(100px);
+    opacity: 0;
+}
+
+.slide-left-to-right-enter-to,
+.slide-left-to-right-leave-from {
+    transform: translateX(0);
+    opacity: 1;
 }
