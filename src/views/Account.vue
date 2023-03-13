@@ -12,6 +12,10 @@ import {isLarge} from "../plugins/common";
 import GameItemInfoCard from "../components/parts/account/GameItemInfoCard.vue";
 import GameTroop from "../components/parts/account/GameTroop.vue";
 import GameAnalytics from "../components/parts/account/GameAnalytics.vue";
+import GameLogger from "../components/parts/account/GameLogger.vue";
+import GameAccountSetting from "../components/parts/account/GameAccountSetting.vue";
+import GameUserModule from "../components/parts/account/GameUserModule.vue";
+import TransitionOverlay from "../components/element/TransitionOverlay.vue";
 
 
 const account = accountStore();
@@ -55,15 +59,20 @@ const infoTabHeaders = [
     ref: "#analytics",
   },
   {
-    title: "account.tabs.operation",
-    icon: "ghost-outline",
-    ref: "#operation",
+    title: "account.tabs.module",
+    icon: "script-text-play-outline",
+    ref: "#module",
   },
-  {
-    title: "account.tabs.schedule",
-    icon: "chart-timeline",
-    ref: "#schedule",
-  },
+  // {
+  //   title: "account.tabs.operation",
+  //   icon: "ghost-outline",
+  //   ref: "#operation",
+  // },
+  // {
+  //   title: "account.tabs.schedule",
+  //   icon: "chart-timeline",
+  //   ref: "#schedule",
+  // },
   {
     title: "account.tabs.logger",
     icon: "comment-text-multiple-outline",
@@ -74,17 +83,18 @@ const infoTabHeaders = [
     icon: "cog-outline",
     ref: "#setting",
   },
-  {
-    title: "account.tabs.terminal",
-    icon: "console-line",
-    ref: "#terminal",
-  },
+  // {
+  //   title: "account.tabs.terminal",
+  //   icon: "console-line",
+  //   ref: "#terminal",
+  // },
 ] as Record<string, any>[]
 
 const infoLoaded: Ref = ref(true)
 const inventoryLoaded: Ref = ref(false)
 const troopLoaded: Ref = ref(false)
 const analyticsLoaded: Ref = ref(false)
+const moduleLoaded: Ref = ref(false)
 const operationLoaded: Ref = ref(false)
 const scheduleLoaded: Ref = ref(false)
 const loggerLoaded: Ref = ref(false)
@@ -188,6 +198,9 @@ function changeTab(item: any, index: number) {
     case "#analytics":
       analyticsLoaded.value = true
       break
+    case "#module":
+      moduleLoaded.value = true
+      break
     case "#operation":
       operationLoaded.value = true
       break
@@ -280,10 +293,29 @@ onUnmounted(() => {
             :game-user-name="gameUserName"
             :game-platform="gamePlatform"
         />
+        <GameUserModule
+            v-if="moduleLoaded"
+            v-show="currentTab === '#module'"
+            :game-user-name="gameUserName"
+            :game-platform="gamePlatform"
+        />
+        <GameLogger
+            v-if="loggerLoaded"
+            v-show="currentTab === '#logger'"
+            :game-user-name="gameUserName"
+            :game-platform="gamePlatform"
+        />
+        <GameAccountSetting
+            class="w-full"
+            v-if="settingLoaded"
+            v-show="currentTab === '#setting'"
+            :game-user-name="gameUserName"
+            :game-platform="gamePlatform"
+        />
       </div>
     </div>
   </div>
-  <div v-else-if="isLegalAccount" class="rounded-xl bg-base-200 bg-opacity-80 mt-1">
+  <div v-else-if="isLegalAccount" class="rounded-xl bg-base-200 bg-opacity-80">
     <NotFound
         class="md:py-5"
         title="error.account_not_start_title" translate-title
@@ -292,7 +324,7 @@ onUnmounted(() => {
         :back="goManage"
     />
   </div>
-  <div v-else class="rounded-xl bg-base-200 bg-opacity-80 mt-1">
+  <div v-else class="rounded-xl bg-base-200 bg-opacity-80">
     <NotFound
         class="md:py-5"
         title="error.account_not_found_title" translate-title
@@ -303,11 +335,15 @@ onUnmounted(() => {
   </div>
   <div class="overlay bg-base-200 bg-opacity-40" v-if="itemCardOverlay">
     <div class="fixed w-full h-full left-0 top-0" @click="hideItemCard"/>
-    <GameItemInfoCard
-        v-show="itemCardTransition"
-        class="transform fixed top-1/4 right-1"
-        :select-item="itemClicked"
-    />
+    <TransitionOverlay
+        :show="itemCardTransition"
+        transition-name="slide-left-to-right"
+    >
+      <GameItemInfoCard
+          class="transform fixed top-[4.25rem] right-4 ring-1 ring-secondary"
+          :select-item="itemClicked"
+      />
+    </TransitionOverlay>
   </div>
 </template>
 

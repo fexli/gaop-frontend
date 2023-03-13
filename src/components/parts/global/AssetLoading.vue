@@ -75,7 +75,8 @@ const load_list: LoadingList[] = [
     field: 'itemData',
     loc: 'excel/item_table.json',
     parser: (resp: any) => {
-      return JSON.parse(resp)['items']
+      global_const.gameData.itemTable = JSON.parse(resp)
+      return global_const.gameData.itemTable['items']
     }
   } as LoadingList,
   {
