@@ -38,6 +38,10 @@ const props = defineProps({
     type: String,
     default: 'p-1'
   },
+  inputPadding: {
+    type: String,
+    default: 'px-1 pt-3.5 pb-3'
+  },
   textClass: {
     type: String,
     default: 'text-lg'
@@ -108,8 +112,8 @@ function onAsScroll(e: WheelEvent) {
           :onmousewheel="onAsScroll"
           v-model="settings[field]"
           :disabled="isDisabled"
-          type="text" class="input input-bordered input-primary hover:input-info input-xs px-1 pt-3.5 pb-3" style="font-size: 1rem"
-          :class="width"
+          type="text" class="input input-bordered input-primary hover:input-info input-xs" style="font-size: 1rem"
+          :class="`${width} ${inputPadding}`"
       />
       <span
           :class="(isDisabled ? 'text-base-content text-opacity-20 ': ' ') + textClass"

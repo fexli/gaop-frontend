@@ -47,6 +47,17 @@
     <div class="ss-map-select">
       <div class="flex items-center mt-0.5">
         <span class="text-primary font-bold">选择列表</span>
+        <template v-if="hasNeedTimes">
+          <span class="text-primary font-bold"> | 每</span>
+          <SettingTextInput
+              width="w-10" placeholder="轮换时长"
+              number-only :number-min="0"
+              padding="pl-1" input-padding="p-1" text-class="text-md"
+              :settings="settings" field="rstCyc"
+          />
+          <span
+              class="text-primary font-bold">天重置</span>
+        </template>
       </div>
       <draggable
           class="ss-map-inner"
@@ -66,9 +77,11 @@
               :inventory="inventory"
               :index="checkRightIndex(element)" :removable="removeFromRight" :info="element"
               :settings="list2" :apply-change="uploadChange" :has-times="hasTimes"
+              :has-need-times="hasNeedTimes"
           />
         </template>
       </draggable>
+      <span v-if="hasNeedTimes" class="bg-neutral absolute bottom-2.5 ring-1 rounded-md px-1">上次重置日期：{{ formatter.formatDate(props.settings.lstRst ? props.settings.lstRst * 1000 : 0,"yyyy-MM-dd") }}</span>
     </div>
   </div>
 </template>
@@ -80,6 +93,7 @@ import StageInfo from "./StageInfo.vue";
 import SettingTextInput from "../settings/SettingTextInput.vue";
 import SettingToggle from "../settings/SettingToggle.vue";
 import {BattleMapWithTimes} from "../../../utils/autoBattleMapProc";
+import formatter from "../../../utils/formatter";
 
 defineComponent(draggable)
 
@@ -116,6 +130,10 @@ const props = defineProps({
     default: false,
   },
   hasTimes: {
+    type: Boolean,
+    default: false,
+  },
+  hasNeedTimes: {
     type: Boolean,
     default: false,
   },
@@ -187,6 +205,7 @@ function addToRight(i) {
   }
   let newItem = {...i}
   newItem.times = 1
+  newItem.needT = 1
   if (rightIndexResetTimeout != null) {
     console.log("not Null", rightIndex.value)
     clearTimeout(rightIndexResetTimeout)
@@ -253,7 +272,8 @@ function checkStage(stageInfo, stageId) {
     name: stageInfo[stageId].name || '*未知关卡代号*',
     isHard: isHard,
     canAdd: !isHard && !(stageInfo[stageId].stageType === 'GUIDE') && !(stageInfo[stageId].stageType === 'CAMPAIGN') && ((stageInfo[stageId].apCost || 0) > 0),
-    times: 1
+    times: 1,
+    needT: 1
   }
 }
 
@@ -282,12 +302,13 @@ function initSelected(v) {
   }
   for (let i = 0; i < v.length; i++) {
     let et
-    if (props.hasTimes) {
+    if (props.hasTimes || props.hasNeedTimes) {
       et = checkStage(stageInfo, v[i].mapId)
       if (!et) {
         continue
       }
       et.times = v[i].times
+      et.needT = v[i].needT
     } else {
       et = checkStage(stageInfo, v[i])
       if (!et) {
@@ -299,23 +320,42 @@ function initSelected(v) {
 }
 
 function uploadChange() {
-  if (props.hasTimes) {
+  if (props.hasTimes || props.hasNeedTimes) {
     props.settings[props.fieldMapT] = list2.value.map(item => {
       let r = new BattleMapWithTimes()
       r.mapId = item.id
       r.times = item.times || 1
+      if (props.hasNeedTimes) {
+        r.needT = item.needT || 1
+      }
       return r
     })
   } else {
     props.settings[props.fieldMap] = list2.value.map(item => item.id)
   }
 }
-
+function checkTypeRst(v) {
+  if (v === 'MAPARGRST') {
+    list2.value.forEach(item => {
+      item.needT = 1
+    })
+    if (props.settings['rstCyc'] == null) {
+      props.settings['rstCyc'] = 1
+    }
+  }
+}
 onMounted(() => {
   initStage() // 初始化关卡列表
-  initSelected(props.settings[props.hasTimes ? props.fieldMapT : props.fieldMap]) // 初始化已选关卡
+  initSelected(props.settings[(props.hasTimes || props.hasNeedTimes) ? props.fieldMapT : props.fieldMap]) // 初始化已选关卡
   watch(() => props.hasTimes, (v) => {
-    initSelected(v ? props.settings[props.fieldMapT] : props.settings[props.fieldMap])
+    initSelected((v || props.hasNeedTimes) ? props.settings[props.fieldMapT] : props.settings[props.fieldMap])
+  })
+  watch(() => props.hasNeedTimes, (v) => {
+    initSelected((v || props.hasTimes) ? props.settings[props.fieldMapT] : props.settings[props.fieldMap])
+  })
+  checkTypeRst(props.settings['type'])
+  watch(() => props.settings['type'], (v) => {
+    checkTypeRst(v)
   })
 })
 </script>

@@ -110,9 +110,33 @@ export const bTypeDesc = [
         icon: 'timetable',
     },
     {
+        type: 'MAPARGRST',
+        text: '指定地图每N日进攻次数',
+        desc: '按照指定的地图进攻列表以及进攻次数进行关卡进攻，每N日重置',
+        icon: 'timetable',
+    },
+    {
         type: 'MANAGED',
         text: '指定干员练度优先',
         desc: '按照指定的干员精英化/技能/专精/模组材料需求进行最优关卡进攻',
+        icon: 'account-arrow-up-outline',
+    },
+    {
+        type: 'ITEMBASE',
+        text: '[前端施工中]指定物品与数量规划',
+        desc: '按照指定的材料需求进行最优关卡进攻',
+        icon: 'timetable',
+    },
+    {
+        type: 'MAPLESD',
+        text: '[前端施工中]指定关卡掉落材料追平',
+        desc: '选定指定关卡组中主要掉落材料最少关卡进攻',
+        icon: 'account-arrow-up-outline',
+    },
+    {
+        type: 'PRESET',
+        text: '[前端施工中]服务器预设关卡组合',
+        desc: '根据服务器或用户进攻预设进行进攻',
         icon: 'account-arrow-up-outline',
     },
 ] as Record<string, any>[]

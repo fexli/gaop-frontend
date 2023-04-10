@@ -145,6 +145,12 @@ function updateAnnounce() {
             :title="translate('admin_panel.battle_ss')"
             @change="onConfigChange"
         />
+        <SettingToggle
+            :settings="config"
+            field="bypass_gt"
+            :title="translate('admin_panel.bypass_gt')"
+            @change="onConfigChange"
+        />
       </div>
     </div>
     <div class="rounded-xl mt-1 md:w-full bg-base-300 bg-opacity-80 px-4 py-2">

@@ -38,6 +38,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  hasNeedTimes: {
+    type: Boolean,
+    default: false,
+  },
   inventory: {
     type: Object,
     default: {},
@@ -47,6 +51,9 @@ const props = defineProps({
 watch(() => props.info.times, (value) => {
   props.applyChange()
 })
+watch(() => props.info.needT, (value) => {
+  props.applyChange()
+})
 </script>
 <template>
   <div
@@ -54,12 +61,17 @@ watch(() => props.info.times, (value) => {
     <div class="font-bold text-xl absolute top-1" v-if="index > -1">[{{ index + 1 }}]</div>
     <div
         class="text-info text-3xl font-bold -rotate-12 si-text"
-        :class="(hasTimes || index > -1)? 'pt-4' : ''"
+        :class="(hasTimes || hasNeedTimes || index > -1)? 'pt-4' : ''"
     >{{ info['code'] }}
     </div>
     <SettingTextInput
         v-if="hasTimes"
-        :settings="info" field="times" title="次" number-only padding="p-0"
+        :settings="info" field="times" title="次" number-only :number-min="0" padding="p-0"
+        class="font-bold text-xl absolute top-1" width="w-10" text-class="-ml-1"
+    ></SettingTextInput>
+    <SettingTextInput
+        v-else-if="hasNeedTimes"
+        :settings="info" field="needT" title="次" number-only :number-min="0" padding="p-0"
         class="font-bold text-xl absolute top-1" width="w-10" text-class="-ml-1"
     ></SettingTextInput>
     <!--    <div class="font-bold text-xl absolute top-1" v-if="info['times']">{{ info['times'] }}次</div>-->
@@ -68,6 +80,9 @@ watch(() => props.info.times, (value) => {
       <div>名称：{{ info['name'] }}</div>
       <div>类型：{{ info['stageType'] }}</div>
       <div>理智消耗：{{ info['apCost'] }}</div>
+    </div>
+    <div
+        v-if="hasNeedTimes" class="text-sm absolute bottom-1">(余{{ info.times }}次)
     </div>
     <div class="h-full w-fit absolute right-0 flex items-center">
       <div

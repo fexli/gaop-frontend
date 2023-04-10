@@ -39,15 +39,6 @@ const props = defineProps({
   },
 })
 
-
-const bTypeIcons = {
-  AUTO: 'dice-multiple-outline',
-  RANDOM: 'format-list-bulleted-type',
-  FIRST: 'format-list-numbered',
-  MAPARG: 'timetable',
-  MANAGED: 'account-arrow-up-outline',
-} as Record<string, string>
-
 const autoBattleMapSetting: Ref<AutoBattleMapSumms> = ref(new AutoBattleMapSumms({})) // 解析后的设置
 const currentIndex: Ref<number> = ref(-1) // 当前的index
 const selectAttackSettings: Ref<BattleParam> = ref(new BattleParam()) // 当前选择的解析的进攻设置
@@ -125,7 +116,7 @@ watch(() => currentIndex.value, (index: number, old: number) => { // 监听index
     onDelete.value = false
     return;
   }
-  if (onDelete.value){
+  if (onDelete.value) {
     onDelete.value = false
     console.log("in delete, ignore")
     return
@@ -196,6 +187,18 @@ function applyBattleSetting() {
   props.close()
 }
 
+function findBType(type: string): Record<string, any> {
+  let s = bTypeDesc.find((item) => {
+    if (item.type === type) {
+      return item
+    }
+  })
+  if (s) {
+    return s
+  }
+  return {text: "未知", type: "UNKNOWN",icon:"help"}
+}
+
 onMounted(() => {
   tryLoadBattleSetting()
 })
@@ -206,7 +209,7 @@ onMounted(() => {
       <div class="flex items-center">
         <div class="text-primary text-lg font-bold">进攻设置</div>
         <div class="spacer"/>
-        <div class="font-bold">AutoBattleMapEditor V0.2</div>
+        <div class="font-bold">AutoBattleMapEditor V0.4α</div>
       </div>
       <div class="ab-sets" v-if="!needRefreshed">
         <SettingSelect
@@ -217,8 +220,9 @@ onMounted(() => {
         >
           <template #extra>
             <svg class="w-6 h-6 text-info" viewBox="0 0 24 24">
-              <path fill="currentColor" :d="global_const.mdiPath[bTypeIcons[selectAttackSettings['type']]]"/>
+              <path fill="currentColor" :d="global_const.mdiPath[findBType(selectAttackSettings['type']).icon]"/>
             </svg>
+            <div></div>
             <Explain class="-mr-2">
               <template #explain>
                 <div v-for="i of bTypeDesc">
@@ -237,12 +241,13 @@ onMounted(() => {
           {{ bTypeDesc.find(i => i.type === selectAttackSettings.type)?.desc }}
         </div>
         <div v-if="selectAttackSettings['type'] === 'AUTO'" class="ab-inner"></div>
-        <div v-else-if="['FIRST','RANDOM','MAPARG'].some(i => i === selectAttackSettings['type'])"
+        <div v-else-if="['FIRST','RANDOM','MAPARG','MAPARGRST'].some(i => i === selectAttackSettings['type'])"
              class="ab-inner">
           <StageSelector
               :inventory="inventory"
               :has-index="selectAttackSettings['type'] === 'FIRST'"
               :has-times="selectAttackSettings['type'] === 'MAPARG'"
+              :has-need-times="selectAttackSettings['type'] === 'MAPARGRST'"
               :settings="selectAttackSettings" field-map="maps" field-map-t="mapt"
           />
         </div>
