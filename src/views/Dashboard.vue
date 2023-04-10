@@ -16,7 +16,7 @@ const t1o = ref(99)
 const t1v = ref(-1)
 const t1l = [
   "Welcome To Project AoP",
-  "欢迎来到方舟离线协议工程",
+  "欢迎来到方舟AoP工程",
   "AoPプロジェクトへようこそ",
   // "AoP 프로젝트에 오신 것을 환영합니다",
 ]

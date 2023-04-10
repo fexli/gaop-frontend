@@ -6,7 +6,7 @@ import global_const from "../utils/global_const";
 <template>
   <div class="flex justify-center">
     <div class="container info-shadow text-2xl" style="position: relative;">
-      <div class="text-h2 text-center ma-2">Arknights Offline Proxy V</div>
+      <div class="text-h2 text-center ma-2">Arknights Offline Pro V</div>
       <div class="text-center">v{{ global_const.aopVersion }}</div>
       <div class="text-center">fully designed by fe_x_li</div>
       <div class="text-center">
@@ -17,7 +17,7 @@ import global_const from "../utils/global_const";
       </div>
       <div class="ma-2">#0x01 使用说明</div>
       <div class="ma-4">
-        ArknightsOfflineProxy是基于网页版本的明日方舟游戏托管平台，主要为当前没有时间进行游戏或咸鱼的玩家提供在线版本的自动化托管平台
+        ArknightsOfflinePro是基于网页版本的明日方舟游戏托管平台，主要为当前没有时间进行游戏或咸鱼的玩家提供在线版本的自动化托管平台
       </div>
 
       <div class="ma-2">#0x02 计划任务</div>

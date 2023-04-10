@@ -50,7 +50,7 @@ const AsideCtx = toRef(menuService.menus.value[1], "children")
   >
     <div class="logo-details">
       <Logo class="logo-icon"/>
-      <span class="logo_name">GoArkOffProxy</span>
+      <span class="logo_name">GoArkOffPro</span>
     </div>
     <ul class="nav-links">
       <template v-for="(i,k) of AsideCtx" v-bind:key="k">
