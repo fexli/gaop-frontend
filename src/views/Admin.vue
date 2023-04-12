@@ -147,6 +147,12 @@ function updateAnnounce() {
         />
         <SettingToggle
             :settings="config"
+            field="battle_inj_mode"
+            :title="translate('admin_panel.battle_inj')"
+            @change="onConfigChange"
+        />
+        <SettingToggle
+            :settings="config"
             field="bypass_gt"
             :title="translate('admin_panel.bypass_gt')"
             @change="onConfigChange"

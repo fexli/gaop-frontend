@@ -336,9 +336,9 @@ function uploadChange() {
 }
 function checkTypeRst(v) {
   if (v === 'MAPARGRST') {
-    list2.value.forEach(item => {
-      item.needT = 1
-    })
+    // list2.value.forEach(item => {
+    //   item.needT = 1
+    // })
     if (props.settings['rstCyc'] == null) {
       props.settings['rstCyc'] = 1
     }
