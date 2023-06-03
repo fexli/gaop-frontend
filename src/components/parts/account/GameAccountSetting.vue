@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+  getGameFriends,
   getGameSettings,
   getGameUserBuilding,
   getGameUserInventory,
@@ -56,9 +57,14 @@ const defaultSettings: Ref = ref({
   "apOverflowBuildingCost": null, // TODO
   "apOverflowCheck": null, // TODO
   "apReserve": null,
-  "autoBattleMap": null, // TODO
+  "assistUntilFavorPct":null,
+  "autoBackflowCheckin":null, // TODO
+  "autoBattleMap": null,
   "autoCheckInOnly": null,
   "autoDailyCheckIn": null,
+  "autoEvolveChar": null,
+  "autoFlipOnly": null,
+  "autoFloatRaffle": null,
   "autoGridOnlyV2": null,
   "autoLoginOnly": null,
   "autoPrayOnly": null,
@@ -66,36 +72,31 @@ const defaultSettings: Ref = ref({
   "autoStartCommunicate": null,
   "autoSwichDiamManufact": null,
   "buildingKeepDrone": null,
+  "buyTempShop": null, // TODO
   "commForceDate": null,
   "commGetAll": null,
   "commTouchNoOther": null,
   "commTouchUnget": null,
   "drawLimGachaDailyFree": null,
   "enableAutoBattle": null,
+  "enableAutoBuildingArrange": null,
   "noticedQQ": null,
   "pauseMapAttack": null,
   "receiveMail": null,
   "recruitAutoFull": null,
+  "recruitForceRenewCnt": null,
   "recruitIgnoreRobot": null,
   "recruitReserve": null,
   "refreshRecruit": null,
   "sencClueListIsBlock": null,
   "sencClueUidList": null, // TODO
+  "shopBuyBefore": null, // TODO
   "takeDownInUse": null,
   "useApSupply": null,
   "useApSupplyBefore": null,
   "useDiamondSupplyCnt": null,
   "useSweep": null
 })
-
-
-const bTypeIdents = { // [0, 1, 2, 3]=>[开放，开启关卡选择器，开启MAPT，开启MNG-CHR]
-  AUTO: [true, false, false, false],
-  RANDOM: [true, true, false, false],
-  FIRST: [true, true, false, false],
-  MANAGED: [true, false, true, false],
-  MAPARG: [true, false, false, true],
-}
 
 const isOffline = computed(() => {
   for (let i = 0; i < gameAccountLi.value.length; i++) {
@@ -171,8 +172,13 @@ function getSetting() {
     console.log("getGameSettings err", err)
     getFinished.value = true
   })
-}
 
+  getGameFriends(props.gameUserName as string, props.gamePlatform as number).then((suc:any)=>{
+    console.log("getFrSuc",suc)
+  }).catch((err:any)=>{
+    console.log("getFrErr",err)
+  })
+}
 function confirmResetSettings() {
   resetGameSettings(props.gameUserName as string, props.gamePlatform as number).then((res: any) => {
     console.log("resetGameSettings", res)
@@ -380,6 +386,15 @@ onUnmounted(() => {
               </Explain>
             </template>
           </Toggle>
+          <Toggle :settings="valuedSettings" field="autoFlipOnly" title="自动完成祈愿翻牌">
+            <template #extra>
+              <Explain>
+                <template #explain>
+                  祈愿活动期间自动完成祈愿翻牌
+                </template>
+              </Explain>
+            </template>
+          </Toggle>
           <Toggle :settings="valuedSettings" field="autoCheckInOnly" title="自动活动签到">
             <template #extra>
               <Explain>
@@ -527,9 +542,49 @@ onUnmounted(() => {
             </template>
           </SettingBtn>
           <div class="divider m-0">
+            <h1 class="text-2xl ml-1">升级设置</h1>
+          </div>
+          <Slider
+              :settings="valuedSettings" field="shopBuyBefore" title="提前购买商店内容"
+              :max="7" :min="0"
+          >
+            <template #extra>
+              <Explain>
+                <template #explain>
+                  在活动结束前提前几日购买商店，默认在活动结束时（提前0天）购买商店内容
+                  <span class="text-info">提示：可通过滚轮在数值上滚动调整大小</span>
+                </template>
+              </Explain>
+            </template>
+          </Slider>
+          <div class="divider m-0">
+            <h1 class="text-2xl ml-1">商店设置</h1>
+          </div>
+          <Toggle :settings="valuedSettings" field="autoEvolveChar" title="自动升级干员">
+            <template #extra>
+              <Explain>
+                <template #explain>
+                  是否启用自动升级干员（自动精英化、升级、技能专精）
+                  <span class="text-warning">警告：购买芯片助剂和双芯片合成未完成，需要手动完成！</span>
+                </template>
+              </Explain>
+            </template>
+          </Toggle>
+          <div class="divider m-0">
             <h1 class="text-2xl ml-1">基建设置</h1>
           </div>
           <h1 v-if="!accEnable" class="text-error">禁用：基建控制中心等级小于3级，无法开启无人机加速</h1>
+          <Toggle
+              :disabled="!accEnable || valuedSettings['enableAutoBuildingArrange'] == null"
+              :settings="valuedSettings" field="enableAutoBuildingArrange" title="启用自动排班">
+            <template #extra>
+              <Explain>
+                <template #explain>
+                  是否启用自动基建排班
+                </template>
+              </Explain>
+            </template>
+          </Toggle>
           <Select
               :settings="valuedSettings"
               field="accelerateSlot" item-value="slot" item-text="text"
@@ -660,6 +715,21 @@ onUnmounted(() => {
             </template>
           </Toggle>
           <h1 class="text-info">~~~~~~~~~这里是赠送名单设置~~~~~~</h1>
+          <Slider
+              :disabled="valuedSettings['assistUntilFavorPct'] == null"
+              :settings="valuedSettings" field="assistUntilFavorPct" title="更换高于指定信赖的基建副手"
+              :max="200" :min="100"
+          >
+            <template #extra>
+              <Explain>
+                <template #explain>
+                  更换高于指定信赖的基建副手（默认为200，即当基建副手信赖≥200时会更换）
+                  更换新干员为精英化优先、等级高优先、星级高优先
+                  <span class="text-info">提示：可通过滚轮在数值上滚动调整大小</span>
+                </template>
+              </Explain>
+            </template>
+          </Slider>
           <div class="divider m-0">
             <h1 class="text-2xl ml-1">公招设置</h1>
           </div>
@@ -672,6 +742,20 @@ onUnmounted(() => {
               </Explain>
             </template>
           </Toggle>
+          <Slider
+              :disabled="valuedSettings['recruitForceRenewCnt'] == null"
+              :settings="valuedSettings" field="recruitForceRenewCnt" title="强制空选数量"
+              :max="4" :min="0"
+          >
+            <template #extra>
+              <Explain>
+                <template #explain>
+                  公招槽强制最小空选数量（强制空选=若没有高星则空Tag+7H40M，不空选=不选择等待下次公招再说），默认为4
+                  <span class="text-info">提示：可通过滚轮在数值上滚动调整大小</span>
+                </template>
+              </Explain>
+            </template>
+          </Slider>
           <Toggle :settings="valuedSettings" field="recruitAutoFull" title="自动使用所有公招">
             <template #extra>
               <Explain>

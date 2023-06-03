@@ -287,7 +287,7 @@ onMounted(() => {
         <!--          }}-->
         <!--        </div>-->
 
-        <div class="flex px-1">
+        <div class="flex px-1 pt-1">
           <div class="px-1 -mb-1 text-sm">进攻组合参数</div>
           <div class="spacer"/>
           <div class="fe-btn fe-btn_absr" @click="addNewAtks">新增</div>
@@ -295,7 +295,7 @@ onMounted(() => {
         <div style="width: calc(100% - 0.5rem)"
              class="relative m-1 rounded-md border border-base-content h-44 overflow-x-hidden">
           <draggable
-              class="w-full absolute"
+              class="w-full absolute flex flex-col gap-y-1"
               :component-data="{
                       type:'transition-group',
                     }"
@@ -310,7 +310,7 @@ onMounted(() => {
             <template #item="{ element,index }">
               <div
                   @click="currentIndex = index"
-                  class="border border-base-content rounded-md text-sm"
+                  class="ring-1 ring-base-content text-sm hover:bg-base-100 transition-all"
               >
                 <div class="flex gap-1 items-center h-full px-0.5">
                   <div class="text-primary font-bold">

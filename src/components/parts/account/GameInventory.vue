@@ -4,7 +4,7 @@ import {Ref} from "vue";
 import {accountStore} from "../../../store/account";
 import {storeToRefs} from "pinia";
 import global_const from "../../../utils/global_const";
-import {getGameUserInventory} from "../../../plugins/axios";
+import {getGameUserInventory, listGameItemUse} from "../../../plugins/axios";
 import {useTranslate} from "../../../hooks/translate";
 import ItemFrame from "../inventory/ItemFrame.vue";
 
@@ -52,6 +52,7 @@ const computeGetUserInventory = computed(() => {
       }
       inv.push({
         key: key,
+        inst: item,
         value: accountInfo.value[gameUserID.value].consumable[key][item].count,
         sortId: global_const.gameData.itemData[key].sortId,
         ts: accountInfo.value[gameUserID.value].consumable[key][item].ts,
@@ -145,7 +146,7 @@ onMounted(() => {
       <!--插入消耗品-->
       <template v-for="item in computeGetUserInventory" :key="item.sortKey || item.key">
         <ItemFrame font-size="1.25rem" font-overlay class="w-32 h-32 bg-base-200" :item-id="item.key"
-                   :ts="item.ts || -1" :count="item.value" :consume="item.consume"
+                   :ts="item.ts || -1" :count="item.value" :consume="item.consume" :item-inst="item.inst"
                    :clicker="clicker"/>
       </template>
     </div>

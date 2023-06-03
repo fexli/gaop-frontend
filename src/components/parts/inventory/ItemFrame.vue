@@ -5,6 +5,7 @@ import FeImg from "../../element/FeImg.vue";
 
 const props = defineProps({
   itemId: String,
+  itemInst: String,
   count: {
     type: [Number, String],
     default: 0
@@ -55,6 +56,7 @@ function handleClicker() {
   if (props.clicker != undefined) {
     props.clicker({
       itemId: props.itemId,
+      itemInst: props.itemInst,
       count: props.count,
       content: props.content,
       consume: props.consume,

@@ -16,6 +16,7 @@ export const accountStore = defineStore("account", {
         inRunningAccount: 0,//游戏账号管理
         webUserInfo: {} as any,
         accountAlert: {} as any,
+        accountItemUse: {} as any,
     }),
     getters: {
         getAccountAlert: (state) => {
@@ -44,7 +45,7 @@ export const accountStore = defineStore("account", {
         },
         getAvatar: (state) => {
             return state.webUserInfo.avatar
-        }
+        },
     },
     actions: {
         hasAccountAlert(account: string, platform: Number) {
@@ -142,30 +143,34 @@ export const accountStore = defineStore("account", {
                 return
             return syncUserAccounts().then(
                 (resp: any) => {
-                    console.log('syncUserAccounts', resp)
-                    this.gameAccountLi = resp.msg
+                    console.log('syncUserAccounts', resp, Array.isArray(resp.msg), Array.isArray(resp.data))
+                    let dataV = resp.data
+                    if (Array.isArray(resp.msg)) {
+                        dataV = resp.msg // fit old api
+                    }
+                    this.gameAccountLi = dataV
 
                     let running = 0
                     let accountTree: RouteRecordRaw[] = []
                     let accounts: string[] = []
                     const platformCN = ['IOS', '安卓', 'B服']
-                    for (let j = 0; j < resp.msg.length; j++) {
+                    for (let j = 0; j < dataV.length; j++) {
                         accountTree.push({
                             component: undefined,
                             redirect: "",
-                            path: '/account/dashboard/' + resp.msg[j].platform + '/' + resp.msg[j].account,
-                            name: 'account.p' + resp.msg[j].platform + '.' + resp.msg[j].account,
+                            path: '/account/dashboard/' + dataV[j].platform + '/' + dataV[j].account,
+                            name: 'account.p' + dataV[j].platform + '.' + dataV[j].account,
                             meta: {
-                                title: '[' + platformCN[resp.msg[j].platform] + ']' + resp.msg[j].name,
+                                title: '[' + platformCN[dataV[j].platform] + ']' + dataV[j].name,
                                 group: 'apps',
                                 translatable: false,
-                                disp: resp.msg[j].name,
-                                hiddenInMenu: resp.msg[j].status !== 2
+                                disp: dataV[j].name,
+                                hiddenInMenu: dataV[j].status !== 2
                             }
                             // component: () => import('@/views/Account.vue')
                         })
-                        accounts.push(['I', 'G', 'B'][resp.msg[j].platform] + resp.msg[j].account)
-                        if (resp.msg[j].status >= 1)
+                        accounts.push(['I', 'G', 'B'][dataV[j].platform] + dataV[j].account)
+                        if (dataV[j].status >= 1)
                             running++
                     }
                     console.log(accountTree, menu.menus.value[1].children)
@@ -206,6 +211,12 @@ export const accountStore = defineStore("account", {
                 this.accountInfo[userId] = {}
             }
             this.accountInfo[userId] = Object.assign(this.accountInfo[userId], data)
+        },
+        setAccountItemUse(account: string, platform: number, itemUse: any) {
+            this.accountItemUse[global_const.getUserLogName(account, platform)] = itemUse
+        },
+        getAccountItemUse(account: string, platform: number) {
+            return this.accountItemUse[global_const.getUserLogName(account, platform)]
         }
     },
 });

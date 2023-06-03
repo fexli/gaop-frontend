@@ -218,6 +218,18 @@ export const getGameUserInventory = (username: string, platform: number) => post
     username,
     platform
 });
+export const listGameItemUse = (username: string, platform: number) => post('/game/listItemUse', {
+    username,
+    platform
+});
+export const addGameItemUse = (username: string, platform: number, itemId: string, itemInst: number, cnt: number, ex: string) => post('/game/addItemUse', {
+    username,
+    platform,
+    itemId,
+    itemInst,
+    cnt,
+    ex,
+});
 export const getGameUserTroop = (username: string, platform: number) => post('/game/troop', {
     username,
     platform

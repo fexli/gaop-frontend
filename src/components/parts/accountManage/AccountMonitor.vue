@@ -50,7 +50,12 @@ function tryRefreshData() {
 function refreshData() {
   getMonitorInfos().then((suc: any) => {
     console.log("getMonitorInfos refreshData", suc)
-    currentData.value = suc.msg
+    if (Array.isArray(suc.msg)) {
+      currentData.value = suc.msg // fit old api
+    } else {
+      currentData.value = suc.data
+    }
+
     isError.value = false
     lastSyncTs.value = Date.now()
     // calcNext()

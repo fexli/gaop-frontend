@@ -73,6 +73,7 @@ const itemTypes = {
     'LMTGS_COIN': '寻访数据契约',
     'MATERIAL': '养成素材',
     'RENAMING_CARD': '改名卡',
+    'RENAMING_CARD_2':'改名卡',
     'REP_COIN': '情报凭证',
     'SOCIAL_PT': '信用',
     'TKT_GACHA': '寻访凭证',
@@ -86,6 +87,30 @@ const itemTypes = {
     'VOUCHER_PICK': '干员兑换券',
     'EXTERMINATION_AGENT': "剿灭代理卡",
     "VOUCHER_SKIN": "时装自选凭证",
+    'NONE':'？',
+    'CHAR':'干员',
+    'FURN':'家具',
+    'CHAR_SKIN':'干员皮肤',
+    'LIMITED_FREE_GACHA':'限定池免费抽',
+    'ROGUELIKE':'肉鸽物品',
+    'VOUCHER_ELITE_II_5':'资深干员特训邀请函',
+    'RETRO_COIN':'事相结晶',
+    'PLAYER_AVATAR':'头像',
+    'UNI_COLLECTION':'家具收藏包',
+    'VOUCHER_FULL_POTENTIAL':'私人信件',
+    'RL_COIN':'肉鸽代币',
+    'RETURN_CREDIT':'二次认证徽记',
+    'MEDAL':'蚀刻章',
+    'CHARM':'干员模组',
+    'HOME_BACKGROUND':'主页背景',
+    'OPTIONAL_VOUCHER_PICK':'芯片自选',
+    'ACT_CART_COMPONENT':'[活动]车辆涂装',
+    'VOUCHER_LEVELMAX_6':'6☆特训装置',
+    'VOUCHER_LEVELMAX_5':'5☆特训装置',
+    'ACTIVITY_POTENTIAL':'活动潜能',
+    'ITEM_PACK':'礼包组合',
+    'SANDBOX':'生息演算',
+    'FAVOR_ADD_ITEM':'信赖提升物品',
 }
 const loginBG = {
     bg: [
@@ -171,12 +196,12 @@ const aopVersion = '2.1a - 1.8.81'
 const servers = [
     {
         name: "稳定服",
-        server: "api.akaem.com:8082",
+        server: "mc.mesord.com:8084",
         secure: false,
     },
     {
         name: "测试服",
-        server: "api.aksc.com:8084",
+        server: "mc.mesord.com:8087",
         secure: true,
     },
     {
