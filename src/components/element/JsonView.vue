@@ -1,11 +1,11 @@
 <template>
   <div class="bgView">
     <div :class="['json-view', length ? 'closeable' : '']"
-         :style="'font-size:' + fontSize+'px; line-height:'+lineHeight+'px'">
+         :style="'font-size:' + fontSize+'px; line-height:'+lineHeight+'px; padding-left: '+indent+'px;'">
     <span @click="toggleClose" :class="['angle', innerclosed ? 'closed' : '']" v-if="length">
     </span>
       <div class="content-wrap">
-        <p class="first-line">
+        <p class="first-line" :style="'line-height:'+lineHeight+'px'">
           <span v-if="jsonKey" class="json-key">"{{ jsonKey }}": </span>
           <span v-if="length">
           {{ prefix }}
@@ -22,11 +22,14 @@
                 :closed="childClosed"
                 v-if="item.isJSON"
                 :key="index"
+                :font-size="fontSize"
+                :line-height="lineHeight"
                 :json="item.value"
+                :indent="indent"
                 :jsonKey="item.key"
                 :isLast="index === items.length - 1"
             ></JsonView>
-            <p class="json-item" v-else>
+            <p class="json-item" :style="'line-height:'+lineHeight+'px; padding-left: '+indent+'px;'" v-else>
               <span class="json-key">
                   {{ (isArray ? '' : '"' + item.key + '"') }}
               </span>
@@ -39,7 +42,7 @@
           </template>
           <span v-show="!innerclosed" class="body-line"></span>
         </div>
-        <p v-if="!innerclosed && length" class="last-line">
+        <p v-if="!innerclosed && length" class="last-line" :style="'line-height:'+lineHeight+'px'">
           <span>{{ subfix }}</span>
         </p>
       </div>
@@ -68,8 +71,12 @@ const props = defineProps({
   },
   lineHeight: {
     type: Number,
-    default: 6
+    default: 16
   },
+  indent: {
+    type: Number,
+    default: 20
+  }
 })
 
 const innerclosed = ref(true);
@@ -160,7 +167,7 @@ const items = computed(() => {
   width: 100%;
   height: 100%;
   white-space: nowrap;
-  padding-left: 20px;
+  /*padding-left: 20px;*/
   box-sizing: border-box;
   font-weight: bold;
 }
@@ -175,14 +182,14 @@ const items = computed(() => {
 
 .json-item {
   margin: 0;
-  padding-left: 20px;
-  height: 16px;
+  /*padding-left: 20px;*/
+  /*height: 16px;*/
 }
 
 .first-line {
   padding: 0;
   margin: 0;
-  height: 16px;
+  /*height: 16px;*/
 }
 
 .json-body {
@@ -203,7 +210,7 @@ const items = computed(() => {
 .last-line {
   padding: 0;
   margin: 0;
-  height: 16px;
+  /*height: 16px;*/
 }
 
 .angle {

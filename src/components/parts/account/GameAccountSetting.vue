@@ -57,8 +57,8 @@ const defaultSettings: Ref = ref({
   "apOverflowBuildingCost": null, // TODO
   "apOverflowCheck": null, // TODO
   "apReserve": null,
-  "assistUntilFavorPct":null,
-  "autoBackflowCheckin":null, // TODO
+  "assistUntilFavorPct": null,
+  "autoBackflowCheckin": null, // TODO
   "autoBattleMap": null,
   "autoCheckInOnly": null,
   "autoDailyCheckIn": null,
@@ -150,7 +150,7 @@ function getSetting() {
       return
     }
     getUserInventory().then((data) => {
-      console.log("get Inv",data)
+      console.log("get Inv", data)
       inventoryData.value = data
     })
     getGameUserBuilding(props.gameUserName as string, props.gamePlatform as number).then((suc2: any) => {
@@ -173,12 +173,13 @@ function getSetting() {
     getFinished.value = true
   })
 
-  getGameFriends(props.gameUserName as string, props.gamePlatform as number).then((suc:any)=>{
-    console.log("getFrSuc",suc)
-  }).catch((err:any)=>{
-    console.log("getFrErr",err)
+  getGameFriends(props.gameUserName as string, props.gamePlatform as number).then((suc: any) => {
+    console.log("getFrSuc", suc)
+  }).catch((err: any) => {
+    console.log("getFrErr", err)
   })
 }
+
 function confirmResetSettings() {
   resetGameSettings(props.gameUserName as string, props.gamePlatform as number).then((res: any) => {
     console.log("resetGameSettings", res)
@@ -340,7 +341,7 @@ function showResetOverlay() {
 }
 
 onMounted(() => {
-  global_const.requireAssets(["building_data","character_data","stage_table","item_data"], () => {
+  global_const.requireAssets(["building_data", "character_data", "stage_table", "item_data"], () => {
     getSetting()
   })
 })
@@ -718,13 +719,14 @@ onUnmounted(() => {
           <Slider
               :disabled="valuedSettings['assistUntilFavorPct'] == null"
               :settings="valuedSettings" field="assistUntilFavorPct" title="更换高于指定信赖的基建副手"
-              :max="200" :min="100"
+              :max="201" :min="100"
           >
             <template #extra>
               <Explain>
                 <template #explain>
                   更换高于指定信赖的基建副手（默认为200，即当基建副手信赖≥200时会更换）
                   更换新干员为精英化优先、等级高优先、星级高优先
+                  <span class="text-info">提示：调整为201时为禁用（超出信赖范围0~200）</span>
                   <span class="text-info">提示：可通过滚轮在数值上滚动调整大小</span>
                 </template>
               </Explain>
@@ -852,6 +854,7 @@ onUnmounted(() => {
     >
       <AutoBattleMapEdit
           :inventory="inventoryData"
+          :status="accountInfo[gameUserID].status || {}"
           :close="closeAutoBattleOverlay"
           :settings="valuedSettings"
           field="autoBattleMap"

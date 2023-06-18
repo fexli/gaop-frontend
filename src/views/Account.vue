@@ -172,7 +172,7 @@ function listenCtxUpdate() {
     syncGameData()
   }
   if (account.loggerStoreUpdate) {
-    console.log('content updated.')
+    // console.log('content updated.')
     contentIsShow.value = false
     nextTick(() => {
       contentIsShow.value = true

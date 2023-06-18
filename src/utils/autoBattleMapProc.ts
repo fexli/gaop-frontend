@@ -63,6 +63,17 @@ export class ManagedCharTrainingInfo {
     }
 }
 
+
+export class ItemBasedCtx {
+    id: string;
+    count: number;
+
+    constructor() {
+        this.id = "";
+        this.count = 0;
+    }
+}
+
 export class BattleParam implements Record<any, any> {
     type: string;
     maps: Array<string>;
@@ -123,7 +134,7 @@ export const bTypeDesc = [
     },
     {
         type: 'ITEMBASE',
-        text: '[前端施工中]指定物品与数量规划',
+        text: '指定物品与数量规划',
         desc: '按照指定的材料需求进行最优关卡进攻',
         icon: 'timetable',
     },
@@ -259,9 +270,7 @@ export const parseSingleBattleParamToStr = function (data: BattleParam): string 
             break
         case 'MANAGED':
             let cInfos = {} as Record<string, string[]>
-
             for (let minfo of data.mng || []) {
-                console.log("mifo", minfo)
                 let cname = (global_const.gameData.characterData[minfo.charId]?.name || minfo.charId)
                 if (cInfos[cname] == null) {
                     cInfos[cname] = []

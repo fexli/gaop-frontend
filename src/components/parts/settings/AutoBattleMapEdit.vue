@@ -16,6 +16,8 @@ import {useToast} from "../../../hooks/toast";
 import CharUpgSelector from "../battleMapEdit/CharUpgSelector.vue";
 import {AutoBattleMapAtkSet, AutoBattleMapSumms} from "../../../utils/autoBattleMapSumms";
 import SettingTextInput from "./SettingTextInput.vue";
+import JsonView from "../../element/JsonView.vue";
+import ItemSelector from "../battleMapEdit/ItemSelector.vue";
 
 const {showMessage} = useToast()
 
@@ -29,6 +31,10 @@ const props = defineProps({
     default: "",
   },
   inventory: {
+    type: Object,
+    default: {},
+  },
+  status: {
     type: Object,
     default: {},
   },
@@ -58,6 +64,7 @@ function atksRemapEnd(el: any) {
   if (el.newIndex === el.oldIndex) {
     return
   }
+  // 先将数据序列化？
   inDrag.value = true
   // TODO:change index
   let minOf = Math.min(el.newIndex, el.oldIndex)
@@ -75,11 +82,13 @@ function atksRemapEnd(el: any) {
 }
 
 function trySaveCurrentBattleMapSet(index: number) {
+  console.log("enter trySaveCurrentBattleMapSet", index)
   if (index !== -1) {
     if ((autoBattleMapSetting.value?.atks?.length || 0) <= index) {
       return
     }
     // 保存index设置
+    console.log("trySaveCurrentBattleMapSet", index, selectAttackSettings.value)
     autoBattleMapSetting.value.atks[index].mapSetting = selectAttackSettings.value
   }
 }
@@ -93,21 +102,26 @@ function deleteAtkMap(index: number) {
     // 保存index设置
     autoBattleMapSetting.value.atks.splice(index, 1)
     onDelete.value = true
-    if (currentIndex.value === index) {
-      if (index == 0) {
-        currentIndex.value = -1
-        selectAttackSettings.value = new BattleParam()
-      } else {
-        currentIndex.value = 0
-      }
-    } else if (currentIndex.value > index) {
+    if (currentIndex.value === index && index === 0) {
+      currentIndex.value = -1
+      selectAttackSettings.value = new BattleParam()
+    } else if (currentIndex.value >= index) {
       currentIndex.value = currentIndex.value - 1
     }
   }
 }
 
+function loadByIndex(index: number) {
+  console.log("load index", index, autoBattleMapSetting.value.atks[index].mapSetting)
+  selectAttackSettings.value = autoBattleMapSetting.value.atks[index].mapSetting
+  needRefreshed.value = true
+  nextTick(() => {
+    needRefreshed.value = false
+  })
+}
+
 watch(() => currentIndex.value, (index: number, old: number) => { // 监听index变化（点击切换）
-  console.log("currentIndex", old, index)
+  console.log("currentIndex", "old=", old, "new=", index)
   if (autoBattleMapSetting.value.atks[index] == undefined) {
     console.log("index not exist, ignore")
     if (index >= 0) {
@@ -117,8 +131,17 @@ watch(() => currentIndex.value, (index: number, old: number) => { // 监听index
     return;
   }
   if (onDelete.value) {
-    onDelete.value = false
     console.log("in delete, ignore")
+    if (currentIndex.value > old) {
+      console.log("in delete and sub index, reset and return")
+      currentIndex.value = old
+      return;
+    }
+    if (currentIndex.value < old) {
+      console.log("in delete and hum index, reset and return")
+      loadByIndex(index)
+    }
+    onDelete.value = false
     return
   }
   if (inDrag.value) {
@@ -129,12 +152,7 @@ watch(() => currentIndex.value, (index: number, old: number) => { // 监听index
   trySaveCurrentBattleMapSet(old)
   if (index !== -1) {
     // 加载index设置
-    console.log("load index", index)
-    selectAttackSettings.value = autoBattleMapSetting.value.atks[index].mapSetting
-    needRefreshed.value = true
-    nextTick(() => {
-      needRefreshed.value = false
-    })
+    loadByIndex(index)
   }
 })
 
@@ -196,7 +214,7 @@ function findBType(type: string): Record<string, any> {
   if (s) {
     return s
   }
-  return {text: "未知", type: "UNKNOWN",icon:"help"}
+  return {text: "未知", type: "UNKNOWN", icon: "help"}
 }
 
 onMounted(() => {
@@ -240,22 +258,7 @@ onMounted(() => {
         <div class="text-primary text-sm font-bold ml-1 px-1">>
           {{ bTypeDesc.find(i => i.type === selectAttackSettings.type)?.desc }}
         </div>
-        <div v-if="selectAttackSettings['type'] === 'AUTO'" class="ab-inner"></div>
-        <div v-else-if="['FIRST','RANDOM','MAPARG','MAPARGRST'].some(i => i === selectAttackSettings['type'])"
-             class="ab-inner">
-          <StageSelector
-              :inventory="inventory"
-              :has-index="selectAttackSettings['type'] === 'FIRST'"
-              :has-times="selectAttackSettings['type'] === 'MAPARG'"
-              :has-need-times="selectAttackSettings['type'] === 'MAPARGRST'"
-              :settings="selectAttackSettings" field-map="maps" field-map-t="mapt"
-          />
-        </div>
-        <div v-else-if="selectAttackSettings['type'] === 'MANAGED'" class="ab-inner">
-          <CharUpgSelector
-              :settings="selectAttackSettings" field="mng"
-          />
-        </div>
+        <!--        这里开始就是Type对应的SettingArea        -->
         <div
             v-if="currentIndex < 0"
             class="bg-base-200 rounded-md bg-opacity-90 absolute left-0 top-0 w-full h-full flex items-center justify-center text-primary select-none"
@@ -269,6 +272,31 @@ onMounted(() => {
             <div>或点击创建分组进行设置</div>
           </div>
         </div>
+        <template v-else>
+          <div v-if="selectAttackSettings['type'] === 'AUTO'" class="ab-inner"></div>
+          <div v-else-if="['FIRST','RANDOM','MAPARG','MAPARGRST'].some(i => i === selectAttackSettings['type'])"
+               class="ab-inner">
+            <StageSelector
+                :inventory="inventory"
+                :has-index="selectAttackSettings['type'] === 'FIRST'"
+                :has-times="selectAttackSettings['type'] === 'MAPARG'"
+                :has-need-times="selectAttackSettings['type'] === 'MAPARGRST'"
+                :settings="selectAttackSettings" field-map="maps" field-map-t="mapt"
+            />
+          </div>
+          <div v-else-if="selectAttackSettings['type'] === 'MANAGED'" class="ab-inner">
+            <CharUpgSelector
+                :settings="selectAttackSettings" field="mng"
+            />
+          </div>
+          <div v-else-if="selectAttackSettings['type'] === 'ITEMBASE'" class="ab-inner">
+            <ItemSelector
+                :settings="selectAttackSettings" field="items"
+                :inventory="inventory"
+                :status="status"
+            />
+          </div>
+        </template>
       </div>
     </div>
     <div class="basis-1/4 border-base-content border rounded-r-lg px-1 flex flex-col max-w-[30%]">
@@ -293,7 +321,7 @@ onMounted(() => {
           <div class="fe-btn fe-btn_absr" @click="addNewAtks">新增</div>
         </div>
         <div style="width: calc(100% - 0.5rem)"
-             class="relative m-1 rounded-md border border-base-content h-44 overflow-x-hidden">
+             class="relative m-1 rounded-md border border-base-content h-64 overflow-x-hidden">
           <draggable
               class="w-full absolute flex flex-col gap-y-1"
               :component-data="{
@@ -332,7 +360,17 @@ onMounted(() => {
           </draggable>
         </div>
 
-        <div class="p-1 bottom-0 break-all text-xs max-h-[16rem] overflow-auto">{{ autoBattleMapSetting }}</div>
+        <div class="p-1 bottom-0 break-all text-xs max-h-[10.5rem] overflow-auto whitespace-pre-wrap">
+          <!--          {{ JSON.stringify(autoBattleMapSetting,null,2) }}-->
+          <JsonView
+              style="margin-top: 10px"
+              :font-size="12"
+              :line-height="13"
+              :indent="13"
+              :json="autoBattleMapSetting"
+              :closed="false"
+          />
+        </div>
         <!--        <SettingTextInput :settings="autoBattleMapSetting" field="fbid" title="默认关卡" width="w-20"/>-->
         <!--        <div class="w-full h-44">-->
         <!--          <draggable-->
