@@ -13,6 +13,10 @@ const props = defineProps({
     type: Function,
     default: undefined,
   },
+  hasLessDrop: {
+    type: Boolean,
+    default: false,
+  },
   addable: {
     type: Function,
     default: undefined,
@@ -47,7 +51,12 @@ const props = defineProps({
     default: {},
   },
 })
-
+const minDropCnt = computed(() => {
+  return Math.min(...props.info.dropInfo.map((item: any) => {
+    if (!item.isMainDrop) return 999999999
+    return props.inventory[item.id] == undefined ? 999999999 : Math.max(0, props.inventory[item.id])
+  }))
+})
 watch(() => props.info.times, (value) => {
   props.applyChange()
 })
@@ -94,7 +103,7 @@ watch(() => props.info.needT, (value) => {
               class="w-16 h-16 si-ctx"
               count-x="0" count-is-left count-y="0"
               font-overlay
-              :class="info.dropInfo.length > 4 ? '-mx-7' : '-mx-5'"
+              :class="(info.dropInfo.length > 4 ? '-mx-7' : '-mx-5') + (!hasLessDrop || inventory[i.id] === minDropCnt ? '' : ' grayscale opacity-20 hover:opacity-100')"
               :item-id="i.id" :count="inventory[i.id] || -1"
           />
         </template>

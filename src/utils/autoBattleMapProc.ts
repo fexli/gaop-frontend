@@ -1,4 +1,5 @@
 import global_const from "./global_const";
+import formatter from "./formatter";
 
 export class BattleMapWithTimes {
     mapId: string;
@@ -140,7 +141,7 @@ export const bTypeDesc = [
     },
     {
         type: 'MAPLESD',
-        text: '[前端施工中]指定关卡掉落材料追平',
+        text: '指定关卡掉落材料追平',
         desc: '选定指定关卡组中主要掉落材料最少关卡进攻',
         icon: 'account-arrow-up-outline',
     },
@@ -248,6 +249,7 @@ export const parseSingleBattleParamToStr = function (data: BattleParam): string 
         case 'AUTO':
             break
         case 'RANDOM':
+        case 'MAPLESD':
         case 'FIRST':
             for (let mid of data.maps || []) {
                 if (global_const.gameData.stageTable['stages'][mid] != null) {
@@ -289,4 +291,54 @@ export const parseSingleBattleParamToStr = function (data: BattleParam): string 
             break
     }
     return result
+}
+
+const WEEKDAY = ['日', '一', '二', '三', '四', '五', '六']
+
+function parseConditionByValued(cond: Record<string, any>): string {
+    switch (cond['type']) {
+        case 0:
+            return "永远不满足"
+        case 1:
+            return "永远满足"
+        case 2:
+            return "星期" + WEEKDAY[cond['value']]
+        case 3:
+            return "任务完成后"
+        case 4:
+            return "在" + formatter.formatDate(cond['value'] * 1000, "yyyy-MM-dd HH:mm") + "后"
+        case 5:
+            return "在" + formatter.formatDate(cond['value'] * 1000, "yyyy-MM-dd HH:mm") + "前"
+    }
+    return "未知值判!(" + cond['type'] + ',' + cond['value'] + ")"
+}
+
+function parseConditionByUnary(cond: Record<string, any>): string {
+    switch (cond['op']) {
+        case 2:
+            return "不满足(" + parseConditionStr(cond['val']) + ")"
+    }
+    return "未知一元判!(" + cond['op'] + ',' + parseConditionStr(cond['val']) + ")"
+}
+
+function parseConditionByBinary(cond: Record<string, any>): string {
+    switch (cond['op']) {
+        case 0:
+            return "满足[" + parseConditionStr(cond['lhs']) + "]和[" + parseConditionStr(cond['rhs']) + "]"
+        case 1:
+            return "满足[" + parseConditionStr(cond['lhs']) + "]或[" + parseConditionStr(cond['rhs']) + "]"
+    }
+    return "未知二元判!(" + cond['op'] + ")"
+}
+
+export function parseConditionStr(cond: Record<string, any>): string {
+    if (cond['value'] != undefined) {
+        return parseConditionByValued(cond)
+    } else if (cond['val'] != undefined) {
+        return parseConditionByUnary(cond)
+    } else if (cond['lhs'] != undefined) {
+        return parseConditionByBinary(cond)
+    } else {
+        return "未知!" + JSON.stringify(cond)
+    }
 }

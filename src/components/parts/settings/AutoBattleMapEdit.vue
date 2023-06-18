@@ -10,7 +10,8 @@ import {
   BattleParam,
   bTypeDesc,
   parseSingleBattleParam,
-  parseSingleBattleParamToStr
+  parseSingleBattleParamToStr,
+  parseConditionStr,
 } from "../../../utils/autoBattleMapProc";
 import {useToast} from "../../../hooks/toast";
 import CharUpgSelector from "../battleMapEdit/CharUpgSelector.vue";
@@ -274,12 +275,14 @@ onMounted(() => {
         </div>
         <template v-else>
           <div v-if="selectAttackSettings['type'] === 'AUTO'" class="ab-inner"></div>
-          <div v-else-if="['FIRST','RANDOM','MAPARG','MAPARGRST'].some(i => i === selectAttackSettings['type'])"
-               class="ab-inner">
+          <div
+              v-else-if="['FIRST','RANDOM','MAPARG','MAPARGRST','MAPLESD'].some(i => i === selectAttackSettings['type'])"
+              class="ab-inner">
             <StageSelector
                 :inventory="inventory"
                 :has-index="selectAttackSettings['type'] === 'FIRST'"
                 :has-times="selectAttackSettings['type'] === 'MAPARG'"
+                :has-less-drop="selectAttackSettings['type'] === 'MAPLESD'"
                 :has-need-times="selectAttackSettings['type'] === 'MAPARGRST'"
                 :settings="selectAttackSettings" field-map="maps" field-map-t="mapt"
             />
@@ -344,9 +347,17 @@ onMounted(() => {
                   <div class="text-primary font-bold">
                     {{ index + 1 }}
                   </div>
-                  <div class="break-all">
-                    {{ parseSingleBattleParamToStr(element.mapSetting || {}) }}
-                    <span class="text-success">{{ element.isComplete ? ' √ 搞定了' : '' }}</span>
+                  <div class="flex flex-col">
+                    <div class="break-all">
+                      {{ parseSingleBattleParamToStr(element.mapSetting || {}) }}
+                      <span class="text-success">{{ element.isComplete ? ' √ 搞定了' : '' }}</span>
+                    </div>
+                    <div class="spacer-line-w bg-secondary my-0.5"></div>
+                    <div class="flex mb-0.5">
+                      条件：{{ parseConditionStr(element.conditions) }}
+                      <div class="spacer"/>
+                      <button class="fe-btn fe-btn_absr" disabled>编辑</button>
+                    </div>
                   </div>
                   <div class="spacer"/>
                   <button class="btn btn-ghost btn-circle btn-xs btn-primary" @click="deleteAtkMap(index)">

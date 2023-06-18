@@ -33,6 +33,7 @@
         <template #item="{ element }">
           <StageInfo
               :inventory="inventory"
+              :has-less-drop="hasLessDrop"
               :addable="addToRight"
               :info="element"
           />
@@ -78,10 +79,13 @@
               :index="checkRightIndex(element)" :removable="removeFromRight" :info="element"
               :settings="list2" :apply-change="uploadChange" :has-times="hasTimes"
               :has-need-times="hasNeedTimes"
+              :has-less-drop="hasLessDrop"
           />
         </template>
       </draggable>
-      <span v-if="hasNeedTimes" class="bg-neutral absolute bottom-2.5 ring-1 rounded-md px-1">上次重置日期：{{ formatter.formatDate(props.settings.lstRst ? props.settings.lstRst * 1000 : 0,"yyyy-MM-dd") }}</span>
+      <span v-if="hasNeedTimes" class="bg-neutral absolute bottom-2.5 ring-1 rounded-md px-1">上次重置日期：{{
+          formatter.formatDate(props.settings.lstRst ? props.settings.lstRst * 1000 : 0, "yyyy-MM-dd")
+        }}</span>
     </div>
   </div>
 </template>
@@ -130,6 +134,10 @@ const props = defineProps({
     default: false,
   },
   hasTimes: {
+    type: Boolean,
+    default: false,
+  },
+  hasLessDrop: {
     type: Boolean,
     default: false,
   },
@@ -255,10 +263,11 @@ function checkStage(stageInfo, stageId) {
   let items = []
 
   for (let it of stageInfo[stageId]['stageDropInfo']['displayRewards']) {
-    if (it['dropType'] === 2 || it['dropType'] === 3) {
+    if ((it['dropType'] === 2 || it['dropType'] === 3) && it['type'] !== "ACTIVITY_ITEM") {
       items.push({
         id: it.id,
-        name: (global_const.gameData.itemData[it.id] && global_const.gameData.itemData[it.id].name) || ""
+        name: (global_const.gameData.itemData[it.id] && global_const.gameData.itemData[it.id].name) || "",
+        isMainDrop: it['dropType'] === 2 //  好像都是主掉
       })
     }
   }
@@ -334,6 +343,7 @@ function uploadChange() {
     props.settings[props.fieldMap] = list2.value.map(item => item.id)
   }
 }
+
 function checkTypeRst(v) {
   if (v === 'MAPARGRST') {
     // list2.value.forEach(item => {
@@ -344,6 +354,7 @@ function checkTypeRst(v) {
     }
   }
 }
+
 onMounted(() => {
   initStage() // 初始化关卡列表
   initSelected(props.settings[(props.hasTimes || props.hasNeedTimes) ? props.fieldMapT : props.fieldMap]) // 初始化已选关卡
