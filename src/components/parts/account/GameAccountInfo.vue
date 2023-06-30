@@ -80,6 +80,7 @@ const currentAp = computed(() => {
         <DataCard
             :description="translate('game.info.info_share')"
             :value="userCard['infoShare']"
+            :font-size="userCard['infoShare'].length > 4 ? '2.2rem' : '2.3rem'"
             icon="MEETING"
         />
         <DataCard

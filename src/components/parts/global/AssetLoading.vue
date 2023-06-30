@@ -73,7 +73,7 @@ const load_list: LoadingList[] = [
     name: 'item_data',
     title: '物品数据',
     field: 'itemData',
-    loc: 'excel/item_table.json',
+    loc: 'gamedata/excel/item_table.json',
     parser: (resp: any) => {
       global_const.gameData.itemTable = JSON.parse(resp)
       return global_const.gameData.itemTable['items']
@@ -83,7 +83,7 @@ const load_list: LoadingList[] = [
     name: 'character_data',
     title: '干员数据',
     field: "characterData",
-    loc: 'excel/character_table.json',
+    loc: 'gamedata/excel/character_table.json',
     parser: (resp: any) => {
       let data = JSON.parse(resp)
       let rT = new PushableDict([1, 2, 3, 4, 5, 6])
@@ -100,38 +100,38 @@ const load_list: LoadingList[] = [
     name: 'game_const_data',
     title: '常量数据',
     field: 'gameConstData',
-    loc: 'excel/gamedata_const.json',
+    loc: 'gamedata/excel/gamedata_const.json',
     needLoading: true,
   } as LoadingList,
   {
     name: 'skill_data',
     title: '技能数据',
     field: 'skillData',
-    loc: 'excel/skill_table.json',
+    loc: 'gamedata/excel/skill_table.json',
   } as LoadingList,
   {
     name: 'building_data',
     title: '基建数据',
     field: 'buildingData',
-    loc: 'excel/building_data.json',
+    loc: 'gamedata/excel/building_data.json',
   } as LoadingList,
   {
     name: 'uniequip_table',
     title: '模组数据',
     field: 'uniequipTable',
-    loc: 'excel/uniequip_table.json',
+    loc: 'gamedata/excel/uniequip_table.json',
   } as LoadingList,
   {
     name: 'skin_table',
     title: '皮肤数据',
     field: 'skinTable',
-    loc: 'excel/skin_table.json',
+    loc: 'gamedata/excel/skin_table.json',
   } as LoadingList,
   {
     name: 'gacha_data',
     title: '卡池数据',
     field: 'gachaData',
-    loc: 'excel/gacha_table.json',
+    loc: 'gamedata/excel/gacha_table.json',
     parser: (resp: any) => {
       let data = JSON.parse(resp)
       global_const.gameData.recruitTags = {}
@@ -155,16 +155,22 @@ const load_list: LoadingList[] = [
     isStatic: true,
   } as LoadingList,
   {
+    name: 'charpack_pos',
+    title: '干员位置数据',
+    field: 'charPosData',
+    loc: '/charpack/summary.json',
+  } as LoadingList,
+  {
     name: 'stage_table',
     title: '关卡数据',
     field: 'stageTable',
-    loc: 'excel/stage_table.json',
+    loc: 'gamedata/excel/stage_table.json',
     needLoading: true,
   } as LoadingList
 ]
 
 const config = {
-  url: "http://mc.mesord.com:8999/gamedata/"
+  url: "http://mc.mesord.com:8999/"
 }
 
 let callback: Function | undefined = undefined;
@@ -297,7 +303,7 @@ startLoadAssets()
       <div
           :style="(smallMode ? 'height: 112px;width: 119px' : 'height: 320px;width: 340px') + `;background-repeat: no-repeat;background-size: contain;background-image: url('${loadingSrc}')`"
       />
-      <div :class="(smallMode ? '' : 'text-xl') + ' text-primary '">{{ text }}{{ percent }}{{ dot }}</div>
+      <div :class="(smallMode ? 'text-center text-xs' : 'text-xl')" class="text-primary whitespace-pre">{{ text }} {{ percent }}{{ dot }}</div>
       <ProgressBar v-if="!smallMode" :buf-value="buf" :value="val+tmlVal" :loading="val+tmlVal===0" :max="max"/>
     </div>
   </div>

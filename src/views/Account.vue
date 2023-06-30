@@ -16,9 +16,14 @@ import GameLogger from "../components/parts/account/GameLogger.vue";
 import GameAccountSetting from "../components/parts/account/GameAccountSetting.vue";
 import GameUserModule from "../components/parts/account/GameUserModule.vue";
 import TransitionOverlay from "../components/element/TransitionOverlay.vue";
+import {storeToRefs} from "pinia";
+import GameCharInfoCard from "../components/parts/account/GameCharInfoCard.vue";
 
 
 const account = accountStore();
+
+const {accountInfo} = storeToRefs(account)
+
 const router = useRouter();
 const route = useRoute()
 const {showMessage} = useToast();
@@ -36,6 +41,10 @@ const currentTabIndex: Ref = ref(0)
 const itemClicked: Ref = ref({})
 const itemCardOverlay: Ref = ref(false)
 const itemCardTransition: Ref = ref(false)
+
+const charClicked: Ref = ref({})
+const charCardOverlay: Ref = ref(false)
+const charCardTransition: Ref = ref(false)
 
 const infoTabHeaders = [
   {
@@ -105,9 +114,12 @@ const gameUserName: Ref = ref("")
 const gamePlatform: Ref = ref(0)
 const userCard: Ref = ref({})
 
+const gameUserID = computed(() => {
+  return global_const.getPlatform(gamePlatform.value) + gameUserName.value
+})
 
 const getAccountAlert = computed(() => {
-  return account.getAccountAlert[global_const.getPlatform(gamePlatform.value) + gameUserName.value] || [[], []]
+  return account.getAccountAlert[gameUserID.value] || [[], []]
 })
 
 function goManage() {
@@ -129,7 +141,7 @@ function syncGameData() {
   getGameUserCard(gameUserName.value, gamePlatform.value).then((suc: any) => {
     console.log("gSuc", suc)
     account.addAccountInfo(gameUserName.value, gamePlatform.value, suc.data['baseInfo'])
-    mergeGameData(global_const.getPlatform(gamePlatform.value) + gameUserName.value, suc.data['baseInfo'])
+    mergeGameData(gameUserID.value, suc.data['baseInfo'])
     userCard.value = suc.data['userCard']
     getGameSortAlert(gameUserName.value, gamePlatform.value).then((suc: any) => {
       console.log("alerts", suc)
@@ -155,7 +167,7 @@ function syncGameData() {
 
 function legalAccount() {
   for (let x in account.accountsList) {
-    if (account.accountsList[x] === global_const.getPlatform(gamePlatform.value) + gameUserName.value) {
+    if (account.accountsList[x] === gameUserID.value) {
       return true
     }
   }
@@ -228,11 +240,42 @@ function showItemInfo(item: any) {
   }, 100)
 }
 
+function findCharByInst(inst: number) {
+  for (let x in accountInfo.value[gameUserID.value].troop.chars) {
+    if (accountInfo.value[gameUserID.value].troop.chars[x].instId === inst) {
+      return accountInfo.value[gameUserID.value].troop.chars[x]
+    }
+  }
+  return null
+}
+
+function showCharInfo(charInst: number) {
+  let char = findCharByInst(charInst)
+  if (char == null) {
+    console.log("showItemInfoNotFound", charInst)
+    return
+  }
+  console.log("showCharInfo", char)
+  charClicked.value = char
+  charCardOverlay.value = true
+  setTimeout(() => {
+    charCardTransition.value = true
+  }, 100)
+}
+
 function hideItemCard() {
   itemCardTransition.value = false
   setTimeout(() => {
     itemCardOverlay.value = false
     itemClicked.value = {}
+  }, 100)
+}
+
+function hideCharInfo() {
+  charCardTransition.value = false
+  setTimeout(() => {
+    charCardOverlay.value = false
+    charClicked.value = {}
   }, 100)
 }
 
@@ -271,7 +314,7 @@ onUnmounted(() => {
             v-show="currentTab === '#info'"
             :user-card="userCard"
             :alerts="getAccountAlert"
-            :game-user-name="global_const.getPlatform(gamePlatform) + gameUserName"
+            :game-user-name="gameUserID"
         />
         <GameInventory
             v-if="inventoryLoaded"
@@ -285,7 +328,7 @@ onUnmounted(() => {
             v-show="currentTab === '#troop'"
             :game-user-name="gameUserName"
             :game-platform="gamePlatform"
-            :clicker="showItemInfo"
+            :clicker="showCharInfo"
         />
         <GameAnalytics
             v-if="analyticsLoaded"
@@ -342,6 +385,20 @@ onUnmounted(() => {
       <GameItemInfoCard
           class="transform fixed top-[4.25rem] right-4 ring-1 ring-secondary"
           :select-item="itemClicked"
+          :game-user-name="gameUserName"
+          :game-platform="gamePlatform"
+      />
+    </TransitionOverlay>
+  </div>
+  <div class="overlay bg-base-200 bg-opacity-40" v-if="charCardOverlay">
+    <div class="fixed w-full h-full left-0 top-0" @click="hideCharInfo"/>
+    <TransitionOverlay
+        :show="charCardTransition"
+        transition-name="slide-left-to-right"
+    >
+      <GameCharInfoCard
+          class="transform fixed top-[4.25rem] right-4 ring-1 ring-secondary"
+          :select-item="charClicked"
           :game-user-name="gameUserName"
           :game-platform="gamePlatform"
       />

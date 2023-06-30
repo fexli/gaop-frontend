@@ -246,6 +246,8 @@ function mergeColorTo(o, n) {
   m.options = mergeOptionFrom(n, o)
   return m
 }
+
+const s = `</br>`
 </script>
 <template>
   <span v-if="inner && inner.length !== 0">
@@ -260,6 +262,9 @@ function mergeColorTo(o, n) {
       />
     </template>
   </span>
-  <span v-else class="font-sans" :style="parseColorStyle(mergeColorTo(prevColor,color))">{{ log }}</span>
+  <span
+      v-else class="font-sans"
+      :style="parseColorStyle(mergeColorTo(prevColor,color))" v-html="log.replaceAll('\n', s)"
+  />
 </template>
 

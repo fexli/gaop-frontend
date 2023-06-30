@@ -839,7 +839,7 @@ function displayRemarks(remark: Record<string, any>): string {
                 </td>
                 <td v-if="!currentFreezeType">
                   <h4 v-if="i.finalLog === null">-</h4>
-                  <h4 v-else class="nowrap-hidden-ellipsis ">
+                  <h4 v-else class="nowrap-hidden-ellipsis h-[21px]">
                     <span class="font-mono">[{{formatter.formatDate(i.finalLog.ts*1000,"HH:mm:ss")}}]</span>
                     <span>[</span>
                     <span

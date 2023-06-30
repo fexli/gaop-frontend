@@ -7,6 +7,7 @@ defineProps({
     type: [Number, String]
   },
   charId: String,
+  equip: String,
   skinId: String,
   skillId: String,
   potential: {
@@ -26,6 +27,11 @@ defineProps({
     type: [Number, String]
   },
 })
+
+function findEquip(eq: string) {
+  return eq ? global_const.gameData.uniequipTable['equipDict'][eq] : null
+}
+
 </script>
 <template>
   <div style="width: 12vw;height: 23vw" class="card m-1">
@@ -92,10 +98,12 @@ defineProps({
       {{ level }}
     </div>
     <img
+        v-if="potential !== 0"
         :src="'static\\charframe\\potential_frame.png'"
         alt="potframe"
         class="char-image char-image__potential"/>
     <img
+        v-if="potential !== 0"
         :src="'static\\charframe\\potential_'+potential+'.png'"
         alt="pot"
         class="char-image char-image__potential"/>
@@ -103,6 +111,12 @@ defineProps({
         :src="global_const.assetServer+'skills/skill_icon_'+skillId+'.png'"
         alt="skico"
         class="char-image char-image__skill"/>
+    <div
+        v-if="equip" class="char-image char-image__equip"
+        :class="findEquip(equip)['typeIcon'] === 'original' ? 'scale-[.6] mt-1' : ''"
+        style="background-repeat: no-repeat;background-position: center;background-size: contain"
+        :style="`background-image: url('${global_const.assetServer+'equiptc/'+findEquip(equip)['typeIcon']+'.png'}');`"
+    />
     <div class="char-image char-image__name">{{ global_const.gameData.characterData[charId].name }}</div>
     <div style="position:absolute;width: 100%;height: 100%" @click="clicker && clicker(inst)"></div>
   </div>
@@ -177,9 +191,10 @@ defineProps({
     height: 5.58vw
 
   &__potential
-    left: 5.74vw
-    top: 18.45vw
-    width: 1.94vw
+    right: 1vw
+    top: 14.75vw
+    width: 2.1vw
+    background-color: rgba(0, 0, 0, 0.2)
 
 
   &__level
@@ -200,6 +215,12 @@ defineProps({
     right: 1.2vw
     top: 20.31vw
     font-size: 1.63vw
+
+  &__equip
+    right: 3.3vw
+    top: 17vw
+    width: 4vw
+    height: 4vw
 
 .proc-level
   position: absolute

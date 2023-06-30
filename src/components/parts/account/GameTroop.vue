@@ -159,8 +159,11 @@ function getSkillId(item: any) {
   return global_const.gameData.skillData[item.skills[item.defaultSkillIndex].skillId].iconId || item.skills[item.defaultSkillIndex].skillId
 }
 
-function doShowChar(char: any) {
-  console.log("show char", char) // TODO
+function doShowChar(char: number) {
+  console.log("show char", char,chars)
+  if (props.clicker) {
+    props.clicker(char)
+  }
 }
 
 watch(() => filterStar.value, () => {
@@ -173,7 +176,7 @@ watch(() => filterProf.value, () => {
 })
 
 onMounted(() => {
-  global_const.requireAssets(["character_data", "skill_data"], () => {
+  global_const.requireAssets(["character_data", "skill_data","game_const_data","uniequip_table"], () => {
     isLoading.value = false
     getTroops()
   })
@@ -222,6 +225,7 @@ onMounted(() => {
       <div v-if="finRefresh" class="flex flex-row justify-center flex-wrap">
         <CharacterFrame
             v-for="item in chars.slice((page-1)*20,page*20)" :key="item['instId']"
+            :equip="(item['currentTmpl'] ? item['tmpl'][item['currentTmpl']] : item)['currentEquip']"
             :level="item.level"
             :evolve="item.evolvePhase"
             :skill-id="getSkillId(item)"

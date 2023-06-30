@@ -1,21 +1,43 @@
 <script setup lang="ts">
 import {accountStore} from "../../../store/account";
 import {storeToRefs} from "pinia";
-import {Ref} from "vue";
+import {onMounted, Ref} from "vue";
 import FeImg from "../../element/FeImg.vue";
 import global_const from "../../../utils/global_const";
 import formatter from "../../../utils/formatter";
 
-defineProps({
+const props = defineProps({
   userCard: Object,
   gameUserName: String,
 })
 const account = accountStore();
 const {accountInfo} = storeToRefs(account)
-const warnHidden: Ref = ref(false)
+const warnHidden: Ref<Boolean> = ref(false)
+const loadComplete: Ref<Boolean> = ref(false)
+const bgp:Ref<string> = ref("center")
+
+function setCharPos() {
+  let gChar = global_const.gameData.charPosData[props.userCard!['secretary']['skin'] || '']
+  console.log("setCharPos", gChar)
+  if (gChar) {
+    //@ts-ignore
+    let x = parseInt(100 * (gChar['pv'][0] + gChar['of'][0] / gChar['sz'][0])) + '%'
+    //@ts-ignore
+    let y = parseInt(100 * (gChar['pv'][1] + gChar['of'][1] / gChar['sz'][1])) + '%'
+    console.log("setCharPos", x, y)
+    bgp.value = x + " " + y
+  }
+}
+
+onMounted(() => {
+  global_const.requireAssets(["charpack_pos"], () => {
+    setCharPos()
+    loadComplete.value = true
+  })
+})
 </script>
 <template>
-  <div class="outpacker bg-base-100 rounded-xl select-none text-white">
+  <div class="outpacker bg-base-100 rounded-xl select-none text-white" v-if="loadComplete">
     <div class="ucard-full-overlay"/>
     <div class="ucard-full-ren"/>
     <FeImg
@@ -23,6 +45,7 @@ const warnHidden: Ref = ref(false)
         :src="global_const.assetServer+'camplogo/logo_'+userCard['secretary']['camp']+'.png'"
     />
     <FeImg
+        :background-position="bgp"
         class="background-image-card-full-thin"
         :src="global_const.assetServer+'charpack/'+userCard['secretary']['skin']+'.png'"
     />
