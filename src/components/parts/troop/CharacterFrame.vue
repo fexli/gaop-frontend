@@ -1,13 +1,14 @@
 <link rel="stylesheet" href="../../../assets/fonts/aewide/aewide.css">
 <script setup lang="ts">
 import global_const from "../../../utils/global_const";
+import {GameInfoParser} from "../../../utils/gameInfoParser";
 
-defineProps({
+const props = defineProps({
   rarity: {
     type: [Number, String]
   },
   charId: String,
-  equip: String,
+  playerCharInfo: Object,
   skinId: String,
   skillId: String,
   potential: {
@@ -32,6 +33,17 @@ function findEquip(eq: string) {
   return eq ? global_const.gameData.uniequipTable['equipDict'][eq] : null
 }
 
+const gameParser = new GameInfoParser()
+
+const charData = computed(() => {
+  //@ts-ignore
+  return gameParser.findCharData(props.playerCharInfo)
+})
+
+const equip = computed(() => {
+  //@ts-ignore
+  return gameParser.charTmpl(props.playerCharInfo)['currentEquip']
+})
 </script>
 <template>
   <div style="width: 12vw;height: 23vw" class="card m-1">
@@ -67,7 +79,7 @@ function findEquip(eq: string) {
         alt="shadowrarity"
         class="char-image char-image__shadow"/>
     <img
-        :src="'static\\charframe\\icon_profession_'+global_const.gameData.characterData[charId]['profession'].toLowerCase()+'.png'"
+        :src="'static\\charframe\\icon_profession_'+charData['profession'].toLowerCase()+'.png'"
         alt="prof"
         class="char-image char-image__profession"/>
     <img

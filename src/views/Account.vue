@@ -18,6 +18,7 @@ import GameUserModule from "../components/parts/account/GameUserModule.vue";
 import TransitionOverlay from "../components/element/TransitionOverlay.vue";
 import {storeToRefs} from "pinia";
 import GameCharInfoCard from "../components/parts/account/GameCharInfoCard.vue";
+import Tab from "../components/element/Tab.vue";
 
 
 const account = accountStore();
@@ -195,6 +196,7 @@ function listenCtxUpdate() {
 }
 
 function changeTab(item: any, index: number) {
+  console.log("changeTab", item, index)
   currentTab.value = item.ref
   currentTabIndex.value = index * 9 / 4
   switch (item.ref) {
@@ -290,73 +292,64 @@ onUnmounted(() => {
 </script>
 <template>
   <div v-if="gameStart">
-    <div class="flex h-full">
-      <div class="tabs-horizontal tabs lg:tab-account">
-        <div
-            :style="`transform: translate${isLarge ? 'Y':'X'}(${currentTabIndex}rem)`"
-            class="tab-select-back absolute bg-primary w-32 h-8 mx-1 rounded-xl transition-all duration-200"
-        />
-        <template v-for="(i,k) of infoTabHeaders" v-bind:key="k">
-          <div
-              @click="changeTab(i,k)" class="tab tab-horizontal"
-              :class="currentTab === i.ref ? 'tab-active' : ''"
-          >
-            <svg class="w-6 h-6" stroke="currentColor" fill="currentColor" viewBox="0 0 24 24">
-              <path stroke-width="0.3" :d="global_const.mdiPath[i.icon]"/>
-            </svg>
-            <span>{{ translate(i.title) }}</span>
-          </div>
-        </template>
-      </div>
-      <div class="w-full lg:tab-content">
-        <GameAccountInfo
-            v-if="infoLoaded"
-            v-show="currentTab === '#info'"
-            :user-card="userCard"
-            :alerts="getAccountAlert"
-            :game-user-name="gameUserID"
-        />
-        <GameInventory
-            v-if="inventoryLoaded"
-            v-show="currentTab === '#inventory'"
-            :game-user-name="gameUserName"
-            :game-platform="gamePlatform"
-            :clicker="showItemInfo"
-        />
-        <GameTroop
-            v-if="troopLoaded"
-            v-show="currentTab === '#troop'"
-            :game-user-name="gameUserName"
-            :game-platform="gamePlatform"
-            :clicker="showCharInfo"
-        />
-        <GameAnalytics
-            v-if="analyticsLoaded"
-            v-show="currentTab === '#analytics'"
-            :game-user-name="gameUserName"
-            :game-platform="gamePlatform"
-        />
-        <GameUserModule
-            v-if="moduleLoaded"
-            v-show="currentTab === '#module'"
-            :game-user-name="gameUserName"
-            :game-platform="gamePlatform"
-        />
-        <GameLogger
-            v-if="loggerLoaded"
-            v-show="currentTab === '#logger'"
-            :game-user-name="gameUserName"
-            :game-platform="gamePlatform"
-        />
-        <GameAccountSetting
-            class="w-full"
-            v-if="settingLoaded"
-            v-show="currentTab === '#setting'"
-            :game-user-name="gameUserName"
-            :game-platform="gamePlatform"
-        />
-      </div>
-    </div>
+    <Tab
+        :change-tab="changeTab"
+        :current-tab="currentTab"
+        :current-tab-index="currentTabIndex"
+        :info-headers="infoTabHeaders"
+        :large-mode="isLarge"
+    >
+      <template #content>
+        <div class="w-full lg:ml-[9.25rem]">
+          <GameAccountInfo
+              v-if="infoLoaded"
+              v-show="currentTab === '#info'"
+              :user-card="userCard"
+              :alerts="getAccountAlert"
+              :game-user-name="gameUserID"
+          />
+          <GameInventory
+              v-if="inventoryLoaded"
+              v-show="currentTab === '#inventory'"
+              :game-user-name="gameUserName"
+              :game-platform="gamePlatform"
+              :clicker="showItemInfo"
+          />
+          <GameTroop
+              v-if="troopLoaded"
+              v-show="currentTab === '#troop'"
+              :game-user-name="gameUserName"
+              :game-platform="gamePlatform"
+              :clicker="showCharInfo"
+          />
+          <GameAnalytics
+              v-if="analyticsLoaded"
+              v-show="currentTab === '#analytics'"
+              :game-user-name="gameUserName"
+              :game-platform="gamePlatform"
+          />
+          <GameUserModule
+              v-if="moduleLoaded"
+              v-show="currentTab === '#module'"
+              :game-user-name="gameUserName"
+              :game-platform="gamePlatform"
+          />
+          <GameLogger
+              v-if="loggerLoaded"
+              v-show="currentTab === '#logger'"
+              :game-user-name="gameUserName"
+              :game-platform="gamePlatform"
+          />
+          <GameAccountSetting
+              class="w-full"
+              v-if="settingLoaded"
+              v-show="currentTab === '#setting'"
+              :game-user-name="gameUserName"
+              :game-platform="gamePlatform"
+          />
+        </div>
+      </template>
+    </Tab>
   </div>
   <div v-else-if="isLegalAccount" class="rounded-xl bg-base-200 bg-opacity-80">
     <NotFound

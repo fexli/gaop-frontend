@@ -42,7 +42,7 @@ export class GameInfoParser {
     }
 
     constructor() {
-        global_const.requireAsset("game_const_data", () => {
+        global_const.requireAssets(["game_const_data", "character_data", "char_patch_table","range_table"], () => {
             GameInfoParser.onComplete.value = true
         })
     }
@@ -107,19 +107,22 @@ export class GameInfoParser {
         return /{(?<type>.+?)(?<format>:.+?)?}/gm.exec(txt)
     }
 
+    findBlackboard(blackboard: Record<string, any>[], type: string) {
+        for (let i = 0; i < blackboard.length; i++) {
+            if (blackboard[i].key === type) {
+                return blackboard[i]
+            }
+        }
+        return {key: undefined, value: undefined, valueStr: undefined}
+    }
+
     replaceSkillText(type: string, format: string, blackboard: Record<string, any>[]): string {
         let neg = false
         if (type[0] === '-') {
             neg = true
             type = type.slice(1)
         }
-        let bb = {} as Record<string, any>
-        for (let i = 0; i < blackboard.length; i++) {
-            if (blackboard[i].key === type) {
-                bb = blackboard[i]
-                break
-            }
-        }
+        let bb = this.findBlackboard(blackboard, type)
         if (bb.key === undefined) {
             return `!${type}%`
         }
@@ -142,12 +145,9 @@ export class GameInfoParser {
         while (res != null) {
             //@ts-ignore
             txt = txt.slice(0, res.index) + this.replaceSkillText(res.groups.type, res.groups.format || "", blackboard) + txt.slice(res.index + res[0].length)
-            // console.log('after', res, txt)
             res = this.reMatchSkillText(txt)
-            // console.log("res->", res)
         }
-        txt = txt.replaceAll("\\n","</br>")
-        // console.log("compileSkillBlackboard", txt)
+        txt = txt.replaceAll("\\n", "</br>")
         return txt
     }
 
@@ -183,22 +183,35 @@ export class GameInfoParser {
         let data = []
         let i = 0
         for (let skill of charData['skills']) {
+            if (!this.charTmpl(playerCharInfo)['skills'][i]) {
+                continue
+            }
             let cur = new SkillObject(
                 skillData[skill.skillId],
                 skill.skillId,
                 this.charTmpl(playerCharInfo)['skills'][i]['specializeLevel'],
-                this.charTmpl(playerCharInfo).mainSkillLvl + this.charTmpl(playerCharInfo)['skills'][i]['specializeLevel'],
+                playerCharInfo.mainSkillLvl + this.charTmpl(playerCharInfo)['skills'][i]['specializeLevel'],
                 this.charTmpl(playerCharInfo)['skills'][i]['unlock'],
             )
             i += 1
             data.push(cur)
         }
-        console.log(data)
         return data
     }
 
     charTmpl(charInfo: Record<string, any>): Record<string, any> {
         return charInfo['currentTmpl'] ? charInfo['tmpl'][charInfo['currentTmpl']] : charInfo
+    }
+
+    findCharData(playerCharInfo: Record<string, any>): Record<string, any> {
+        if (playerCharInfo.currentTmpl) {
+            return global_const.gameData.charPatchTable['patchChars'][playerCharInfo.currentTmpl] || {} as Record<string, any>
+        }
+        return global_const.gameData.characterData[playerCharInfo.charId] || {} as Record<string, any>
+    }
+
+    getRangeData(rangeId: string) {
+        return global_const.gameData.rangeTable[rangeId]
     }
 }
 

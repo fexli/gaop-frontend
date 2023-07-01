@@ -128,6 +128,18 @@ const load_list: LoadingList[] = [
     loc: 'gamedata/excel/skin_table.json',
   } as LoadingList,
   {
+    name: 'char_patch_table',
+    title: '升变数据',
+    field: 'charPatchTable',
+    loc: 'gamedata/excel/char_patch_table.json',
+  } as LoadingList,
+  {
+    name: 'range_table',
+    title: '范围数据',
+    field: 'rangeTable',
+    loc: 'gamedata/excel/range_table.json',
+  } as LoadingList,
+  {
     name: 'gacha_data',
     title: '卡池数据',
     field: 'gachaData',

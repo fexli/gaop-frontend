@@ -151,8 +151,8 @@ function setFilterStar(i: number) {
 function getSkillId(item: any) {
   if (item['currentTmpl']) {
     let tmpl = item['tmpl'][item['currentTmpl']]
-    console.log("tmpl ct", tmpl)
-    return global_const.gameData.skillData[tmpl.skills[tmpl.defaultSkillIndex].skillId].iconId || 'skchr_empty'
+    console.log("tmpl ct", tmpl,tmpl.skills[tmpl.defaultSkillIndex].skillId)
+    return global_const.gameData.skillData[tmpl.skills[tmpl.defaultSkillIndex].skillId].iconId || tmpl.skills[tmpl.defaultSkillIndex].skillId || 'skchr_empty'
   }
   if (item.defaultSkillIndex === -1)
     return 'skchr_empty'
@@ -176,7 +176,7 @@ watch(() => filterProf.value, () => {
 })
 
 onMounted(() => {
-  global_const.requireAssets(["character_data", "skill_data","game_const_data","uniequip_table"], () => {
+  global_const.requireAssets(["character_data", "skill_data","game_const_data","uniequip_table","char_patch_table"], () => {
     isLoading.value = false
     getTroops()
   })
@@ -225,15 +225,15 @@ onMounted(() => {
       <div v-if="finRefresh" class="flex flex-row justify-center flex-wrap">
         <CharacterFrame
             v-for="item in chars.slice((page-1)*20,page*20)" :key="item['instId']"
-            :equip="(item['currentTmpl'] ? item['tmpl'][item['currentTmpl']] : item)['currentEquip']"
             :level="item.level"
-            :evolve="item.evolvePhase"
+            :evolve="item['evolvePhase']"
             :skill-id="getSkillId(item)"
             :skin-id="item.skin"
             :char-id="item.charId"
-            :potential="item.potentialRank"
+            :player-char-info="item"
+            :potential="item['potentialRank']"
             :rarity="item.rarity"
-            :inst="item.instId"
+            :inst="item['instId']"
             :level-percent="item.levelPercent"
             :clicker="doShowChar"
         />

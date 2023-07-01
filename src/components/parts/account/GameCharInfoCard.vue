@@ -11,6 +11,7 @@ import {getTheme} from "../../../plugins/theme";
 import {GameInfoParser} from "../../../utils/gameInfoParser";
 import TalentTable from "../charInfo/TalentTable.vue";
 import SkillTable from "../charInfo/SkillTable.vue";
+import CharRangeVision from "../charInfo/CharRangeVision.vue";
 
 const {getAccountItemUse, setAccountItemUse} = accountStore();
 
@@ -51,7 +52,7 @@ const favors = [0, 8, 16, 28, 40, 56, 72, 92, 112, 137, 162, 192, 222, 255, 288,
 ]
 
 const charData = computed(() => {
-  return global_const.gameData.characterData[props.selectItem.charId] || {} as Record<string, any>
+  return gameParser.findCharData(props.selectItem)
 })
 const levelUpCost = computed(() => {
   return global_const.gameData.gameConstData['characterExpMap'][props.selectItem.evolvePhase][props.selectItem.level - 1]
@@ -101,7 +102,17 @@ function skillDuration(skillId: string, currentLevel: number): string {
   let skData = global_const.gameData.skillData[skillId]['levels'][currentLevel - 1]
   let duType = skData['durationType']
   if (duType === 0) {
-    return parseInt(skData['duration']).toString()
+    let dd = parseInt(skData['duration'])
+    if (dd <= 0) {
+      let data = gameParser.findBlackboard(skData['blackboard'], 'duration')
+      if (data.key) {
+        dd = parseInt(data.value)
+      }
+    }
+    if (dd <= 0) {
+      return '-'
+    }
+    return dd.toString()
   }
   return "弹药"
 }
@@ -249,7 +260,7 @@ function setCharPos() {
     //@ts-ignore
     bgCharScale.value = parseInt(200 * gChar['sz'][0] / 2048)
     //@ts-ignore
-    bgCharLeft.value = (parseInt(100 * (gChar['pv'][0] - 0.5 - (gChar['of'][0] / gChar['sz'][0]) / 2)) - ((bgCharScale.value - 100) / 2))
+    bgCharLeft.value = (parseInt(100 * (gChar['pv'][0] - 0.5 + (gChar['of'][0] / gChar['sz'][0]))) - ((bgCharScale.value - 100) / 2))
     //@ts-ignore
     bgCharTop.value = (parseInt(100 * (gChar['pv'][1] - 0.5 - (gChar['of'][1] / gChar['sz'][1]))) - ((bgCharScale.value - 100) / 2))
     console.log("setCharPos", bgCharLeft.value, bgCharTop.value, bgCharScale.value)
@@ -423,12 +434,12 @@ onMounted(() => {
                 </div>
               </div>
               <div
-                  style="top:-10rem;"
+                  style="top:-12.5rem;"
                   class="delay-200 transition-all p-1 px-2 dropdown-content flex flex-col items-end"
               >
                 <div
                     class="card bg-base-100 rounded-md p-0.5 px-2 ring-primary ring-1"
-                    v-html="gameParser.compileSkillBlackboard(gameParser.compileDescRichText(k.skill.levels[k.current].description,'',true),k.skill.levels[k.current].blackboard)"
+                    v-html="gameParser.compileSkillBlackboard(gameParser.compileDescRichText(k.skill.levels[k.current-1].description,'',true),k.skill.levels[k.current-1].blackboard)"
                 />
                 <SkillTable
                     :game-parser="gameParser"
@@ -512,6 +523,7 @@ onMounted(() => {
                       :game-parser="gameParser"
                       :talent-obj="k"
                   />
+                  <div class="card bg-base-100 rounded-md p-0.5 px-2 ring-primary ring-1">模组信息在这里添加/覆写</div>
                 </div>
               </div>
             </template>
@@ -523,7 +535,7 @@ onMounted(() => {
     <!--      左下角左侧内容-->
     <div class="absolute flex flex-col-reverse left-2.5 bottom-2.5 ma-3">
       <div class="flex flex-row">
-        <div class="outrd">
+        <div class="outrd opacity-70">
           <img
               class="h-[4.5rem] w-[4.5rem]"
               :style="`filter: invert(${getTheme() ? '0' : '1'})`"
@@ -531,13 +543,19 @@ onMounted(() => {
               alt="prof"
           />
         </div>
-        <div class="ml-2 h-[4.5rem] w-[7.5rem] flex flex-col-reverse outrd">
-          <div class="bottom-1 w-full text-center">攻击范围</div>
-          <div class="w-full text-center text-3xl mb-1">
-            RG{{ charData["phases"][selectItem['evolvePhase']]["rangeId"] }}
+        <div class="ml-2 h-[4.5rem] w-[7.5rem] flex flex-col-reverse outrd opacity-90">
+          <div class="bottom-1 w-full text-center">
+            攻击范围({{gameParser.getRangeData(charData['phases'][selectItem['evolvePhase']]['rangeId']).id}})
+          </div>
+          <div class="w-full text-center -mb-1 h-16 flex items-center justify-center">
+            <CharRangeVision
+                :max-width-px="120"
+                :max-height-px="46"
+                :range-data="gameParser.getRangeData(charData['phases'][selectItem['evolvePhase']]['rangeId'])"
+            />
           </div>
         </div>
-        <div class="ml-2" style="font-size: 15px">
+        <div class="ml-2 opacity-90" style="font-size: 15px">
           <div class="outrd h-5 w-[7.5rem] text-center">
             {{ position[charData.position] }}
           </div>
@@ -681,7 +699,7 @@ onMounted(() => {
   background-position: center center
 
 .outrd
-  @apply bg-base-100 opacity-70
+  @apply bg-base-100
   outline: #333333 double
 
 .attr-fd

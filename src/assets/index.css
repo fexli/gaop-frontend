@@ -67,7 +67,30 @@
         @apply fixed;
     }
 
-    .tab-content {
-        @apply ml-[9.25rem];
+    .tabs-horizontal {
+        @apply flex flex-col justify-start items-start bg-base-200 rounded-xl py-2 px-1;
+        /*fixed so no need for mr-1*/
+    }
+
+    .tabs-verticle {
+        @apply flex flex-row justify-around items-start bg-base-200 rounded-xl py-2 px-1 mb-1;
+    }
+
+    .tab-horizontal {
+        @apply p-0 mx-1 text-base rounded-xl flex w-32 h-8 mt-0 gap-1 px-1;
+        justify-content: flex-start;
+    }
+
+    .tab-horizontal:not(:last-child) {
+        @apply mb-1;
+    }
+
+    .tab-verticle {
+        @apply flex content-center p-1 px-2 m-1 h-12 text-base rounded-xl w-24;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .tab-active.tab-verticle.tab {
+        @apply rounded-md bg-primary
     }
 }
