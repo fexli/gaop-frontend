@@ -334,6 +334,7 @@ const profNick = {
     SPECIAL: "特种",
     WARRIOR: "近卫",
     TOKEN: "召唤物",
+    TRAP: "陷阱",
     "": "未筛选",
 } as Record<string, string>
 

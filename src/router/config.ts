@@ -46,6 +46,37 @@ export const publicRoute: RouteRecordRaw[] = [
         ]
     },
     {
+        path: '/db',
+        component: () => import('../components/layouts/LayoutDatabase.vue'),
+        meta: {
+            title: 'DataBase'
+        },
+        redirect: '/db/summary',
+        props: {
+            hidden: false,
+        },
+        children: [
+            {
+                path: '/db/summary',
+                name: 'ark_db_2',
+                component: () => import("../views/ArkDB.vue"),
+                meta: {
+                    title: 'ark_db_2',
+                },
+                children: [],
+            },
+            {
+                path: '/db/char/:charId',
+                name: 'ark_db_char',
+                component: () => import("../components/parts/arkdb/CharDBInfo.vue"),
+                meta: {
+                    title: 'ark_db_char',
+                },
+                children: [],
+            },
+        ]
+    },
+    {
         path: '/404',
         name: '404',
         meta: {
@@ -80,6 +111,9 @@ export const protectedRoute: RouteRecordRaw[] = [
             title: 'home',
             group: 'apps',
             icon: ''
+        },
+        props: {
+            default: true,
         },
         redirect: '/dashboard',
         children: [
@@ -250,5 +284,5 @@ export const protectedRoute: RouteRecordRaw[] = [
                 },
             },
         ]
-    }
+    },
 ]

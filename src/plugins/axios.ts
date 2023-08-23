@@ -3,7 +3,17 @@ import {createToast} from "mosha-vue-toastify";
 import {authStore} from "../store/auth";
 import {router} from "../router/router";
 import {useI18n} from "vue-next-i18n";
+import JSEncrypt from 'jsencrypt'
 
+const encrypt = new JSEncrypt();
+encrypt.setPublicKey("-----BEGIN RSA PUBLIC KEY-----" +
+    "MIIBCgKCAQEA+uDZWCI6g/D2lvui2LI0DxxTrHBrPhRzhB6kcP55/R+aC96U0jjDHJ" +
+    "wpKxdUcUQinjQgSz2VD/pdTcDUCfC+JDEkLWzapyv8eXUEccSiX/oE2VMPhQ4HwOHP" +
+    "mUXos0HP7M9/z4xgx57Mm1T2GFLc8XvBrlMMNZpTxm82VdLtYLJrOGahdZRC12m2Ys" +
+    "cbWR+NkF+4hki8wMpyvCoxEh5DdsTtpHfaqzxzjhDwvwGdVcywSSpUmw+Vn5lxkujp" +
+    "l1hM5IfBlx2QEaKewsNuNj3fZq01hOmRQc2RiZljQyO0/+HPNprHanNWFB2DINulOv" +
+    "9kbZLtoigk29PHACYkd8grvQIDAQAB" +
+    "-----END RSA PUBLIC KEY-----")
 const service = axios.create({
     baseURL: localStorage.getItem('host') || "https://akapi.aopcore.com/",
     timeout: 50000,
@@ -67,6 +77,7 @@ function post(url: string, params: object = {}) {
     return new Promise((resolve, reject) => {
         service.post(url, params)
             .then(response => {
+                console.log("response", response)
                 resolve(response.data);
             }, err => {
                 if (err.response === undefined) {

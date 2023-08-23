@@ -22,6 +22,7 @@ import SettingBtn from "../settings/SettingBtn.vue";
 import AutoBattleMapEdit from "../settings/AutoBattleMapEdit.vue";
 import {parseSingleBattleParamToStr} from "../../../utils/autoBattleMapProc";
 import TransitionOverlay from "../../element/TransitionOverlay.vue";
+import RecruitTypeEdit from "../settings/RecruitTypeEdit.vue";
 
 const account = accountStore();
 const {gameAccountLi, accountInfo} = storeToRefs(account)
@@ -51,9 +52,11 @@ const backedSettings: Ref = ref({}) // 服务器返回的设置数据的备份
 
 const resetOverlay: Ref = ref(false) // 重置确认弹窗
 const autoBattleOverlay: Ref = ref(false) // 自动战斗地图设置弹窗
+const recruitAutoFullTypeOverlay: Ref = ref(false) // 公招设置类型弹窗
 
 const defaultSettings: Ref = ref({
   "accelerateSlot": null,
+  "act27sideStrategy": null,
   "apOverflowBuildingCost": null, // TODO
   "apOverflowCheck": null, // TODO
   "apReserve": null,
@@ -84,6 +87,7 @@ const defaultSettings: Ref = ref({
   "pauseMapAttack": null,
   "receiveMail": null,
   "recruitAutoFull": null,
+  "recruitAutoFullType": null,
   "recruitForceRenewCnt": null,
   "recruitIgnoreRobot": null,
   "recruitReserve": null,
@@ -117,6 +121,14 @@ function showAutoBattle() {
 
 function closeAutoBattleOverlay() {
   autoBattleOverlay.value = false
+}
+
+function showRecruitAutofull() {
+  recruitAutoFullTypeOverlay.value = true
+}
+
+function closeRecruitAutofullOverlay() {
+  recruitAutoFullTypeOverlay.value = false
 }
 
 
@@ -543,7 +555,7 @@ onUnmounted(() => {
             </template>
           </SettingBtn>
           <div class="divider m-0">
-            <h1 class="text-2xl ml-1">升级设置</h1>
+            <h1 class="text-2xl ml-1">商店设置</h1>
           </div>
           <Slider
               :settings="valuedSettings" field="shopBuyBefore" title="提前购买商店内容"
@@ -558,8 +570,21 @@ onUnmounted(() => {
               </Explain>
             </template>
           </Slider>
+          <Slider
+              :settings="valuedSettings" field="act27sideStrategy" title="汐斯塔摆摊策略"
+              :max="2" :min="0"
+          >
+            <template #extra>
+              <Explain>
+                <template #explain>
+                  4周年夏活汐斯塔摆摊策略，0为不摆摊，1为无脑激进，2为激进+偷窥
+                  <span class="text-info">提示：可通过滚轮在数值上滚动调整大小</span>
+                </template>
+              </Explain>
+            </template>
+          </Slider>
           <div class="divider m-0">
-            <h1 class="text-2xl ml-1">商店设置</h1>
+            <h1 class="text-2xl ml-1">升级设置</h1>
           </div>
           <Toggle :settings="valuedSettings" field="autoEvolveChar" title="自动升级干员">
             <template #extra>
@@ -767,6 +792,19 @@ onUnmounted(() => {
               </Explain>
             </template>
           </Toggle>
+          <SettingBtn
+              :settings="valuedSettings" field="recruitAutoFullType"
+              :disabled="!valuedSettings['recruitAutoFull']"
+              title="自动公招类型" title-btn=">>>>点我修改<<<<" :clicker="showRecruitAutofull"
+          >
+            <template #extra>
+              <Explain>
+                <template #explain>
+                  设定自动公招类型
+                </template>
+              </Explain>
+            </template>
+          </SettingBtn>
           <Toggle
               :disabled="!valuedSettings['recruitAutoFull'] || valuedSettings['recruitIgnoreRobot'] == null"
               :settings="valuedSettings" field="recruitIgnoreRobot" title="公招忽略机器人">
@@ -858,6 +896,16 @@ onUnmounted(() => {
           :close="closeAutoBattleOverlay"
           :settings="valuedSettings"
           field="autoBattleMap"
+      />
+    </TransitionOverlay>
+    <TransitionOverlay
+        :show="recruitAutoFullTypeOverlay"
+        class="overlay bg-base-200 bg-opacity-40"
+    >
+      <RecruitTypeEdit
+          :close="closeRecruitAutofullOverlay"
+          :settings="valuedSettings"
+          field="recruitAutoFullType"
       />
     </TransitionOverlay>
   </div>

@@ -79,7 +79,7 @@ const equip = computed(() => {
         alt="shadowrarity"
         class="char-image char-image__shadow"/>
     <img
-        :src="'static\\charframe\\icon_profession_'+charData['profession'].toLowerCase()+'.png'"
+        :src="'static\\charframe\\icon_profession_'+(charData['profession'] || 'unknown').toLowerCase()+'.png'"
         alt="prof"
         class="char-image char-image__profession"/>
     <img

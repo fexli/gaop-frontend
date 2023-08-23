@@ -392,8 +392,6 @@ onUnmounted(() => {
       <GameCharInfoCard
           class="transform fixed top-[4.25rem] right-4 ring-1 ring-secondary"
           :select-item="charClicked"
-          :game-user-name="gameUserName"
-          :game-platform="gamePlatform"
       />
     </TransitionOverlay>
   </div>

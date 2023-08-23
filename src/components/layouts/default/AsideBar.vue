@@ -37,7 +37,7 @@ watch(menuService.close, (target) => {
   }
 })
 
-const AsideCtx = toRef(menuService.menus.value[1], "children")
+const AsideCtx = toRef(menuService.menus.value[2], "children")
 </script>
 
 <template>

@@ -9,11 +9,9 @@ export const en = {
         error_reconn: 'the WS connection has been disconnect, trying to reconnect',
         error_reconn_t: 'the WS connection has been disconnect, reconnect after {0} second',
     },
-    admin: {
-        announce: {
-            success: 'System announce update successfully！',
-            error: 'System announce update failed: {0}',
-        }
+    adminannounce: {
+        success: 'System announce update successfully！',
+        error: 'System announce update failed: {0}',
     },
     game: {
         troop: {
@@ -163,7 +161,7 @@ export const en = {
             recruit_finish: 'You have {0} recruitment completed. Remember to hire in time~',
             mission_d: 'You haven\'t finished all your tasks today. You can\'t rest yet~',
             mission_w: 'Your tasks have not been completed this week. Please check and complete them in time',
-            climb_tower:'Your climb tower has not been completed!',
+            climb_tower: 'Your climb tower has not been completed!',
         }
     },
     account: {
@@ -293,6 +291,7 @@ export const en = {
         test_spine: 'Spine',
         admin: 'Admin',
         ark_db: 'ArkDataBase',
+        script: 'ModuleScript',
         account: {
             dashboard: 'Dashboard',
         },

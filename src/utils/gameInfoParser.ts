@@ -6,6 +6,13 @@ export class GameInfoParser {
 
     public static NC = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
 
+    public position = {
+        MELEE: "近战位",
+        RANGED: "远程位",
+        ALL: "近/远程位",
+        NONE: "-",
+    }
+
     public charAttrKeyNames = {
         "maxHp": "生命",
         "atk": "攻击",
@@ -42,7 +49,12 @@ export class GameInfoParser {
     }
 
     constructor() {
-        global_const.requireAssets(["game_const_data", "character_data", "char_patch_table","range_table"], () => {
+        global_const.requireAssets([
+            "game_const_data", "character_data",
+            "char_patch_table", "range_table",
+            "charpack_pos", "uniequip_table",
+            "skill_data"
+        ], () => {
             GameInfoParser.onComplete.value = true
         })
     }
@@ -159,6 +171,10 @@ export class GameInfoParser {
         return data
     }
 
+    parseUnlockCondSkill(skill: Record<string, any>): string {
+        return `精${skill['unlockCond']['phase']}开放`
+    }
+
     parseTalentCurrent(charData: Record<string, any>, playerCharInfo: Record<string, any>): TalentObject[] {
         let data = []
         for (let talent of charData['talents']) {
@@ -180,6 +196,7 @@ export class GameInfoParser {
     }
 
     parseSkillCurrent(charData: Record<string, any>, skillData: Record<string, any>, playerCharInfo: Record<string, any>): SkillObject[] {
+        console.log(charData, skillData, playerCharInfo)
         let data = []
         let i = 0
         for (let skill of charData['skills']) {
@@ -196,6 +213,7 @@ export class GameInfoParser {
             i += 1
             data.push(cur)
         }
+        console.log("parseSkillCurrent", data)
         return data
     }
 
@@ -212,6 +230,76 @@ export class GameInfoParser {
 
     getRangeData(rangeId: string) {
         return global_const.gameData.rangeTable[rangeId]
+    }
+
+    skillDuration(skillId: string, currentLevel: number): string {
+        let skData = global_const.gameData.skillData[skillId]['levels'][currentLevel - 1]
+        let duType = skData['durationType']
+        if (duType === 0) {
+            let dd = parseInt(skData['duration'])
+            if (dd <= 0) {
+                let data = this.findBlackboard(skData['blackboard'], 'duration')
+                if (data.key) {
+                    dd = parseInt(data.value)
+                }
+            }
+            if (dd <= 0) {
+                return '-'
+            }
+            return dd.toString()
+        }
+        return "弹药"
+    }
+
+    parseSkillType(skillType: number) {
+        switch (skillType) {
+            case 0:
+                return "被动触发"
+            case 1:
+                return "手动触发"
+            case 2:
+                return "自动触发"
+            default:
+                return `SkillType!${skillType}`
+        }
+    }
+    parseSkillTypeColor(skillType: number) {
+        switch (skillType) {
+            case 0:
+                return "gray"
+            case 1:
+                return "darkcyan"
+            case 2:
+                return "darkgreen"
+            default:
+                return `orangered`
+        }
+    }
+
+    parseSpType(spType: number) {
+        switch (spType) {
+            case 0:
+                return "自动回复"
+            case 1:
+                return "攻击回复"
+            case 2:
+                return "受击回复"
+            default:
+                return `SpType!${spType}`
+        }
+    }
+
+    parseSpTypeColor(spType: number) {
+        switch (spType) {
+            case 0:
+                return "green"
+            case 1:
+                return "darkorange"
+            case 2:
+                return "blue"
+            default:
+                return `orangered`
+        }
     }
 }
 

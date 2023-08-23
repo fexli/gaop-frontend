@@ -174,14 +174,16 @@ export const accountStore = defineStore("account", {
                             running++
                     }
                     console.log(accountTree, menu.menus.value[1].children)
-                    // @ts-ignore
-                    for (let child of menu.menus.value[1].children) {
-                        if (child.path === '/account') {
-                            console.log("Inject accountTree success", accountTree)
-                            child.children = accountTree
-                            break
+                    for (let menuId in menu.menus.value) {
+                        for (let child of menu.menus.value[menuId].children || []) {
+                            if (child.path === '/account') {
+                                console.log("Inject accountTree success", accountTree)
+                                child.children = accountTree
+                                break
+                            }
                         }
                     }
+
                     this.accountsList = accounts
                     this.inRunningAccount = running
                     console.log("try get me")

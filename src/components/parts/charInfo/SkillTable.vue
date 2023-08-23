@@ -11,6 +11,18 @@ const props = defineProps({
     type: GameInfoParser,
     default: () => new GameInfoParser()
   },
+  detailed: {
+    type: Boolean,
+    default: false
+  },
+  noDescription: {
+    type: Boolean,
+    default: false
+  },
+  withDetail: {
+    type: Boolean,
+    default: false
+  },
 })
 
 function LevelToCnName(l: number): string {
@@ -41,7 +53,7 @@ function LevelToCnName(l: number): string {
 }
 </script>
 <template>
-  <div class="card bg-base-100 rounded-md mt-1 w-[40rem] ring-primary ring-1 flex items-end">
+  <div>
     <table class="table table-zebra table-compact w-[40rem]">
       <thead>
       <tr>
@@ -49,20 +61,59 @@ function LevelToCnName(l: number): string {
         <th style="width: 5.5rem;white-space: break-spaces!important;" class="lh-.8 text-center">名称</th>
         <th style="width: 20rem;white-space: break-spaces!important;" class="lh-.8">描述</th>
         <!--        <th style="width: 6.5rem;white-space: break-spaces!important;" class="lh-.8">解锁条件</th>-->
-        <th style="width: 4rem;white-space: break-spaces!important;" class="lh-.8 text-center">说明</th>
+        <th v-if="!noDescription" style="width: 4rem;white-space: break-spaces!important;" class="lh-.8 text-center">
+          说明
+        </th>
+        <template v-if="withDetail">
+          <th style="width: 2.5rem;white-space: break-spaces!important;" class="lh-.8 text-center">
+            <div
+                class="absolute -ml-[0.82rem] -mt-[0.35rem]"
+                style="height: 23px;width: 16px"
+                :style="`background-image: url('/static/charframe/charcommon/image_sp_start_bkg.png');
+                  background-position: left center;background-repeat: no-repeat;background-size: cover`"
+            />
+            <span class="pr-0.5" style="background-color: rgb(67,67,67)">初始</span>
+
+          </th>
+          <th style="width: 2.5rem;white-space: break-spaces!important;" class="lh-.8 text-center">
+            <div
+                class="absolute -ml-[0.82rem] -mt-[0.35rem]"
+                style="height: 23px;width: 16px"
+                :style="`background-image: url('/static/charframe/charcommon/image_sp_cost_bkg.png');
+                  background-position: left center;background-repeat: no-repeat;background-size: cover`"
+            />
+            <span class="pr-0.5" style="background-color: rgb(67,67,67)">需求</span>
+          </th>
+          <th style="width: 2.5rem;white-space: break-spaces!important;" class="lh-.8 text-center">
+            <div
+                class="absolute -ml-[0.89rem] -mt-[0.35rem]"
+                style="height: 23px;width: 16px"
+                :style="`background-image: url('/static/charframe/charcommon/image_sp_keep_bkg.png');
+                  background-position: left center;background-repeat: no-repeat;background-size: cover`"
+            />
+            <span class="pr-0.5" style="background-color: rgb(67,67,67)">持续</span>
+          </th>
+        </template>
       </tr>
       </thead>
       <tbody>
       <template v-for="(ani,i) in skillObj.skill.levels">
-        <tr v-if="[0,3,6,7,8,9].indexOf(i) !== -1 || i === skillObj.current-1">
+        <tr v-if="detailed || [0,3,6,7,8,9].indexOf(i) !== -1 || i === skillObj.current-1">
           <td style="white-space: break-spaces!important;" class="lh-.8 text-center">{{ LevelToCnName(i) }}</td>
           <td style="white-space: break-spaces!important;" class="lh-.8 text-center">{{ ani.name }}</td>
           <td style="white-space: break-spaces!important;" class="lh-.8"
               v-html="gameParser.compileSkillBlackboard(gameParser.compileDescRichText(ani.description, '', false),ani['blackboard'])">
           </td>
-          <td style="white-space: break-spaces!important;" class="lh-.8 text-center">
+          <td v-if="!noDescription" style="white-space: break-spaces!important;" class="lh-.8 text-center">
             {{ i === skillObj.current - 1 ? skillObj.isUnlock ? '当前生效' : '未解锁' : '' }}
           </td>
+          <template v-if="withDetail">
+            <td style="white-space: break-spaces!important;" class="lh-.8 text-center p-0 m-0">{{ ani.spData.initSp }}</td>
+            <td style="white-space: break-spaces!important;" class="lh-.8 text-center p-0 m-0">{{ ani.spData.spCost }}</td>
+            <td style="white-space: break-spaces!important;" class="lh-.8 text-center p-0 m-0">
+              {{ gameParser.skillDuration(skillObj.skillId, i+1) }}
+            </td>
+          </template>
         </tr>
       </template>
       </tbody>

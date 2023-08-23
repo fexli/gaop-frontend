@@ -66,7 +66,7 @@ class Menu {
             this.getNestedMenuByRoute(m, routerMap);
         });
         console.log("routerMap", routerMap)
-        return routerMap.get(route.path);
+        return routerMap.get(route.path) || [];
     }
 
     linkPage(menu: RouteRecordRaw) {
@@ -86,7 +86,6 @@ class Menu {
         if (this.closeTimeout) {
             clearTimeout(this.closeTimeout);
         }
-        console.log("openDrawer", this.menus.value[1].children);
         this.close.value = true;
     }
 
@@ -120,14 +119,16 @@ class Menu {
 
     // 根据路由元数据构建菜单列表
     getMenuByRoute() {
-        return router
+        const menu = router
             .getRoutes()
-            .filter((route) => route.children.length)
+            .filter((route) => route.children.length && !route.props.hidden)
             .map((route) => {
                 const menu: RouteRecordRaw = {...route};
                 menu.children = this.filterNestedMenu(route.children);
                 return menu;
             }) as RouteRecordRaw[];
+        console.log("menu", menu);
+        return menu;
     }
 }
 

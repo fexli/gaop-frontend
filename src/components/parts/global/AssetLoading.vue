@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import global_const from "../../../utils/global_const";
 import ProgressBar from "./ProgressBar.vue";
-import {Ref} from "vue";
+import {ComputedRef, Ref} from "vue";
 import {PushableDict} from "../../../utils/recruit_planner";
 import {start} from "nprogress";
 
@@ -30,10 +30,6 @@ watch(() => val.value, (v) => {
     percent.value = ''
     overlay.value = false;
     dot.value = '';
-    if (callback != undefined) {
-      callback();
-      callback = undefined;
-    }
     setTimeout(() => {
       loadingFinished.value = true
       smallMode.value = true
@@ -185,7 +181,7 @@ const config = {
   url: "http://mc.mesord.com:8999/"
 }
 
-let callback: Function | undefined = undefined;
+let callback: Function[] = [];
 
 function getLocalFile(url: string, asyncs = false, callback: Function | null = null, method = 'GET', mime = 'application/json') {
   let xhr = new XMLHttpRequest()
@@ -210,13 +206,18 @@ function getLocalFile(url: string, asyncs = false, callback: Function | null = n
   }
 }
 
-function startLoadAssets() {
+function startLoadAssets(force: boolean = false) {
   let max_vx = load_list.filter((v) => v.needLoading && !v.isFinished).length
   if (max_vx === 0 && loadingFinished.value) {
-    if (callback != undefined) {
-      callback();
-      callback = undefined;
+    if (callback.length) {
+      for (let cb of callback) {
+        cb()
+      }
+      callback = []
     }
+    return
+  }
+  if (!force && overlay.value) {
     return
   }
   // reset all param
@@ -238,7 +239,8 @@ function requireAsset(name: string, cb: Function | undefined = undefined, requir
   if (asset) {
     asset.needLoading = true
   }
-  callback = cb
+  if (cb)
+    callback.push(cb)
   if (requireLoad)
     startLoadAssets()
 }
@@ -247,7 +249,8 @@ function requireAssets(names: string[], cb: Function | undefined = undefined, re
   for (let name of names) {
     requireAsset(name, undefined, false)
   }
-  callback = cb
+  if (cb)
+    callback.push(cb)
   if (requireLoad)
     startLoadAssets()
 }
@@ -286,6 +289,7 @@ function loadNextAsset() {
         val.value += 1
         tmlVal.value = 0
         text.value = task.title + "获取完成"
+        console.log("load " + task.name + " finished")
         percent.value = ''
         loadNextAsset()
       })
@@ -300,10 +304,17 @@ function loadNextAsset() {
     }
     return allNone
   }
+  console.log("No more task")
+  if (callback.length) {
+    callback.forEach((cb) => {
+      cb()
+    })
+    callback = []
+  }
   return allNone;
 }
 
-startLoadAssets()
+startLoadAssets(true)
 </script>
 <template>
   <div
@@ -315,7 +326,9 @@ startLoadAssets()
       <div
           :style="(smallMode ? 'height: 112px;width: 119px' : 'height: 320px;width: 340px') + `;background-repeat: no-repeat;background-size: contain;background-image: url('${loadingSrc}')`"
       />
-      <div :class="(smallMode ? 'text-center text-xs' : 'text-xl')" class="text-primary whitespace-pre">{{ text }} {{ percent }}{{ dot }}</div>
+      <div :class="(smallMode ? 'text-center text-xs' : 'text-xl')" class="text-primary whitespace-pre">{{ text }}
+        {{ percent }}{{ dot }}
+      </div>
       <ProgressBar v-if="!smallMode" :buf-value="buf" :value="val+tmlVal" :loading="val+tmlVal===0" :max="max"/>
     </div>
   </div>

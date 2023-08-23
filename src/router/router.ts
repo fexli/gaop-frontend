@@ -20,14 +20,16 @@ router.beforeEach((to, from, next) => {
     // next()
     const user = authStore();
     const token = user.getAccessToken;
-    if (to.path.startsWith('/static') || to.path.startsWith('/reader')) {
+    if (
+        to.path.startsWith('/static') || to.path.startsWith('/reader') || to.path.startsWith('/ark-db') || to.path.startsWith('/db')
+    ) {
         next()
     } else if (to.name !== 'login' && to.name !== 'register') {
         if (token) {
             next()
         } else {
             // next({name: 'login', query: {redirect: to.path}})
-            next({path: '/reader'})
+            next({path: '/auth/login'})
         }
     } else {
         if (token) {

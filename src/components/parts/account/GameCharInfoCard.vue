@@ -20,8 +20,6 @@ const props = defineProps({
     type: Object,
     default: {}
   },
-  gameUserName: String,
-  gamePlatform: Number,
 })
 
 function formatTime(ts: number) {
@@ -30,12 +28,6 @@ function formatTime(ts: number) {
 
 const gameParser = new GameInfoParser()
 
-const position = {
-  MELEE: "近战位",
-  RANGED: "远程位",
-  ALL: "近/远程位",
-  NONE: "-",
-}
 
 const favors = [0, 8, 16, 28, 40, 56, 72, 92, 112, 137, 162, 192, 222, 255, 288, 325, 362, 404, 446, 491, 536,
   586, 636, 691, 746, 804, 862, 924, 986, 1052, 1118, 1184, 1250, 1316, 1382, 1457, 1532, 1607, 1682, 1757, 1832,
@@ -97,26 +89,6 @@ function skillSpCost(skillId: string, currentLevel: number): number {
 function skillInitSp(skillId: string, currentLevel: number): number {
   return global_const.gameData.skillData[skillId]['levels'][currentLevel - 1]['spData']['initSp']
 }
-
-function skillDuration(skillId: string, currentLevel: number): string {
-  let skData = global_const.gameData.skillData[skillId]['levels'][currentLevel - 1]
-  let duType = skData['durationType']
-  if (duType === 0) {
-    let dd = parseInt(skData['duration'])
-    if (dd <= 0) {
-      let data = gameParser.findBlackboard(skData['blackboard'], 'duration')
-      if (data.key) {
-        dd = parseInt(data.value)
-      }
-    }
-    if (dd <= 0) {
-      return '-'
-    }
-    return dd.toString()
-  }
-  return "弹药"
-}
-
 
 function findEquip(eq: string) {
   return eq ? global_const.gameData.uniequipTable['equipDict'][eq] : null
@@ -428,9 +400,9 @@ onMounted(() => {
                 />
                 <div
                     v-if="global_const.gameData.skillData[k.skillId]['levels'][k.current - 1]['skillType'] === 0"
-                    :class="skillDuration(k.skillId,k.current).length >= 2 ? 'scale-75' : ''"
+                    :class="gameParser.skillDuration(k.skillId,k.current).length >= 2 ? 'scale-75' : ''"
                     class="h-[1.375rem] mt-10 ml-[1.475rem] text-sknum font-aewide">
-                  {{ skillDuration(k.skillId, k.current) }}
+                  {{ gameParser.skillDuration(k.skillId, k.current) }}
                 </div>
               </div>
               <div
@@ -442,6 +414,7 @@ onMounted(() => {
                     v-html="gameParser.compileSkillBlackboard(gameParser.compileDescRichText(k.skill.levels[k.current-1].description,'',true),k.skill.levels[k.current-1].blackboard)"
                 />
                 <SkillTable
+                    class="card bg-base-100 rounded-md mt-1 w-[40rem] ring-primary ring-1 flex items-end"
                     :game-parser="gameParser"
                     :skill-obj="k"
                 />
@@ -557,7 +530,7 @@ onMounted(() => {
         </div>
         <div class="ml-2 opacity-90" style="font-size: 15px">
           <div class="outrd h-5 w-[7.5rem] text-center">
-            {{ position[charData.position] }}
+            {{ gameParser.position[charData.position] }}
           </div>
           <div class="outrd mt-2 h-11 w-[7.5rem] text-center flex flex-wrap flex-auto justify-center content-center">
             <div
