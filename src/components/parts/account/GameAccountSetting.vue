@@ -22,7 +22,7 @@ import SettingBtn from "../settings/SettingBtn.vue";
 import AutoBattleMapEdit from "../settings/AutoBattleMapEdit.vue";
 import {parseSingleBattleParamToStr} from "../../../utils/autoBattleMapProc";
 import TransitionOverlay from "../../element/TransitionOverlay.vue";
-import RecruitTypeEdit from "../settings/RecruitTypeEdit.vue";
+import MultiDecisionSelector from "../settings/MultiDecisionSelector.vue";
 
 const account = accountStore();
 const {gameAccountLi, accountInfo} = storeToRefs(account)
@@ -102,6 +102,25 @@ const defaultSettings: Ref = ref({
   "useSweep": null
 })
 
+const recruitAutoFullTypeMap = [
+  {
+    value: 1,
+    label: '招募六星干员',
+  },
+  {
+    value: 2,
+    label: '招募五星干员',
+  },
+  {
+    value: 4,
+    label: '招募机器人',
+  },
+  {
+    value: 8,
+    label: '招募四星干员',
+  },
+]
+
 const isOffline = computed(() => {
   for (let i = 0; i < gameAccountLi.value.length; i++) {
     if (gameAccountLi.value[i].account === props.gameUserName && gameAccountLi.value[i].platform === props.gamePlatform) {
@@ -131,6 +150,11 @@ function closeRecruitAutofullOverlay() {
   recruitAutoFullTypeOverlay.value = false
 }
 
+function confirmRecruitAutofull(v: number) {
+  console.log("confirmRecruitAutofull", v)
+  valuedSettings.value['recruitAutoFullType'] = v
+  closeRecruitAutofullOverlay()
+}
 
 async function getUserInventory(force: boolean = false): Promise<Record<string, number>> {
   if (accountInfo.value[gameUserID.value] && accountInfo.value[gameUserID.value].inventory && !force) {
@@ -902,10 +926,11 @@ onUnmounted(() => {
         :show="recruitAutoFullTypeOverlay"
         class="overlay bg-base-200 bg-opacity-40"
     >
-      <RecruitTypeEdit
+      <MultiDecisionSelector
           :close="closeRecruitAutofullOverlay"
-          :settings="valuedSettings"
-          field="recruitAutoFullType"
+          :confirm="confirmRecruitAutofull"
+          :value="valuedSettings['recruitAutoFullType']"
+          :decision-type-map="recruitAutoFullTypeMap"
       />
     </TransitionOverlay>
   </div>

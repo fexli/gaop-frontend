@@ -107,6 +107,7 @@ const rightClkOpt = {
       label: '冻结账号',
       tips: 'Freeze',
       icon: 'archive-arrow-down-outline',
+      disabled: (params: any) => (params.syncFrom == "quote"),
       hidden: () => currentFreezeType.value,
       fn: (params: any, currentEl: HTMLElement, bindingEl: HTMLElement, e: MouseEvent) => {
         console.log('freeze', params, currentEl, bindingEl, e)
@@ -440,25 +441,26 @@ function restartAccount(accInfo: any) {
   console.log("restartAccount", accInfo)
   gameStopAccount(accInfo.account, accInfo.platform).then(
       () => {
-        account.clearLoggerInfo(accInfo.account, accInfo.platform)
-        gameStartAccount(accInfo.account, accInfo.platform).then(
-            (suc: any) => {
-              showMessage("game.restart.success", 2000, 'success', accInfo.account)
-              setTimeout(() => {
-                syncGameAccounts(true)
-              }, 300)
-            }
-        ).catch(
-            (err: any) => {
-              showMessage(err.data.msg, 2000, 'danger', accInfo.account)
-            }
-        )
       }
   ).catch(
       (err: any) => {
         showMessage(err.data.msg, 2000, 'danger', accInfo.account)
       }
-  )
+  ).finally(()=>{
+    account.clearLoggerInfo(accInfo.account, accInfo.platform)
+    gameStartAccount(accInfo.account, accInfo.platform).then(
+        (suc: any) => {
+          showMessage("game.restart.success", 2000, 'success', accInfo.account)
+          setTimeout(() => {
+            syncGameAccounts(true)
+          }, 300)
+        }
+    ).catch(
+        (err: any) => {
+          showMessage(err.data.msg, 2000, 'danger', accInfo.account)
+        }
+    )
+  })
 }
 
 function freezeAccount(account: string, platform: number) {
@@ -471,6 +473,7 @@ function freezeAccount(account: string, platform: number) {
     showMessage(translate('freezeFail'), 3000, 'warning');
   })
 }
+
 function unFreezeAccount(account: string, platform: number) {
   gameUnFreezeAccount(account, platform).then((res: any) => {
     console.log('unfreeze success', res)
@@ -840,7 +843,7 @@ function displayRemarks(remark: Record<string, any>): string {
                 <td v-if="!currentFreezeType">
                   <h4 v-if="i.finalLog === null">-</h4>
                   <h4 v-else class="nowrap-hidden-ellipsis h-[21px]">
-                    <span class="font-mono">[{{formatter.formatDate(i.finalLog.ts*1000,"HH:mm:ss")}}]</span>
+                    <span class="font-mono">[{{ formatter.formatDate(i.finalLog.ts * 1000, "HH:mm:ss") }}]</span>
                     <span>[</span>
                     <span
                         :style="'color:'+ global_const.loggerLvlType[i.finalLog.level].color">{{
