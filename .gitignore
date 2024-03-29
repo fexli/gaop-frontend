@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 
 public/static/spineout
+
+pnpm-lock.yaml
