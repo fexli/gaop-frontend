@@ -237,7 +237,7 @@ onMounted(() => {
               <div class="h-16 w-full pt-1 flex">
                 <div
                     class="h-14 w-16"
-                    :style="`background-image: url('${global_const.assetServer+'skills/skill_icon_'+(global_const.gameData.skillData[k.skillId]['iconId'] || k.skillId)+'.png'}');
+                    :style="`background-image: url('${global_const.getAssetServer()+'skills/skill_icon_'+(global_const.gameData.skillData[k.skillId]['iconId'] || k.skillId)+'.png'}');
                   background-position: center;background-repeat: no-repeat;background-size: contain`"
                 />
                 <div>

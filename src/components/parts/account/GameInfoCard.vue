@@ -42,12 +42,12 @@ onMounted(() => {
     <div class="ucard-full-ren"/>
     <FeImg
         class="ucard-full-camplogo ucard-full-item"
-        :src="global_const.assetServer+'camplogo/logo_'+userCard['secretary']['camp']+'.png'"
+        :src="global_const.getAssetServer()+'camplogo/logo_'+userCard['secretary']['camp']+'.png'"
     />
     <FeImg
         :background-position="bgp"
         class="background-image-card-full-thin"
-        :src="global_const.assetServer+'charpack/'+userCard['secretary']['skin']+'.png'"
+        :src="global_const.getAssetServer()+'charpack/'+userCard['secretary']['skin']+'.png'"
     />
     <div class="ucard-full-overlay__lr ucard-full-item abs-0"></div>
     <div class="ucard-full-overlay__rl ucard-full-item abs-0"></div>
@@ -104,7 +104,7 @@ onMounted(() => {
     <div class="ucard-full-item ucard-full-avatar flex">
       <FeImg
           class="hidden md:flex"
-          :src="global_const.assetServer+'avatar/'+(userCard.avatar.type ? userCard.avatar.type.replace('ICON','DEFAULT') : 'DEFAULT')+'/'+(userCard.avatar.id ? userCard.avatar.id.replace('@','_').replace('#','_'): 'avatar_def_01')+'.png'"
+          :src="global_const.getAssetServer()+'avatar/'+(userCard.avatar.type ? userCard.avatar.type.replace('ICON','DEFAULT') : 'DEFAULT')+'/'+(userCard.avatar.id ? userCard.avatar.id.replace('@','_').replace('#','_'): 'avatar_def_01')+'.png'"
           style="height: 100px;width: 100px;"
       ></FeImg>
       <div class="flex flex-col" style="padding: 3px;margin-left: 7px;width: 286px">

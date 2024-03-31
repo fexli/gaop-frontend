@@ -1,4 +1,3 @@
-<link rel="stylesheet" href="../../../assets/fonts/aewide/aewide.css">
 <script setup lang="ts">
 import global_const from "../../../utils/global_const";
 import {GameInfoParser} from "../../../utils/gameInfoParser";
@@ -62,7 +61,7 @@ const equip = computed(() => {
     <img :src="'static\\charframe\\upper_shadow.png'"
          alt="upshadow"
          class="char-image char-image__upper-shadow"/>
-    <img :src="global_const.assetServer+'charpor/'+skinId+'.png'"
+    <img :src="global_const.getAssetServer()+'charpor/'+skinId+'.png'"
          alt="skin"
          class="char-image char-image__skin"
          @click="clicker && clicker(inst)"/>
@@ -120,14 +119,14 @@ const equip = computed(() => {
         alt="pot"
         class="char-image char-image__potential"/>
     <img
-        :src="global_const.assetServer+'skills/skill_icon_'+skillId+'.png'"
+        :src="global_const.getAssetServer()+'skills/skill_icon_'+skillId+'.png'"
         alt="skico"
         class="char-image char-image__skill"/>
     <div
         v-if="equip" class="char-image char-image__equip"
         :class="findEquip(equip)['typeIcon'] === 'original' ? 'scale-[.6] mt-1' : ''"
         style="background-repeat: no-repeat;background-position: center;background-size: contain"
-        :style="`background-image: url('${global_const.assetServer+'equiptc/'+findEquip(equip)['typeIcon']+'.png'}');`"
+        :style="`background-image: url('${global_const.getAssetServer()+'equiptc/'+findEquip(equip)['typeIcon']+'.png'}');`"
     />
     <div class="char-image char-image__name">{{ global_const.gameData.characterData[charId].name }}</div>
     <div style="position:absolute;width: 100%;height: 100%" @click="clicker && clicker(inst)"></div>

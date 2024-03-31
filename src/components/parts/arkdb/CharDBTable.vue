@@ -139,7 +139,7 @@ onMounted(() => {
             <div class="flex">
               <FeImg
                   class="border border-base-content rounded-md w-16 h-16 m-1"
-                  :src="global_const.assetServer+'avatar/ASSISTANT/'+getAvatar(charData.charId,charData)+'.png'"
+                  :src="global_const.getAssetServer()+'avatar/ASSISTANT/'+getAvatar(charData.charId,charData)+'.png'"
               />
               <div>
                 <img :src="'static\\charframe\\star_'+(charData.rarity+1)+'.png'" alt="star" class="mt-1"/>

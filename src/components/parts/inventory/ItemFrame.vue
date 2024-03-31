@@ -72,7 +72,7 @@ const isValid = computed(() => {
 <template>
   <div class="card rounded-xl" v-if="isValid && count !== 0 && global_const.gameData.itemData[itemId].sortId >= -10">
     <FeImg
-        :src="global_const.assetServer+'items/'+global_const.gameData.itemData[itemId]['iconId']+'.png'"
+        :src="global_const.getAssetServer()+'items/'+global_const.gameData.itemData[itemId]['iconId']+'.png'"
         class="item-image"
     />
     <p class="item-content" v-if="content != null">{{ content }}</p>

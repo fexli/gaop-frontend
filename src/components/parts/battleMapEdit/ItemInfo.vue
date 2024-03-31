@@ -63,7 +63,7 @@ onMounted(() => {
     <div class="flex items-center">
       <FeImg
           class="w-16 h-16 m-1"
-          :src="global_const.assetServer+'items/'+info.iconId+'.png'"
+          :src="global_const.getAssetServer()+'items/'+info.iconId+'.png'"
       />
       <div
           class="text-primary text-sm font-bold"

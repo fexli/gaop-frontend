@@ -86,7 +86,7 @@ const defaultClassIsErr = function (checker: string): string {
       <FeImg
           :class="data.maxAp ? 'ring-success':'ring-error'"
           class="hidden md:flex w-16 h-16 ring-2 rounded-md"
-          :src="global_const.assetServer+'avatar/'+(data.avatar.type ? data.avatar.type.replace('ICON','DEFAULT') : 'DEFAULT')+'/'+(data.avatar.id ? data.avatar.id.replace('@','_').replace('#','_'): 'avatar_def_01')+'.png'"
+          :src="global_const.getAssetServer()+'avatar/'+(data.avatar.type ? data.avatar.type.replace('ICON','DEFAULT') : 'DEFAULT')+'/'+(data.avatar.id ? data.avatar.id.replace('@','_').replace('#','_'): 'avatar_def_01')+'.png'"
       />
       <div>
         <div

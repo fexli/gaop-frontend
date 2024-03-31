@@ -90,7 +90,7 @@ onMounted(() => {
     <div class="flex items-center">
       <FeImg
           class="border border-base-content rounded-md w-16 h-16 m-1"
-          :src="global_const.assetServer+'avatar/ASSISTANT/'+info.id+'.png'"
+          :src="global_const.getAssetServer()+'avatar/ASSISTANT/'+info.id+'.png'"
       />
       <div
           class="text-primary text-sm font-bold"

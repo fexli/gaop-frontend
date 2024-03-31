@@ -252,7 +252,7 @@ onMounted(() => {
     />
     <div
         class="m-auto absolute rounded-xl"
-        :style="`background-image: url('${global_const.assetServer+'charpack/'+selectItem.skin+'.png'}');
+        :style="`background-image: url('${global_const.getAssetServer()+'charpack/'+selectItem.skin+'.png'}');
         left: ${bgCharLeft}%;top: ${bgCharTop}%;height: ${bgCharScale > 130 ? bgCharScale : 130}%;width: ${bgCharScale}%;
         background-position: center;background-repeat: no-repeat;background-size: contain`"
     ></div>
@@ -348,7 +348,7 @@ onMounted(() => {
               <div class="w-[4.5rem] h-[5.75rem] -mt-9">
                 <div
                     class="h-14 w-16 absolute"
-                    :style="`background-image: url('${global_const.assetServer+'skills/skill_icon_'+(global_const.gameData.skillData[k.skillId]['iconId'] || k.skillId)+'.png'}');
+                    :style="`background-image: url('${global_const.getAssetServer()+'skills/skill_icon_'+(global_const.gameData.skillData[k.skillId]['iconId'] || k.skillId)+'.png'}');
                   background-position: center;background-repeat: no-repeat;background-size: contain`"
                 />
                 <div class="absolute text-center w-16 h-8 mt-[3.875rem] text-skill flex items-center justify-center">
@@ -452,7 +452,7 @@ onMounted(() => {
           />
           <div
               v-if="computeCharTmpl['currentEquip']" class="sk-im"
-              :style="`background-image: url('${global_const.assetServer+'equipt/'+findEquip(computeCharTmpl['currentEquip'])['typeIcon']+'.png'}');`"
+              :style="`background-image: url('${global_const.getAssetServer()+'equipt/'+findEquip(computeCharTmpl['currentEquip'])['typeIcon']+'.png'}');`"
           />
           <div class="text-xs w-20 absolute left-52 mt-7 text-center">
             {{ computeCharTmpl['currentEquip'] ? findEquipName(computeCharTmpl['currentEquip']) : 'NONE' }}

@@ -129,7 +129,7 @@ onMounted(() => {
       <div class="mx-6 self-center">
         <FeImg
             style="height: 100px;width: 100px;"
-            :src="'http://mc.mesord.com:8999/items/'+(itemData?.iconId || 'missing')+'.png'"/>
+            :src="global_const.getAssetServer()+'/items/'+(itemData?.iconId || 'missing')+'.png'"/>
 
       </div>
     </div>

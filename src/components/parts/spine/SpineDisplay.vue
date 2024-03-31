@@ -440,7 +440,7 @@ const animationsDetail = ref<{ name: string; duration: number }[]>([])
 
 async function load() {
   isLoading.value = true
-  const path = global_const.assetServer + 'spine/' + currentSettings.value.char + '/' + currentSettings.value.skin + '/' + currentSettings.value.model
+  const path = global_const.getAssetServer() + 'spine/' + currentSettings.value.char + '/' + currentSettings.value.skin + '/' + currentSettings.value.model
   let skelData = ((spineSumms.value[currentSettings.value.char] || {})[currentSettings.value.skin] || {})[currentSettings.value.model]
   if (!skelData) {
     console.log("load", "skelData not found")
@@ -500,7 +500,7 @@ onMounted(() => {
       return
     }
     spineRef.spine = new Spine(canvas.value)
-    getXHR(global_const.assetServer + "spine/summary.json").then((res: any) => {
+    getXHR(global_const.getAssetServer() + "spine/summary.json").then((res: any) => {
       console.log("XHR", res)
       spineSumms.value = res
       global_const.onGameDataLoaded("characterData", () => {

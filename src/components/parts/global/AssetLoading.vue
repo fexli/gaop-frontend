@@ -177,10 +177,6 @@ const load_list: LoadingList[] = [
   } as LoadingList
 ]
 
-const config = {
-  url: "http://mc.mesord.com:8999/"
-}
-
 let callback: Function[] = [];
 
 function getLocalFile(url: string, asyncs = false, callback: Function | null = null, method = 'GET', mime = 'application/json') {
@@ -273,7 +269,7 @@ function loadNextAsset() {
     if (!global_const.gameData[task.field]) {
       console.log('try fetch ' + task.name)
       text.value = "获取" + task.title + "中"
-      getLocalFile((task.isStatic ? '' : config.url) + task.loc, true, (xhr: any) => {
+      getLocalFile((task.isStatic ? '' : global_const.getAssetServer()) + task.loc, true, (xhr: any) => {
         if (task.parser !== undefined) {
           try {
             global_const.gameData[task.field] = task.parser(xhr.response)

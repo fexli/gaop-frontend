@@ -73,7 +73,7 @@ const itemTypes = {
     'LMTGS_COIN': '寻访数据契约',
     'MATERIAL': '养成素材',
     'RENAMING_CARD': '改名卡',
-    'RENAMING_CARD_2':'改名卡',
+    'RENAMING_CARD_2': '改名卡',
     'REP_COIN': '情报凭证',
     'SOCIAL_PT': '信用',
     'TKT_GACHA': '寻访凭证',
@@ -87,30 +87,30 @@ const itemTypes = {
     'VOUCHER_PICK': '干员兑换券',
     'EXTERMINATION_AGENT': "剿灭代理卡",
     "VOUCHER_SKIN": "时装自选凭证",
-    'NONE':'？',
-    'CHAR':'干员',
-    'FURN':'家具',
-    'CHAR_SKIN':'干员皮肤',
-    'LIMITED_FREE_GACHA':'限定池免费抽',
-    'ROGUELIKE':'肉鸽物品',
-    'VOUCHER_ELITE_II_5':'资深干员特训邀请函',
-    'RETRO_COIN':'事相结晶',
-    'PLAYER_AVATAR':'头像',
-    'UNI_COLLECTION':'家具收藏包',
-    'VOUCHER_FULL_POTENTIAL':'私人信件',
-    'RL_COIN':'肉鸽代币',
-    'RETURN_CREDIT':'二次认证徽记',
-    'MEDAL':'蚀刻章',
-    'CHARM':'干员模组',
-    'HOME_BACKGROUND':'主页背景',
-    'OPTIONAL_VOUCHER_PICK':'芯片自选',
-    'ACT_CART_COMPONENT':'[活动]车辆涂装',
-    'VOUCHER_LEVELMAX_6':'6☆特训装置',
-    'VOUCHER_LEVELMAX_5':'5☆特训装置',
-    'ACTIVITY_POTENTIAL':'活动潜能',
-    'ITEM_PACK':'礼包组合',
-    'SANDBOX':'生息演算',
-    'FAVOR_ADD_ITEM':'信赖提升物品',
+    'NONE': '？',
+    'CHAR': '干员',
+    'FURN': '家具',
+    'CHAR_SKIN': '干员皮肤',
+    'LIMITED_FREE_GACHA': '限定池免费抽',
+    'ROGUELIKE': '肉鸽物品',
+    'VOUCHER_ELITE_II_5': '资深干员特训邀请函',
+    'RETRO_COIN': '事相结晶',
+    'PLAYER_AVATAR': '头像',
+    'UNI_COLLECTION': '家具收藏包',
+    'VOUCHER_FULL_POTENTIAL': '私人信件',
+    'RL_COIN': '肉鸽代币',
+    'RETURN_CREDIT': '二次认证徽记',
+    'MEDAL': '蚀刻章',
+    'CHARM': '干员模组',
+    'HOME_BACKGROUND': '主页背景',
+    'OPTIONAL_VOUCHER_PICK': '芯片自选',
+    'ACT_CART_COMPONENT': '[活动]车辆涂装',
+    'VOUCHER_LEVELMAX_6': '6☆特训装置',
+    'VOUCHER_LEVELMAX_5': '5☆特训装置',
+    'ACTIVITY_POTENTIAL': '活动潜能',
+    'ITEM_PACK': '礼包组合',
+    'SANDBOX': '生息演算',
+    'FAVOR_ADD_ITEM': '信赖提升物品',
 }
 const loginBG = {
     bg: [
@@ -216,8 +216,14 @@ const servers = [
     },
 ]
 
-const assetServer = "http://mc.mesord.com:8999/"
-
+const getAssetServer = function () {
+    // check if use https
+    if (location.protocol === 'https:') {
+        return "https://mc.mesord.com:8998/"
+    } else {
+        return "http://mc.mesord.com:8999/"
+    }
+}
 const mdiPath: Record<string, string> = {
     "cog-outline": "M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M10,22C9.75,22 9.54,21.82 9.5,21.58L9.13,18.93C8.5,18.68 7.96,18.34 7.44,17.94L4.95,18.95C4.73,19.03 4.46,18.95 4.34,18.73L2.34,15.27C2.21,15.05 2.27,14.78 2.46,14.63L4.57,12.97L4.5,12L4.57,11L2.46,9.37C2.27,9.22 2.21,8.95 2.34,8.73L4.34,5.27C4.46,5.05 4.73,4.96 4.95,5.05L7.44,6.05C7.96,5.66 8.5,5.32 9.13,5.07L9.5,2.42C9.54,2.18 9.75,2 10,2H14C14.25,2 14.46,2.18 14.5,2.42L14.87,5.07C15.5,5.32 16.04,5.66 16.56,6.05L19.05,5.05C19.27,4.96 19.54,5.05 19.66,5.27L21.66,8.73C21.79,8.95 21.73,9.22 21.54,9.37L19.43,11L19.5,12L19.43,13L21.54,14.63C21.73,14.78 21.79,15.05 21.66,15.27L19.66,18.73C19.54,18.95 19.27,19.04 19.05,18.95L16.56,17.95C16.04,18.34 15.5,18.68 14.87,18.93L14.5,21.58C14.46,21.82 14.25,22 14,22H10M11.25,4L10.88,6.61C9.68,6.86 8.62,7.5 7.85,8.39L5.44,7.35L4.69,8.65L6.8,10.2C6.4,11.37 6.4,12.64 6.8,13.8L4.68,15.36L5.43,16.66L7.86,15.62C8.63,16.5 9.68,17.14 10.87,17.38L11.24,20H12.76L13.13,17.39C14.32,17.14 15.37,16.5 16.14,15.62L18.57,16.66L19.32,15.36L17.2,13.81C17.6,12.64 17.6,11.37 17.2,10.2L19.31,8.65L18.56,7.35L16.15,8.39C15.38,7.5 14.32,6.86 13.12,6.62L12.75,4H11.25Z",
     "comment-text-multiple-outline": "M12,23A1,1 0 0,1 11,22V19H7A2,2 0 0,1 5,17V7A2,2 0 0,1 7,5H21A2,2 0 0,1 23,7V17A2,2 0 0,1 21,19H16.9L13.2,22.71C13,22.89 12.76,23 12.5,23H12M13,17V20.08L16.08,17H21V7H7V17H13M3,15H1V3A2,2 0 0,1 3,1H19V3H3V15M9,9H19V11H9V9M9,13H17V15H9V13Z",
@@ -294,6 +300,7 @@ const mdiPath: Record<string, string> = {
     "chevron-right": "M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z",
     "badge-account-horizontal-outline": "M8,9A2,2 0 0,1 10,11A2,2 0 0,1 8,13A2,2 0 0,1 6,11A2,2 0 0,1 8,9M12,17H4V16C4,14.67 6.67,14 8,14C9.33,14 12,14.67 12,16V17M20,8H14V10H20V8M20,12H14V14H20V12M20,16H14V18H20V16M22,4H14V6H22V20H2V6H10V4H2A2,2 0 0,0 0,6V20A2,2 0 0,0 2,22H22A2,2 0 0,0 24,20V6A2,2 0 0,0 22,4M13,6H11V2H13V6Z",
     "shield-sword-outline": "M12 1L21 5V11C21 16.5 17.2 21.7 12 23C6.8 21.7 3 16.5 3 11V5L12 1M12 3.2L5 6.3V11.2C5 15.5 8.2 20 12 21C15.8 20 19 15.5 19 11.2V6.3L12 3.2M12 5.5L14 7.1L13 13H15V15H13V18H11V15H9V13H11L10 7.1L12 5.5Z",
+    "timer-outline": "M12,20A7,7 0 0,1 5,13A7,7 0 0,1 12,6A7,7 0 0,1 19,13A7,7 0 0,1 12,20M19.03,7.39L20.45,5.97C20,5.46 19.55,5 19.04,4.56L17.62,6C16.07,4.74 14.12,4 12,4A9,9 0 0,0 3,13A9,9 0 0,0 12,22C17,22 21,17.97 21,13C21,10.88 20.26,8.93 19.03,7.39M11,14H13V8H11M15,1H9V3H15V1Z",
     "": "",
 }
 const gameData: Record<string, any> = {}
@@ -373,6 +380,6 @@ export default {
     requireAsset,
     requireAssets,
     mdiPath,
-    assetServer,
+    getAssetServer,
     profNick
 }
