@@ -216,6 +216,18 @@ export const accountSetRemark = (username: string, platform: number, remark: str
     platform,
     remark
 });
+
+export const accountAutologinSetEnable = (username: string, platform: number, enable: boolean) => post('/account/autoLogin/setEnable', {
+    username,
+    platform,
+    enable
+});
+
+export const accountAutologinSetCron = (username: string, platform: number, cron: string) => post('/account/autoLogin/set', {
+    username,
+    platform,
+    cron
+});
 export const finishCaptcha = (captcha: any) => post('/account/finishCaptcha', captcha);
 export const getGameUserCard = (username: string, platform: number) => post('/game/userCard', {
     username,

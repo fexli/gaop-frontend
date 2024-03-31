@@ -198,6 +198,13 @@ export const zhHans = {
             terminal: '命令执行',
             schedule: '任务规划',
         },
+        autologin:{
+            set_enable:{
+                error: "设置自动登录失败：{0}",
+                success: "设置自动登录成功",
+                not_found: "设置自动登录失败：账号{0}不存在",
+            }
+        }
     },
     logger: {
         time: '日志时间',

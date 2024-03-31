@@ -8,6 +8,8 @@ import global_const from "../utils/global_const";
 import LogTextCtx from "../components/parts/accountManage/LogTextCtx.vue";
 import formatter from "../utils/formatter";
 import {
+  accountAutologinSetEnable,
+  accountAutologinSetCron,
   accountSetRemark,
   gameCreateAccount,
   gameDeleteAccount, gameFreezeAccount,
@@ -22,6 +24,9 @@ import TransitionOverlay from "../components/element/TransitionOverlay.vue";
 import {ColorPicker} from "vue-color-kit";
 import VueTailwindDatePicker from "../thirdparty/VueTailwindDatePicker.vue";
 import {MouseMenuDirective} from "../plugins/rightClickMenu";
+import Toggle from "../components/parts/settings/SettingToggle.vue";
+import Explain from "../components/element/Explain.vue";
+import cronParser from "../utils/cronParser";
 
 const vMouseMenu = MouseMenuDirective
 const rightClkOpt = {
@@ -177,6 +182,26 @@ class RemarkInfoS {
   style: string = "";
 }
 
+
+class CronUserInfoT {
+  account: string = "";
+  nickname: string = "";
+  platform: number = 0;
+}
+
+class CronInfoF {
+  cron: string = "";
+  enable: boolean = false;
+}
+
+class CronInfoT {
+  crons: string = "";
+  cronsPrevState: string = "";
+  nextTime: string = "";
+  enable: boolean = false;
+  enablePrevState: boolean = false;
+}
+
 const remarkOverlay: Ref<Boolean> = ref(false);
 const remarkInfo: Ref<RemarkInfoT> = ref({
   startTs: "",
@@ -189,6 +214,25 @@ const remarkUserInfo: Ref<RemarkUserInfoT> = ref({
   nickname: "",
   platform: 0,
 });
+
+const cronOverlay: Ref<Boolean> = ref(false);
+const cronUserInfo: Ref<CronUserInfoT> = ref({
+  account: "",
+  nickname: "",
+  platform: 0,
+});
+const cronInfo: Ref<CronInfoT> = ref({
+  crons: "",
+  cronsPrevState: "",
+  nextTime: "",
+  enable: false,
+  enablePrevState: false,
+});
+
+watch(() => cronInfo.value.crons, (newVal, oldVal) => {
+  let next = cronParser.parseCronsNextTs(newVal ? newVal.split("||") : [])
+  cronInfo.value.nextTime = next ? formatter.formatDate(next.getTime(), 'yyyy年MM月dd日 HH:mm:ss') : ""
+})
 
 
 const formatterTyp = ref({
@@ -284,7 +328,7 @@ const gameAccountHeaders = [
     text: computed(() => translate('account.operation')),
     value: 'actions',
     sortable: false,
-    width: '8.75rem',
+    width: '10rem',
   }
 ]
 const customShortcuts = () => {
@@ -446,7 +490,7 @@ function restartAccount(accInfo: any) {
       (err: any) => {
         showMessage(err.data.msg, 2000, 'danger', accInfo.account)
       }
-  ).finally(()=>{
+  ).finally(() => {
     account.clearLoggerInfo(accInfo.account, accInfo.platform)
     gameStartAccount(accInfo.account, accInfo.platform).then(
         (suc: any) => {
@@ -538,6 +582,90 @@ function showTimeBar(accInfo: any) {
   remarkUserInfo.value.nickname = accInfo.name
   parseRemark(accInfo.remarks)
   remarkOverlay.value = true
+}
+
+function parseCronSetting(cron: CronInfoF) {
+  if (!cron) {
+    cronInfo.value.crons = cronInfo.value.cronsPrevState = ""
+    cronInfo.value.enable = cronInfo.value.enablePrevState = false
+    return
+  }
+  cronInfo.value.enable = cronInfo.value.enablePrevState = cron.enable
+  cronInfo.value.crons = cronInfo.value.cronsPrevState = cron.cron
+}
+
+function showCronBar(accInfo: any) {
+  console.log("showCronBar", accInfo)
+  cronUserInfo.value.account = accInfo.account
+  cronUserInfo.value.platform = accInfo.platform
+  cronUserInfo.value.nickname = accInfo.name
+  parseCronSetting(accInfo.cronSetting)
+  cronOverlay.value = true
+}
+
+async function saveCronText(): Promise<boolean> {
+  console.log("saveCronText", cronUserInfo.value, JSON.stringify(cronInfo.value));
+  if (cronInfo.value.crons === cronInfo.value.cronsPrevState) {
+    return true
+  }
+  return await accountAutologinSetCron(cronUserInfo.value.account, cronUserInfo.value.platform, cronInfo.value.crons).then((success: any) => {
+    return true
+  }).catch(err => {
+    console.log(err)
+    showMessage(err.data.msg, 2000, 'danger', err.data.error)
+    return false
+  })
+}
+
+async function saveCron() {
+  console.log("saveCron", cronUserInfo.value, JSON.stringify(cronInfo.value));
+  if (cronInfo.value.crons === cronInfo.value.cronsPrevState && cronInfo.value.enable === cronInfo.value.enablePrevState) {
+    cronOverlay.value = false
+    return
+  }
+  // 关检测
+  if (cronInfo.value.enable !== cronInfo.value.enablePrevState && !cronInfo.value.enable) {
+    accountAutologinSetEnable(cronUserInfo.value.account, cronUserInfo.value.platform, false).then(async (success: any) => {
+      console.log(success)
+      if (await saveCronText()) {
+        showMessage(success.msg, 2000, 'success', cronUserInfo.value.account)
+        cronOverlay.value = false
+      }
+      syncGameAccounts()
+    }).catch(err => {
+      console.log(err)
+      showMessage(err.data.msg, 2000, 'danger', err.data.error)
+    })
+    return;
+  }
+  // 开检测
+  if (cronInfo.value.enable !== cronInfo.value.enablePrevState && cronInfo.value.enable) {
+    if (await saveCronText()) {
+      accountAutologinSetEnable(cronUserInfo.value.account, cronUserInfo.value.platform, true).then((success: any) => {
+        console.log(success)
+        showMessage(success.msg, 2000, 'success', cronUserInfo.value.account)
+      }).catch(err => {
+        console.log(err)
+        showMessage(err.data.msg, 2000, 'danger', err.data.error)
+      }).finally(() => {
+        cronOverlay.value = false
+        syncGameAccounts()
+      })
+    }
+    return;
+  }
+  // 文本检测
+  if (cronInfo.value.crons !== cronInfo.value.cronsPrevState) {
+    accountAutologinSetCron(cronUserInfo.value.account, cronUserInfo.value.platform, cronInfo.value.crons).then((success: any) => {
+      console.log(success)
+      showMessage(success.msg, 2000, 'success', cronUserInfo.value.account)
+      cronOverlay.value = false
+      syncGameAccounts()
+    }).catch(err => {
+      console.log(err)
+      showMessage(err.data.msg, 2000, 'danger', err.data.error)
+    })
+  }
 }
 
 function saveRemark() {
@@ -735,7 +863,7 @@ function displayRemarks(remark: Record<string, any>): string {
       <div class="text-primary">{{ translate("account.welcome", username) }}</div>
     </div>
   </div>
-  <div class="flex flex-col lg:flex-row overflow-hidden">
+  <div class="flex flex-col lg:flex-row">
     <div v-if="!isMonitorType" class="flex flex-wrap flex-row lg:flex-col">
       <StatusInfo class="mr-1 lg:mr-0 mt-1" title="account.current" :content="currentAccounts">
         <template v-slot:icon>
@@ -764,7 +892,7 @@ function displayRemarks(remark: Record<string, any>): string {
       </StatusInfo>
     </div>
     <div class="ml-0 lg:ml-1 w-full" :class="{'mt-1':!isMonitorType}">
-      <div class="overflow-hidden rounded-xl">
+      <div class="rounded-xl">
         <div class="flex items-center bg-base-200 py-2 px-1 font-bold">
           <div class="text-xl ml-2 py-2 nowrap-hidden-ellipsis">{{ translate('account.game_account') }}</div>
           <div class="spacer"></div>
@@ -863,6 +991,23 @@ function displayRemarks(remark: Record<string, any>): string {
                   <pre>{{ displayRemarks(i.remarks) }}</pre>
                 </td>
                 <td class="no-hidden" v-if="!currentFreezeType">
+                  <div class="dropdown dropdown-hover dropdown-left"
+                       :class="k >= (account.getGameAccounList.filter(v => v.freeze === currentFreezeType).length)/2 ? 'dropdown-top' :''">
+                    <button class="btn btn-ghost btn-circle btn-xs mr-1" @click="showCronBar(i)">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                              :d="global_const.mdiPath[i.cronSetting.enable ? 'timer-outline' : 'timer-off-outline']"/>
+                      </svg>
+                    </button>
+                    <div
+                        class="dropdown-content bg-base-300 ring-1 ring-secondary text-base-content rounded-md px-2 py-1 top-px overflow-y-auto shadow-lg">
+                      <div>
+                        <pre>自动登录状态：<span v-if="i.cronSetting.enable" style="color: greenyellow">已启用</span>
+                        <span v-else style="color: orangered">未启用</span></pre>
+                        <pre>{{ i.cronSetting }}</pre>
+                      </div>
+                    </div>
+                  </div>
                   <div class="dropdown dropdown-hover dropdown-left"
                        :class="k >= (account.getGameAccounList.filter(v => v.freeze === currentFreezeType).length)/2 ? 'dropdown-top' :''">
                     <button v-show="i.status <= 0" class="btn btn-ghost btn-circle btn-xs mr-1"
@@ -1051,7 +1196,47 @@ function displayRemarks(remark: Record<string, any>): string {
       </div>
     </div>
   </TransitionOverlay>
-
+  <TransitionOverlay
+      :show="cronOverlay"
+      class="overlay bg-base-200 bg-opacity-50"
+  >
+    <div class="card overflow-visible w-96 bg-neutral text-neutral-content ring-1 ring-secondary" v-if="cronOverlay">
+      <div class="card-body p-3">
+        <div class="flex gap-1 justify-center items-center">
+          <h2 class="card-title text-secondary">账号备注 #{{
+              cronUserInfo.nickname
+            }}({{ cronUserInfo.account }})</h2>
+        </div>
+        <div class="flex gap-2 h-7">
+          <div class="w-16">自动登录</div>
+          <Toggle
+              :settings="cronInfo" field="enable" title="" text-class="" :label-text="false"
+              style="padding: 0!important;margin-left: 0.25rem"
+          >
+          </Toggle>
+        </div>
+        <div class="flex gap-2 h-20">
+          <div class="w-16">登录设置</div>
+          <textarea
+              type="text" class="input ring-1 ring-secondary w-[17rem] h-20" v-model="cronInfo.crons"
+              placeholder="遵循Cron表达式规则，多个Cron间使用双竖线(||)分隔，推荐每天11,23登录，0 5 11,23 * * *"
+          />
+        </div>
+        <div class="flex gap-2 h-7">
+          <div class="w-16">下次登录</div>
+          <div class="dropdown dropdown-right dropdown-top w-72">
+            {{ cronInfo.nextTime || "表达式错误" }}
+          </div>
+        </div>
+        <div class="card-actions w-full justify-end">
+          <button class="btn btn-sm btn-primary" @click="saveCron">保存
+          </button>
+          <button class="btn btn-sm btn-ghost" @click="cronOverlay = false">取消
+          </button>
+        </div>
+      </div>
+    </div>
+  </TransitionOverlay>
   <TransitionOverlay
       :show="createAccountOverlay"
       class="overlay bg-base-200 bg-opacity-50"

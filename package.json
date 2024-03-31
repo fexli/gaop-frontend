@@ -15,6 +15,7 @@
     "@tailwindcss/typography": "^0.5.2",
     "@types/nprogress": "^0.2.0",
     "axios": "^0.27.2",
+    "cron-parser": "^4.9.0",
     "daisyui": "^2.45.0",
     "dayjs": "^1.11.6",
     "event-target-shim": "^6.0.2",
